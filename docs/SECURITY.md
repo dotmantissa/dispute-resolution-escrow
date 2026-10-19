@@ -14,6 +14,8 @@ Never send a different payer's funds to someone else's book expecting sender-spe
 
 Native transfers execute asynchronously. The contract rejects reconciliation while authenticated finalized self-acknowledgements remain pending. Finalize earlier withdrawals before reconciling or funding further activity. Follow both parent and child outcomes. Book withdrawal references prevent replay of a previously emitted withdrawal; a failed arbitrary recipient is not an automatic refund to the book.
 
+The guard depends on the network debiting outgoing value before executing finalized self-messages. The recorded Studio guard test checks provisional rejection and post-acknowledgement accounting. Repeat that qualification before adopting another network or runtime; a self-message alone is not an independent balance-debit proof.
+
 The supported inbox uses actual native balance as its recovery authority. Only its owner can withdraw. The SDK verifies exact source plus owner/book configuration. A custom receiver may falsely accept preflight, reject its callback or offer no recovery interface; raw low-level integrations assume that risk. Do not mix unrelated beneficiaries in one inbox.
 
 ## Documentary truth and confidentiality
