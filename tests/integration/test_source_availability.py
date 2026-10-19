@@ -1,6 +1,7 @@
 """Verify exact changed and deleted public URLs, not a separate provider API.
 
-ESCROW_EVIDENCE_ORIGIN must be an HTTPS reverse tunnel to 127.0.0.1:18765.
+ESCROW_EVIDENCE_ORIGIN is an HTTPS tunnel to 127.0.0.1:18765, or auto
+to create fresh anonymous localhost.run tunnels for each case.
 The server exposes only in-memory test documents. There is no public mutation
 endpoint or filesystem serving. Requests, HTTP status and body hashes are logged.
 """
@@ -8,9 +9,13 @@ import hashlib
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 import json
 import os
+import re
+import subprocess
+import tempfile
 import threading
 import time
 from urllib.request import urlopen
+from pathlib import Path
 
 import pytest
 from genlayer_escrow import Document
@@ -40,12 +45,45 @@ class PublicOrigin:
     def close(self):self.server.shutdown();self.server.server_close();self.thread.join()
 
 
+class FreshTunnel:
+    """One short-lived public HTTPS tunnel per case; no user SSH configuration."""
+    def __init__(self):
+        self.directory=tempfile.TemporaryDirectory(prefix='escrow-evidence-tunnel-')
+        self.log_path=Path(self.directory.name)/'ssh.log'
+        self.log=self.log_path.open('w')
+        self.process=subprocess.Popen(['ssh','-F','/dev/null','-o','IdentityAgent=none',
+            '-o','IdentityFile=none','-o','BatchMode=yes','-o','StrictHostKeyChecking=accept-new',
+            '-o','UserKnownHostsFile='+self.directory.name+'/known-hosts',
+            '-o','ServerAliveInterval=15','-o','ConnectTimeout=12',
+            '-R','80:127.0.0.1:18765','nokey@localhost.run'],stdout=self.log,stderr=subprocess.STDOUT)
+        deadline=time.monotonic()+45
+        while time.monotonic()<deadline:
+            match=re.search(r'https://[a-z0-9]+\.lhr\.life',self.log_path.read_text())
+            if match:
+                self.url=match.group(0);return
+            if self.process.poll() is not None:break
+            time.sleep(1)
+        self.close();raise RuntimeError('Public test HTTPS tunnel did not start')
+    def close(self):
+        if self.process.poll() is None:
+            self.process.terminate()
+            try:self.process.wait(timeout=5)
+            except subprocess.TimeoutExpired:self.process.kill();self.process.wait()
+        self.log.close();self.directory.cleanup()
+
+
 def test_changed_only_and_deleted_origins_use_bound_snapshots():
     live=Live('source-availability-verification.json');origin=PublicOrigin()
-    base=os.environ['ESCROW_EVIDENCE_ORIGIN'].rstrip('/')
+    configured=os.environ['ESCROW_EVIDENCE_ORIGIN'].rstrip('/')
+    tunnel=None
+    base=configured
     try:
         live.tx('payer','deposit',value=22004,key='availability-deposit',finalized=True)
         for phase in ('changed','deleted'):
+            if configured=='auto':
+                tunnel=FreshTunnel();base=tunnel.url
+            origin.phase='original'
+            live.report.setdefault('origins',{})[phase]=base;live.save()
             names=('terms.md','delivery-half.md','dispute-half.md');original={n:(ROOT/'tests/evidence'/n).read_bytes() for n in names}
             prefix='/'+live.run+'/'+phase+'/'
             for name,body in original.items():
@@ -76,7 +114,8 @@ def test_changed_only_and_deleted_origins_use_bound_snapshots():
             for name in names:
                 seen=[q for q in requests if q['path']==prefix+name and q['phase']==phase]
                 assert len(seen)>=3 and all(q['status']==(200 if phase=='changed' else 404) for q in seen),seen
-            live.scenario('exact_url_'+phase+'_snapshot_fallback',escrow_id=eid,assessment=r['last_assessment'],origin_requests=requests)
+            live.scenario('exact_url_'+phase+'_snapshot_fallback',escrow_id=eid,assessment=r['last_assessment'],origin_requests=requests,public_origin=base)
+            if tunnel is not None:tunnel.close();tunnel=None
         for role in ('payer','payee'):
             owner=getattr(live,role).local_account.address;credit=live.read('credit_of',[owner])
             live.tx(role,'withdraw',[credit,owner,'account','availability-'+role],finalized=True)
@@ -84,3 +123,4 @@ def test_changed_only_and_deleted_origins_use_bound_snapshots():
         live.report.update(complete=True,final_accounting=a,public_origin=base,origin_requests=origin.requests);live.save()
     finally:
         live.report['origin_requests']=origin.requests;live.save();origin.close()
+        if tunnel is not None:tunnel.close()

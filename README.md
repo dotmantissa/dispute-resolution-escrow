@@ -68,7 +68,7 @@ python -m pytest tests/integration/test_studio.py -v -s -x
 python -m pytest tests/integration/test_custody_faults.py -v -s -x
 ```
 
-The source-availability suite additionally requires `ESCROW_EVIDENCE_ORIGIN`, a real public HTTPS tunnel to the test server on `127.0.0.1:18765`. Its documentation explains the origin and request logging. No production component depends on this test tunnel.
+The source-availability suite additionally requires `ESCROW_EVIDENCE_ORIGIN`, a real public HTTPS tunnel to the test server on `127.0.0.1:18765`. Set it to `auto` to create a fresh anonymous SSH tunnel for each case. Its documentation explains the origin and request logging. No production component depends on this test tunnel.
 
 Studio quotas can pause a run. Submitted IDs are journaled before polling. Resume an interrupted run with the same keys, deployment and `GENLAYER_RESUME_RUN=1`; inspect the journal and case state first. Never blindly repeat a deposit or deployment after an ambiguous submission error. Run a fresh deployment for a new full test run; test journals reject accidental overwrite.
 

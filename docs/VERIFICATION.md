@@ -17,6 +17,8 @@ The reviewed source passed both GenVM lint/semantic checks. The local suite pass
 
 Direct mode uses official SDK storage and calldata handling. Its verified public evidence cache avoids repeatedly downloading identical bytes. It does not establish actual validator consensus, native transfer delivery or protocol appeal behavior; those are separate live checks.
 
+The final wheel was installed in an independent virtual environment. All 153 SDK tests passed there with Web3 8.0.0. The installed package also signed a real nonpayable Studio reconciliation transaction, waited for successful finality and read the actual accounting state. See `artifacts/package-verification.json` for its ID and source binding.
+
 ## Live qualification
 
 The current deployment manifest identifies the exact source hash and finalized contract address. A deployment's success is not treated as an end-to-end test result. Each live report has its own source, contract, transactions and explicit completion flag. Pending reports are not completed verification evidence.
@@ -29,6 +31,6 @@ The source-availability suite runs a real public HTTPS origin exposing only in-m
 
 Follow the README installation and test commands. Real tests require an external signing key and durable external actor-key file. The public main suite writes a transaction journal before polling and refuses to overwrite an existing run. Set `GENLAYER_RESUME_RUN=1` only after checking the existing case state and using the same deployment and keys.
 
-The test-only source tunnel can be established with an SSH reverse tunnel to the loopback server on port 18765. The origin must be reachable through public HTTPS by the Studio validators. The test exposes no filesystem or public state-changing endpoint. Stop the tunnel when verification finishes.
+Set `ESCROW_EVIDENCE_ORIGIN=auto` to create a fresh anonymous SSH tunnel per source case, or provide your own HTTPS reverse tunnel to the loopback server on port 18765. The automatic option requires the system SSH client and reads no user SSH configuration or identities. The origin must be reachable through public HTTPS by the Studio validators. The test exposes no filesystem or public state-changing endpoint. Stop the tunnel when verification finishes.
 
 Native balances are faucet test balances. Results qualify the recorded Studio network and source, not future networks or runtime versions. Security assumptions and documentary limitations are specified separately in `SECURITY.md`.
