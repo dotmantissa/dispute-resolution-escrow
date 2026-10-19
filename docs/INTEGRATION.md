@@ -97,8 +97,7 @@ payee.wait(payee.submit_evidence(escrow_id, rebuttal))
 escrow.wait(escrow.finish_evidence(escrow_id))
 payee.wait(payee.finish_evidence(escrow_id))
 judgment_id = escrow.adjudicate(escrow_id)
-escrow.wait(judgment_id)
-record = escrow.get_escrow(escrow_id)
+# Persist judgment_id, then choose finality or appeal handling below.
 ```
 
 A dispute requires sufficient existing credit. Its bond is an argument, not attached value. Applications can top up through `deposit` beforehand. The minimum bond rate is 10% of principal, rounded up to the next wei.
@@ -111,6 +110,8 @@ An inconclusive judgment leaves the case `DISPUTED`. Before the resolution deadl
 
 The default `wait` requires finality, majority agreement and successful VM execution. `finalized=False` returns a provisional accepted result that an appeal can change. Never release an off-chain asset based on that preview. Lifecycle names alone do not prove success.
 
+For ordinary settlement, call `escrow.wait(judgment_id)` and then refresh with `escrow.get_escrow(escrow_id)`. To appeal, use the following path while the judgment is still provisional. A transaction that has already finalized cannot be appealed.
+
 ```python
 import json
 from dataclasses import asdict
@@ -118,6 +119,7 @@ from pathlib import Path
 from genlayer_escrow import AppealTicket, PollingTimeout, ExecutionFailed
 
 # Only decided transactions still within the protocol's appeal opportunity qualify.
+escrow.wait(judgment_id, finalized=False)
 ticket = escrow.appeal(escrow_id, judgment_id)
 Path('appeal-ticket.json').write_text(json.dumps(asdict(ticket)))
 
