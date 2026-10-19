@@ -265,7 +265,8 @@ def test_04_inconclusive_bilateral_and_deadline_fallback(live):
     before=live.check_accounting();live.tx('outsider','adjudicate',[eid]);r=live.read('get_escrow',[eid])
     assert r['status']=='DISPUTED' and not r['last_assessment']['conclusive'];assert live.check_accounting()==before
     live.tx('payer','offer_settlement',[eid,3000]);live.tx('payer','cancel_offer',[eid])
-    live.tx('payee','offer_settlement',[eid,3000]);live.tx('payer','offer_settlement',[eid,3000])
+    live.tx('payee','offer_settlement',[eid,3000])
+    live.tx('payer','offer_settlement',[eid,3000],key='renew-offer-after-cancellation:'+eid)
     assert live.read('get_escrow',[eid])['payer_credit']==PRINCIPAL+bond-3000
     eid2=live.create('fallback',response_period=1,adjudication_period=1,fallback_payee_bps=3333)
     live.deliver(eid2);live.dispute(eid2,close=False);live.tx('outsider','resolve_expired_dispute',[eid2])
