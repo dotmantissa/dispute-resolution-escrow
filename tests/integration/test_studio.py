@@ -89,9 +89,10 @@ class Live:
         self.save()
         print("Recover actor keys from:",self.secret_path,flush=True)
         for client in (self.payer,self.payee,self.outsider):
-            result=self.payer.provider.make_request("sim_fundAccount",[client.local_account.address,10**18])
-            assert "error" not in result,result
-            time.sleep(2)
+            if client.get_balance(client.local_account.address)<10**15:
+                result=self.payer.provider.make_request("sim_fundAccount",[client.local_account.address,10**18])
+                assert "error" not in result,result
+                time.sleep(2)
 
     def save(self):
         temporary=self.path.with_suffix(".tmp")

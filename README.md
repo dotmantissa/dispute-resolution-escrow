@@ -110,7 +110,9 @@ export GENLAYER_GITHUB_TOKEN='a GitHub token with gist permission'
 pytest tests/integration/test_source_availability.py -v -s -x
 ```
 
-The suite uses Studio's native test-token faucet. It produces a durable verification report in `artifacts/studio-verification.json` and leaves all test escrows settled. Payer withdrawal proceeds are sent to a real receiving contract to verify contract integration. Run the suite against an otherwise unused registry if another application's active balances would make its final zero-balance assertion inappropriate.
+The live helper respects the server's throttle cooldown and retries read-only transport failures. An interrupted write must be reconciled through its recorded transaction ID or payer reference before resubmission. Generated actor keys stay in the protected recovery file outside the repository. For a reconciled unfinished scenario, `GENLAYER_RESUME_RUN=1` reuses the existing run ID and journal; select only unfinished cases with pytest's `-k` option. Completed escrow references remain permanently used.
+
+The suite uses Studio's native test-token faucet for accounts that need funding and reuses sufficiently funded recovery accounts. It produces a durable verification report in `artifacts/studio-verification.json` and leaves all test escrows settled. Payer withdrawal proceeds are sent to a real receiving contract to verify contract integration. Run the suite against an otherwise unused registry if another application's active balances would make its final zero-balance assertion inappropriate.
 
 Deploy a separate registry with the same source when needed:
 
