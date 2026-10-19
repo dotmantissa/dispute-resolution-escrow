@@ -117,10 +117,11 @@ class Live:
         self.save()
         print(method,txid,flush=True)
         receipt=client.wait_for_transaction_receipt(transaction_hash=txid,
-                    status=TransactionStatus.FINALIZED,interval=6000,retries=150)
+                    status=TransactionStatus.FINALIZED if method=="withdraw" else TransactionStatus.ACCEPTED,
+                    interval=6000,retries=150)
         success=execution_succeeded(receipt)
         votes=receipt.get("consensus_data",{}).get("votes",{})
-        entry.update(state="FINALIZED",execution="SUCCESS" if success else "REVERT",
+        entry.update(state="FINALIZED" if method=="withdraw" else "ACCEPTED",execution="SUCCESS" if success else "REVERT",
                      votes=votes,agree_count=sum(str(v).lower()=="agree" for v in votes.values()))
         if not success:
             entry["error"]=failure_text(receipt)
@@ -143,13 +144,13 @@ class Live:
               "reference":reference,"value":PRINCIPAL,"state":"SUBMITTED"})
         self.save()
         print("create_escrow",txid,flush=True)
-        receipt=self.bindings["payer"].wait(txid)
-        self.report["transactions"][-1].update(state="FINALIZED",execution="SUCCESS",
+        receipt=self.bindings["payer"].wait(txid,finalized=False)
+        self.report["transactions"][-1].update(state="ACCEPTED",execution="SUCCESS",
                     votes=receipt.get("consensus_data",{}).get("votes",{}))
         self.save()
-        eid=self.bindings["payer"].find_escrow(self.payer.local_account.address,reference)
+        eid=self.bindings["payer"].find_escrow(self.payer.local_account.address,reference,finalized=False)
         assert eid
-        r=self.bindings["payer"].get_escrow(eid)
+        r=self.bindings["payer"].get_escrow(eid,finalized=False)
         assert r["principal"]==PRINCIPAL and r["status"]=="FUNDED"
         return eid
 
@@ -162,6 +163,23 @@ class Live:
         bond=self.read("get_escrow",[eid])["bond_required"]
         self.tx("payer","dispute",[eid,d.url,d.sha256],value=bond)
         return bond
+
+    def finalize_journal(self):
+        # Pipeline accepted transactions to reduce redundant finality polling, then
+        # recheck every actual execution at FINALIZED before claiming completion.
+        for entry in self.report["transactions"]:
+            if entry["state"]=="FINALIZED":
+                continue
+            receipt=self.payer.wait_for_transaction_receipt(
+                transaction_hash=entry["transaction_hash"],status=TransactionStatus.FINALIZED,
+                interval=12000,retries=90)
+            succeeded=execution_succeeded(receipt)
+            assert succeeded==(entry.get("expected","success")=="success"),receipt
+            entry["state"]="FINALIZED"
+            entry["finalized_execution"]="SUCCESS" if succeeded else "REVERT"
+            self.save()
+        self.report["all_transactions_finalized"]=True
+        self.save()
 
     def check_accounting(self):
         accounting=self.read("get_accounting")
@@ -331,6 +349,7 @@ def test_07_native_withdrawals_to_account_and_real_intelligent_contract(live):
     accounting=live.check_accounting()
     assert accounting["locked_principal"]==0 and accounting["locked_bonds"]==0
     assert accounting["withdrawal_credits"]==0 and accounting["accounted_balance"]==0
+    live.finalize_journal()
     live.report.update(complete=True,final_accounting=accounting,
                 receiver_address=receiver,receiver_received=payer_credit,
                 payee_withdrawn=payee_credit)

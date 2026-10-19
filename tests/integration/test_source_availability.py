@@ -76,6 +76,7 @@ def test_real_changed_and_missing_origins_use_consensus_committed_snapshots():
         credit=live.read("credit_of",[owner])
         assert credit>0
         live.tx(role,"withdraw",[credit,owner,"account"])
+    live.finalize_journal()
     live.report.update(complete=True,finished_at=int(time.time()),escrow_id=eid,
         origin_changed=True,origin_deleted=True,original_snapshots_preserved=True,
         final_accounting=live.check_accounting(),assessment=r["last_assessment"])
