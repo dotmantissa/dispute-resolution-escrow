@@ -6,19 +6,18 @@ def test_uint256_escrow_ceiling_rejects_unfundable_bond(create,escrow,direct_vm)
     # A single escrow must fit its principal and possible bond in uint256 custody.
     ceiling=(1<<256)-1
     with direct_vm.expect_revert("uint256 capacity"):
-        create(principal=ceiling,bond_bps=1)
+        create(principal=ceiling,bond_bps=1000,prepay=False)
     assert escrow.get_accounting()["total_deposited"]==0
 
 
-def test_distinct_payers_can_reuse_a_reference(create,escrow,direct_vm,direct_alice,direct_bob,direct_charlie,evidence):
-    first=create(reference="same-reference")
+def test_other_payers_cannot_use_this_funding_account(create,escrow,direct_vm,direct_alice,direct_bob,direct_charlie,evidence):
+    eid=create(reference="same-reference")
     direct_vm.sender=direct_charlie
-    direct_vm.value=1
     d=evidence["terms.md"]
-    second=escrow._create_escrow("same-reference",direct_bob.as_hex,d["url"],d["sha256"],100,100,1000)
-    assert second!=first
-    assert escrow.find_escrow(direct_alice.as_hex,"same-reference")==first
-    assert escrow.find_escrow(direct_charlie.as_hex,"same-reference")==second
+    with direct_vm.expect_revert("Only funding owner"):
+        escrow.create_escrow("same-reference",direct_bob.as_hex,d["url"],d["sha256"],1,100,100,1000,60,600,5000)
+    assert escrow.find_escrow(direct_charlie.as_hex,"same-reference")==""
+    assert escrow.find_escrow(direct_alice.as_hex,"same-reference")==eid
 
 
 def test_wrong_party_cannot_submit_dispute(delivered,escrow,direct_vm,direct_bob,evidence):
@@ -26,7 +25,7 @@ def test_wrong_party_cannot_submit_dispute(delivered,escrow,direct_vm,direct_bob
     direct_vm.value=escrow.get_escrow(delivered)["bond_required"]
     d=evidence["dispute-half.md"]
     with direct_vm.expect_revert("Only payer"):
-        escrow._dispute(delivered,d["url"],d["sha256"])
+        escrow.dispute(delivered,d["url"],d["sha256"],direct_vm.value)
 
 
 def test_dispute_replay_is_blocked_before_new_value_is_recorded(disputed,escrow,direct_vm,direct_alice,evidence):
@@ -35,7 +34,7 @@ def test_dispute_replay_is_blocked_before_new_value_is_recorded(disputed,escrow,
     direct_vm.value=1001
     d=evidence["dispute-half.md"]
     with direct_vm.expect_revert("DELIVERED"):
-        escrow._dispute(disputed,d["url"],d["sha256"])
+        escrow.dispute(disputed,d["url"],d["sha256"],1001)
     assert escrow.get_accounting()==before
 
 
@@ -76,10 +75,10 @@ def test_credit_does_not_grant_an_outsider_withdrawal_right(create,escrow,direct
     direct_vm.sender=direct_charlie
     before=escrow.get_accounting()
     with direct_vm.expect_revert("Insufficient withdrawal credit"):
-        escrow.withdraw(1,direct_charlie.as_hex,"account")
+        escrow.withdraw(1,direct_charlie.as_hex,"account","outsider")
     assert escrow.get_accounting()==before
 
 
 def test_registry_cannot_be_its_own_withdrawal_destination(escrow,direct_vm,module):
-    with direct_vm.expect_revert("Cannot withdraw to this registry"):
-        escrow.withdraw(1,module.gl.message.contract_address.as_hex,"account")
+    with direct_vm.expect_revert("Cannot withdraw to this account"):
+        escrow.withdraw(1,module.gl.message.contract_address.as_hex,"account","self")

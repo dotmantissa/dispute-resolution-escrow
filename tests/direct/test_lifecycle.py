@@ -21,16 +21,16 @@ def test_creation_commits_terms_and_value(create, escrow, direct_alice, direct_b
     assert escrow.get_accounting()["conserved"]
 
 
-@pytest.mark.parametrize("principal,rate,expected", [(1,1,1),(9999,1,1),(10000,1,1),(10001,1,2),(101,10000,101)])
+@pytest.mark.parametrize("principal,rate,expected", [(1,1000,1),(9999,1000,1000),(10000,1000,1000),(10001,1000,1001),(101,10000,101)])
 def test_bond_rounds_up(create, escrow, principal, rate, expected):
     eid = create(principal=principal,bond_bps=rate)
     assert escrow.get_escrow(eid)["bond_required"] == expected
 
 
 @pytest.mark.parametrize("kwargs,error", [
-    ({"principal":0},"positive native value"),
-    ({"delivery_period":0},"Delivery period"),({"delivery_period":31536001},"Delivery period"),
-    ({"review_period":0},"Review period"),({"review_period":31536001},"Review period"),
+    ({"principal":0},"positive integer"),
+    ({"delivery_period":0},"Period"),({"delivery_period":31536001},"Period"),
+    ({"review_period":0},"Period"),({"review_period":31536001},"Period"),
     ({"bond_bps":0},"Bond rate"),({"bond_bps":10001},"Bond rate"),
     ({"reference":" bad"},"Reference"),({"reference":"x"*129},"Reference"),
     ({"payee":"0x"+"00"*20},"Zero address"),({"payee":"junk"},"Invalid address"),
@@ -38,27 +38,27 @@ def test_bond_rounds_up(create, escrow, principal, rate, expected):
 def test_invalid_creation_is_atomic(create, escrow, direct_vm, kwargs, error):
     before = escrow.get_accounting()
     with direct_vm.expect_revert(error):
-        create(**kwargs)
+        create(**kwargs,prepay=False)
     assert escrow.get_accounting() == before
 
 
 def test_same_party_and_registry_payee_rejected(create, direct_vm, direct_alice):
     with direct_vm.expect_revert("different external party"):
-        create(payee=direct_alice.as_hex)
+        create(payee=direct_alice.as_hex,prepay=False)
     address = direct_vm._contract_address
     if isinstance(address, bytes):
         address = "0x" + address.hex()
     else:
         address = address.as_hex
     with direct_vm.expect_revert("different external party"):
-        create(payee=address)
+        create(payee=address,prepay=False)
 
 
 def test_reference_replay_prevents_duplicate_funding(create, escrow, direct_vm):
     create(reference="stable")
     before = escrow.get_accounting()
     with direct_vm.expect_revert("Reference already used"):
-        create(reference="stable")
+        create(reference="stable",prepay=False)
     assert escrow.get_accounting() == before
 
 
@@ -99,6 +99,8 @@ def test_only_payer_accepts(delivered, escrow, direct_vm, direct_bob):
 
 def test_timeout_and_delivery_have_nonoverlapping_boundaries(create, escrow, direct_vm, direct_bob, direct_charlie, evidence):
     eid = create()
+    direct_vm.sender = direct_bob
+    escrow.accept_engagement(eid)
     r = escrow.get_escrow(eid)
     warp(direct_vm,r["delivery_deadline"]-1)
     direct_vm.sender = direct_charlie
@@ -125,7 +127,7 @@ def test_dispute_and_release_have_nonoverlapping_boundaries(delivered, escrow, d
     direct_vm.value = r["bond_required"]
     d = evidence["dispute-good-faith.md"]
     with direct_vm.expect_revert("window closed"):
-        escrow._dispute(delivered,d["url"],d["sha256"])
+        escrow.dispute(delivered,d["url"],d["sha256"],direct_vm.value)
     direct_vm.value = 0
     direct_vm.sender = direct_charlie
     escrow.release_expired(delivered)
@@ -140,7 +142,7 @@ def test_dispute_requires_exact_bond(delivered, escrow, direct_vm, direct_alice,
     d = evidence["dispute-half.md"]
     before = escrow.get_accounting()
     with direct_vm.expect_revert("exact dispute bond"):
-        escrow._dispute(delivered,d["url"],d["sha256"])
+        escrow.dispute(delivered,d["url"],d["sha256"],direct_vm.value)
     assert escrow.get_accounting() == before
     assert escrow.get_escrow(delivered)["status"] == "DELIVERED"
 
@@ -201,18 +203,20 @@ def test_offers_must_match_and_can_be_cancelled(disputed, escrow, direct_vm, dir
         escrow.cancel_offer(disputed)
 
 
-def test_phase_transition_invalidates_old_offers(create, escrow, direct_vm, direct_alice, direct_bob, evidence):
+def test_phase_transition_invalidates_old_offers(create, escrow, direct_vm, direct_alice, direct_bob, evidence, fund):
     eid = create()
     escrow.offer_settlement(eid,5000)
     direct_vm.sender = direct_bob
     d = evidence["delivery-full.md"]
+    escrow.accept_engagement(eid)
     escrow.claim_delivery(eid,d["url"],d["sha256"])
     assert escrow.get_escrow(eid)["payer_offer"] == -1
     escrow.offer_settlement(eid,5000)
     direct_vm.sender = direct_alice
-    direct_vm.value = escrow.get_escrow(eid)["bond_required"]
+    bond = escrow.get_escrow(eid)["bond_required"]
+    fund(bond)
     d = evidence["dispute-half.md"]
-    escrow._dispute(eid,d["url"],d["sha256"])
+    escrow.dispute(eid,d["url"],d["sha256"],bond)
     assert escrow.get_escrow(eid)["payee_offer"] == -1
 
 
@@ -241,7 +245,7 @@ def test_many_escrows_are_isolated_with_exact_conservation(create, escrow, direc
 def test_invalid_withdrawals_preserve_accounting(escrow,direct_vm,direct_bob,amount,recipient,kind,error):
     before=escrow.get_accounting()
     with direct_vm.expect_revert(error):
-        escrow.withdraw(amount,direct_bob.as_hex if recipient=="valid" else recipient,kind)
+        escrow.withdraw(amount,direct_bob.as_hex if recipient=="valid" else recipient,kind,"invalid")
     assert escrow.get_accounting()==before
 
 

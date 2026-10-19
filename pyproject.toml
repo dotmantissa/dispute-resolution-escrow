@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "genlayer-dispute-escrow"
-version = "1.0.0"
+version = "2.0.0"
 description = "Native GEN escrow with independently validated evidence adjudication"
 requires-python = ">=3.12"
 dependencies = ["genlayer-py==0.16.3"]

@@ -1,54 +1,58 @@
 {
-  "gist_url": "https://gist.github.com/dotmantissa/8f4cfafff902e118a9d13d3db0fd88f8",
-  "revision": "d36643077f6c8fdb388011de59af5ad502716665",
+  "gist_url": "https://gist.github.com/dotmantissa/a71cb2e8c6be299db99dabf63fb0a54b",
+  "revision": "68d8f03551a619396a9ef79db257c678e8772701",
   "documents": {
-    "delivery-full.md": {
-      "url": "https://gist.githubusercontent.com/dotmantissa/8f4cfafff902e118a9d13d3db0fd88f8/raw/8accc25524cebd5788786076347ff03385936d42/delivery-full.md",
-      "sha256": "8d28c7fb314717584b2ed1f2638ffc4fb00d5626cc6e66d4e3841c0e464d601c"
-    },
-    "delivery-half.md": {
-      "url": "https://gist.githubusercontent.com/dotmantissa/8f4cfafff902e118a9d13d3db0fd88f8/raw/a5f42e065e4092b843117b9dd96c26fb13fc2ab3/delivery-half.md",
-      "sha256": "7edac0f26eb863c47641e0a5619da139d87c349c6bcacbdb00707f59d8ec9a6f"
-    },
-    "delivery-inconclusive.md": {
-      "url": "https://gist.githubusercontent.com/dotmantissa/8f4cfafff902e118a9d13d3db0fd88f8/raw/f8ee332e0142f4309d6f4803a3755394c634d85d/delivery-inconclusive.md",
-      "sha256": "5367c23f9110a89e6e77ffbe00cdac3a6577e1bd71c46dc87d0b23c8c66caeb2"
-    },
-    "delivery-injection.md": {
-      "url": "https://gist.githubusercontent.com/dotmantissa/8f4cfafff902e118a9d13d3db0fd88f8/raw/793c7f03d2235bea3bff489e0abfcb6e05c15a47/delivery-injection.md",
-      "sha256": "f51ead801e6e52b1aa25da1c544302a1422eb54cc95d7af859f12495b19672cb"
-    },
-    "delivery-none.md": {
-      "url": "https://gist.githubusercontent.com/dotmantissa/8f4cfafff902e118a9d13d3db0fd88f8/raw/8eb806cb7d2b37212cff2f6d8889efbe1cca9ad3/delivery-none.md",
-      "sha256": "cf1bb2ebf5b92c16b00b9855018e857e45f04ec1832254ab8d9e57ffaaccaaac"
-    },
-    "dispute-bad-faith.md": {
-      "url": "https://gist.githubusercontent.com/dotmantissa/8f4cfafff902e118a9d13d3db0fd88f8/raw/190e83faace376231a2a1a28960e4bde144c9321/dispute-bad-faith.md",
-      "sha256": "e06776c8d6c10e7ee8620db8b3ca09a72bb5affc7ee254d7a93059390a262e8e"
-    },
-    "dispute-good-faith.md": {
-      "url": "https://gist.githubusercontent.com/dotmantissa/8f4cfafff902e118a9d13d3db0fd88f8/raw/bb1dd34d594886ca9e58a0d0044550bce3c486c8/dispute-good-faith.md",
-      "sha256": "9668c4d33f8a6bc28584a09aadcdae515acc598b4c600a56fd89557fe2a58d8b"
-    },
-    "dispute-half.md": {
-      "url": "https://gist.githubusercontent.com/dotmantissa/8f4cfafff902e118a9d13d3db0fd88f8/raw/a62c262a3936c4cf87c67a83c2800dae299033c6/dispute-half.md",
-      "sha256": "66b06cd1ff6268f6f399d9728415da59affdf520f127b550aa395114fbb20f60"
-    },
-    "dispute-inconclusive.md": {
-      "url": "https://gist.githubusercontent.com/dotmantissa/8f4cfafff902e118a9d13d3db0fd88f8/raw/861ef2cfee21c50fcb8391d110e4c92f34cc4de2/dispute-inconclusive.md",
-      "sha256": "8075d976b004e95c826e6d18b2b5a7a25a648f500629262d4023739d767dd5bf"
-    },
-    "dispute-none.md": {
-      "url": "https://gist.githubusercontent.com/dotmantissa/8f4cfafff902e118a9d13d3db0fd88f8/raw/63ca0a9b891cfaf2bad2e78f384ff8eb07378050/dispute-none.md",
-      "sha256": "5ded01ed80cdef5d205f04a8683b57d23a2938386e7f92851f8dfed74a3a33b1"
-    },
     "terms-inconclusive.md": {
-      "url": "https://gist.githubusercontent.com/dotmantissa/8f4cfafff902e118a9d13d3db0fd88f8/raw/e7d1f42bc29c3379bd959ddc9a0ff35b764b59f1/terms-inconclusive.md",
+      "url": "https://gist.githubusercontent.com/dotmantissa/a71cb2e8c6be299db99dabf63fb0a54b/raw/68d8f03551a619396a9ef79db257c678e8772701/terms-inconclusive.md",
       "sha256": "3c953a1b0bc0164bf51fb50dec82f9e80d0afac91cbe53b305c08f2a4a764f60"
     },
+    "dispute-half.md": {
+      "url": "https://gist.githubusercontent.com/dotmantissa/a71cb2e8c6be299db99dabf63fb0a54b/raw/68d8f03551a619396a9ef79db257c678e8772701/dispute-half.md",
+      "sha256": "66b06cd1ff6268f6f399d9728415da59affdf520f127b550aa395114fbb20f60"
+    },
+    "payee-rebuttal.md": {
+      "url": "https://gist.githubusercontent.com/dotmantissa/a71cb2e8c6be299db99dabf63fb0a54b/raw/68d8f03551a619396a9ef79db257c678e8772701/payee-rebuttal.md",
+      "sha256": "fe97137400c9e672dc274577e7dca9235570dee841853f050e70c4e75851c8b6"
+    },
+    "delivery-full.md": {
+      "url": "https://gist.githubusercontent.com/dotmantissa/a71cb2e8c6be299db99dabf63fb0a54b/raw/68d8f03551a619396a9ef79db257c678e8772701/delivery-full.md",
+      "sha256": "aa856668d7f1000d06121a8a7ecc1f813b2c6ecb5a823a0a5df22dcdef8625b9"
+    },
+    "delivery-inconclusive.md": {
+      "url": "https://gist.githubusercontent.com/dotmantissa/a71cb2e8c6be299db99dabf63fb0a54b/raw/68d8f03551a619396a9ef79db257c678e8772701/delivery-inconclusive.md",
+      "sha256": "5367c23f9110a89e6e77ffbe00cdac3a6577e1bd71c46dc87d0b23c8c66caeb2"
+    },
+    "dispute-bad-faith.md": {
+      "url": "https://gist.githubusercontent.com/dotmantissa/a71cb2e8c6be299db99dabf63fb0a54b/raw/68d8f03551a619396a9ef79db257c678e8772701/dispute-bad-faith.md",
+      "sha256": "3223759436cf3caab11861862f17039f2914b5dfd5f966d134506d48d7899a58"
+    },
     "terms.md": {
-      "url": "https://gist.githubusercontent.com/dotmantissa/8f4cfafff902e118a9d13d3db0fd88f8/raw/b2efcba88684934789f206e9eb5776573bb1e107/terms.md",
-      "sha256": "dc8fbf8f5b0374f0aceac14350fd801bba9188b0603dbaa0655a23da2a434315"
+      "url": "https://gist.githubusercontent.com/dotmantissa/a71cb2e8c6be299db99dabf63fb0a54b/raw/68d8f03551a619396a9ef79db257c678e8772701/terms.md",
+      "sha256": "7fbf4cc48cc098393b4df8a349d0b2b8ed2d07a5c206587e82104b4668a34591"
+    },
+    "dispute-inconclusive.md": {
+      "url": "https://gist.githubusercontent.com/dotmantissa/a71cb2e8c6be299db99dabf63fb0a54b/raw/68d8f03551a619396a9ef79db257c678e8772701/dispute-inconclusive.md",
+      "sha256": "8075d976b004e95c826e6d18b2b5a7a25a648f500629262d4023739d767dd5bf"
+    },
+    "delivery-injection.md": {
+      "url": "https://gist.githubusercontent.com/dotmantissa/a71cb2e8c6be299db99dabf63fb0a54b/raw/68d8f03551a619396a9ef79db257c678e8772701/delivery-injection.md",
+      "sha256": "f51ead801e6e52b1aa25da1c544302a1422eb54cc95d7af859f12495b19672cb"
+    },
+    "delivery-half.md": {
+      "url": "https://gist.githubusercontent.com/dotmantissa/a71cb2e8c6be299db99dabf63fb0a54b/raw/68d8f03551a619396a9ef79db257c678e8772701/delivery-half.md",
+      "sha256": "7d4bee0b2eaaf609805404fb0988cdd6497a1a9aa0f6a3680050920b35f01b25"
+    },
+    "dispute-good-faith.md": {
+      "url": "https://gist.githubusercontent.com/dotmantissa/a71cb2e8c6be299db99dabf63fb0a54b/raw/68d8f03551a619396a9ef79db257c678e8772701/dispute-good-faith.md",
+      "sha256": "9668c4d33f8a6bc28584a09aadcdae515acc598b4c600a56fd89557fe2a58d8b"
+    },
+    "delivery-none.md": {
+      "url": "https://gist.githubusercontent.com/dotmantissa/a71cb2e8c6be299db99dabf63fb0a54b/raw/68d8f03551a619396a9ef79db257c678e8772701/delivery-none.md",
+      "sha256": "cf1bb2ebf5b92c16b00b9855018e857e45f04ec1832254ab8d9e57ffaaccaaac"
+    },
+    "dispute-none.md": {
+      "url": "https://gist.githubusercontent.com/dotmantissa/a71cb2e8c6be299db99dabf63fb0a54b/raw/68d8f03551a619396a9ef79db257c678e8772701/dispute-none.md",
+      "sha256": "5ded01ed80cdef5d205f04a8683b57d23a2938386e7f92851f8dfed74a3a33b1"
     }
   }
 }

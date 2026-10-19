@@ -39,11 +39,11 @@ def test_document_hash_mismatch_and_size_boundary(module,direct_vm):
     assert module._document_bytes(body,hashlib.sha256(body).hexdigest())==body.decode()
 
 
-def test_hash_mismatch_does_not_create_escrow(escrow,direct_vm,direct_bob,evidence):
-    direct_vm.value=10
+def test_hash_mismatch_does_not_create_escrow(escrow,direct_vm,direct_bob,evidence,fund):
+    fund(10)
     before=escrow.get_accounting()
     with direct_vm.expect_revert("mismatch"):
-        escrow._create_escrow("mismatch",direct_bob.as_hex,evidence["terms.md"]["url"],"0"*64,100,100,1000)
+        escrow.create_escrow("mismatch",direct_bob.as_hex,evidence["terms.md"]["url"],"0"*64,10,100,100,1000,60,600,5000)
     assert escrow.get_accounting()==before
 
 
