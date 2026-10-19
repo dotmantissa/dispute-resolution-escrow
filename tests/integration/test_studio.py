@@ -122,7 +122,8 @@ class Live:
                      decision=receipt.get('result_name',receipt.get('result')),votes=(receipt.get('consensus_data') or {}).get('votes',{}))
         if error:
             assert not success,receipt
-            entry['error']=failure_text(receipt);assert error in entry['error'],entry
+            entry['error']=failure_text(receipt)
+            if isinstance(error,str):assert error in entry['error'],entry
         else:assert success,receipt
         self.save();return receipt
 
@@ -283,8 +284,26 @@ def test_05_timeouts_and_rejection(live):
     live.scenario('timeouts_rejection',escrow_ids=[eid,eid2,eid3])
 
 
+def verify_retained_value_recovery(live,eid):
+    # Unknown-method failures can have only a generic VM exit code. Bind failed
+    # execution and actual custody rather than depending on diagnostic wording.
+    live.tx('outsider','not_a_method',[],value=17,error=True,key='retained-value',finalized=True)
+    if not any(e['operation']=='recover-retained-value' for e in live.report['transactions']):
+        assert live.read('get_accounting')['unreconciled_deposits']==17
+    live.tx('outsider','reconcile_deposits',key='recover-retained-value',finalized=True)
+    live.check_accounting();live.scenario('rebuttal_prepaid_replay_retained_value_recovery',escrow_id=eid,recovered=17)
+
+
 def test_06_rebuttal_wrong_bond_replay_and_recovery(live):
-    eid=live.create('rebuttal');live.deliver(eid,'delivery-half.md');d=live.doc('dispute-none.md');r=live.read('get_escrow',[eid])
+    eid=live.create('rebuttal')
+    if any(e['operation']=='retained-value' for e in live.report['transactions']):
+        # This operation is journaled only after all rebuttal, bond and replay
+        # assertions below passed. Resume its original funded ID after a stop.
+        r=live.read('get_escrow',[eid],finalized=True)
+        assert r['payee_bps']==5000 and not r['payer_bad_faith'] and r['payee_credit']==5000,r
+        assert r['supplements'][0]['submitted_by'].lower()==live.payee.local_account.address.lower()
+        verify_retained_value_recovery(live,eid);return
+    live.deliver(eid,'delivery-half.md');d=live.doc('dispute-none.md');r=live.read('get_escrow',[eid])
     before=live.check_accounting();live.tx('payer','dispute',[eid,d.url,d.sha256,r['bond_required']-1],error='exact dispute bond')
     assert live.check_accounting()==before
     live.dispute(eid,'dispute-none.md',close=False)
@@ -298,10 +317,7 @@ def test_06_rebuttal_wrong_bond_replay_and_recovery(live):
     live.tx('payer','create_escrow',[r['reference'],r['payee'],terms.url,terms.sha256,PRINCIPAL,100,100,1000,100,100,5000],error='Reference already used')
     assert live.check_accounting()==before
     # Genuine retained-value failure on this deployment, recovered into its fixed owner.
-    live.tx('outsider','not_a_method',[],value=17,error='method',key='retained-value',finalized=True)
-    assert live.read('get_accounting')['unreconciled_deposits']==17
-    live.tx('outsider','reconcile_deposits',key='recover-retained-value',finalized=True)
-    live.check_accounting();live.scenario('rebuttal_prepaid_replay_retained_value_recovery',escrow_id=eid,recovered=17)
+    verify_retained_value_recovery(live,eid)
 
 
 def test_07_real_protocol_appeal(live):
