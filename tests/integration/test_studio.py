@@ -81,15 +81,37 @@ class Live:
         return EscrowClient(self.payer,address or self.address)._read(method,args,finalized=finalized)
     def balance(self,address):return self.payer.get_balance(address)
 
+    def submit(self,client,destination,method,args,value,error):
+        """Positive main-book flows exercise the published builder binding itself."""
+        if destination.lower()==self.deployment['contract_address'].lower() and not error:
+            api=EscrowClient(client,destination)
+            values=args or []
+            if method=='deposit':return api.deposit(value),'EscrowClient'
+            if value==0:
+                if method=='create_escrow':
+                    return api.create(values[0],values[1],Document(values[2],values[3]),*values[4:8],
+                        response_period=values[8],adjudication_period=values[9],fallback_payee_bps=values[10]),'EscrowClient'
+                if method in ('claim_delivery','submit_evidence'):
+                    return getattr(api,method)(values[0],Document(values[1],values[2])),'EscrowClient'
+                if method=='dispute':
+                    return api.dispute(values[0],Document(values[1],values[2]),bond=values[3]),'EscrowClient'
+                if method=='withdraw':
+                    return api.withdraw(values[0],values[1],recipient_kind=values[2],reference=values[3]),'EscrowClient'
+                if method in ('reconcile_deposits','accept_engagement','accept_delivery','finish_evidence',
+                    'adjudicate','resolve_expired_dispute','release_expired','refund_undelivered',
+                    'reject_escrow','offer_settlement','cancel_offer'):
+                    return getattr(api,method)(*values),'EscrowClient'
+        return client.write_contract(address=destination,function_name=method,args=args or [],value=value,leader_only=False),'raw SDK'
+
     def tx(self,role,method,args=None,value=0,*,error=None,address=None,key=None,finalized=False):
         client=getattr(self,role);destination=address or self.address
         operation=key or hashlib.sha256(json.dumps([role,destination,method,args,value,bool(error)],sort_keys=True).encode()).hexdigest()
         entry=next((e for e in self.report['transactions'] if e['operation']==operation),None)
         if entry is None:
             time.sleep(1)
-            txid=client.write_contract(address=destination,function_name=method,args=args or [],value=value,leader_only=False)
+            txid,submitted_via=self.submit(client,destination,method,args,value,error)
             entry={'operation':operation,'method':method,'caller':client.local_account.address,'address':destination,
-                'transaction_hash':txid,'value':value,'expected':'revert' if error else 'success','state':'SUBMITTED'}
+                'transaction_hash':txid,'value':value,'expected':'revert' if error else 'success','state':'SUBMITTED','submitted_via':submitted_via}
             self.report['transactions'].append(entry);self.save();print(method,txid,flush=True)
         txid=entry['transaction_hash']
         try:
