@@ -1,0 +1,15 @@
+# Escrow settlement architecture
+
+The registry accepts native GEN through `create_escrow`. Every record is funded atomically when created. The payer chooses a payee, a public terms document and its SHA-256 digest, a delivery deadline, a review period and a dispute bond rate. The payee accepts those terms by submitting delivery. Both parties should review the creation receipt before starting work.
+
+The contract owns custody, immutable document commitments, authorization, deadlines, consensus and settlement. The builder owns its interface, authentication, transaction submission and finality tracking. Public sources provide evidence, not executable instructions or trusted attestations.
+
+A document submission fetches the raw HTTPS response and checks its digest inside an equivalence block. Validators must agree on the committed UTF-8 document. The resulting snapshot remains on-chain. At adjudication every participating validator attempts to fetch all three documents again, checks their digests and independently evaluates the same committed snapshots if the source has disappeared or changed. A source cannot revise evidence after submission or hold custody hostage by deleting it.
+
+The adjudication prompt considers only the specific original promise. Its decision is a payee share in 1% increments and a separate finding of clear payer bad faith. The validator independently repeats the substantive assessment and agrees only on an identical share and bad-faith finding. There is no monetary tolerance and no agreement based solely on JSON shape. Bad faith is permitted only with 100% delivery and affirmative evidence that the payer knowingly disputed completed delivery. An unsuccessful dispute alone is insufficient.
+
+Integer settlement credits the payee `principal * share_bps // 10000` and refunds the remainder to the payer. The bond returns to the payer except when consensus establishes clear bad faith. Credits are withdrawn by their owner to a chosen recipient, with transfers emitted on finalization. The registry charges no fee and has no administrator, upgrade path or custody override.
+
+No delivery by the deadline permits a full payer refund. A delivery claim opens the review window. The payer may accept immediately, dispute with the exact bond before the window closes, or permit anyone to release the principal after expiry. Both parties can approve an identical split at any point before settlement. This provides a negotiated exit if evidence remains inconclusive or validators cannot reach agreement. An inconclusive assessment never guesses a payout or confiscates a bond. Disputed custody remains until a conclusive assessment or bilateral agreement; liveness is conditional on one of those paths succeeding.
+
+Network appeals are GenLayer protocol transactions, separate from the payer's escrow dispute bond. Builders must wait for finality before treating any judgment or withdrawal as irreversible. Studio validates the consensus and native-value behavior available in its database-backed network; chain-layer gas, ghost contracts and EVM recipient execution require separate target-network qualification.

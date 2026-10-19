@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "genlayer-dispute-escrow"
+version = "1.0.0"
+description = "Native GEN escrow with independently validated evidence adjudication"
+requires-python = ">=3.12"
+dependencies = ["genlayer-py==0.16.3"]
+license = "MIT"
+authors = [{name = "dotmantissa", email = "negativemantissa@gmail.com"}]
+
+[project.optional-dependencies]
+test = ["pytest==9.1.1", "genlayer-test==0.29.2", "genvm-linter==0.11.0", "cloudpickle>=3.1"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v -p no:gltest"
+markers = ["integration: real Studio transactions, HTTP access and validator model calls"]
