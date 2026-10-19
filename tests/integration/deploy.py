@@ -12,7 +12,8 @@ import time
 from genlayer_py import create_account, create_client
 from genlayer_py.chains import studionet
 from genlayer_py.types import TransactionStatus
-from genlayer_escrow import execution_succeeded
+from genlayer_escrow import EscrowClient
+from tests.integration.transport import attach_transport
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -20,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[2]
 def main():
     source = (ROOT / "contracts/dispute_escrow.py").read_bytes()
     account = create_account(os.environ["GENLAYER_PRIVATE_KEY"])
-    client = create_client(chain=studionet, account=account)
+    client = attach_transport(create_client(chain=studionet, account=account))
     path = ROOT / "artifacts/deployment.json"
     digest = hashlib.sha256(source).hexdigest()
     if path.exists():
@@ -29,17 +30,14 @@ def main():
             raise RuntimeError("Source changed since recorded deployment; archive the old manifest before redeploying")
         txid = data["transaction_hash"]
     else:
-        txid = client.deploy_contract(code=source,args=[],leader_only=False)
+        txid = client.deploy_contract(code=source,args=[account.address],leader_only=False)
         data = {"network":"studionet","rpc":"https://studio.genlayer.com/api",
                 "deployer":account.address,"source":"contracts/dispute_escrow.py",
-                "source_sha256":digest,"transaction_hash":txid,"state":"SUBMITTED"}
+                "source_sha256":digest,"transaction_hash":txid,"state":"SUBMITTED",
+                "version":"2.0.0","constructor_args":[account.address]}
         path.write_text(json.dumps(data,indent=2,default=str)+"\n")
     print("Deployment transaction:",txid,flush=True)
-    receipt=client.wait_for_transaction_receipt(transaction_hash=txid,
-                status=TransactionStatus.FINALIZED,interval=6000,retries=180)
-    if not execution_succeeded(receipt):
-        (ROOT/"artifacts/failed-deployment.json").write_text(json.dumps(receipt,indent=2,default=str)+"\n")
-        raise RuntimeError("Deployment execution failed; inspect artifacts/failed-deployment.json")
+    receipt=EscrowClient(client,account.address).wait(txid,retries=600,interval=6000)
     address=receipt.get("contract_address") or receipt.get("to_address")
     if not address:
         raise RuntimeError("No contract address in successful deployment receipt")

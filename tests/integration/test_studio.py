@@ -1,8 +1,8 @@
-"""End-to-end custody and consensus on hosted Studio, with real HTTP and models.
+"""Real Studio custody and independent consensus. No manufactured model results.
 
-Enable explicitly with GENLAYER_PRIVATE_KEY. No mock validators, mock responses,
-leader-only execution, or manufactured judgments are used. Actors other than the
-payer are generated and kept in a mode-600 file outside the repository for recovery.
+Set GENLAYER_PRIVATE_KEY and GENLAYER_TEST_KEYS_FILE. A durable operation journal
+allows the same transaction IDs and case references to resume after interruption.
+Use GENLAYER_RESUME_RUN=1 only with the same deployment and actor key file.
 """
 import base64
 import hashlib
@@ -14,391 +14,323 @@ import tempfile
 import time
 
 import pytest
-from genlayer_py import create_account, create_client
+from genlayer_py import create_account,create_client
 from genlayer_py.chains import studionet
-from genlayer_py.types import TransactionStatus
-from genlayer_escrow import Document, EscrowClient, execution_succeeded, payment_result, PaymentRejected
+from genlayer_escrow import (Document,EscrowClient,ExecutionFailed,PollingTimeout,
+    AppealTicket,execution_succeeded,transaction_status)
 from tests.integration.transport import attach_transport
 
 ROOT=Path(__file__).resolve().parents[2]
-pytestmark=[pytest.mark.integration,pytest.mark.skipif(not os.environ.get("GENLAYER_PRIVATE_KEY"),
-             reason="Set GENLAYER_PRIVATE_KEY to run real Studio transactions")]
 PRINCIPAL=10001
-
-
-def leader(receipt):
-    rows=(receipt.get("consensus_data") or {}).get("leader_receipt") or []
-    return rows[0] if isinstance(rows,list) and rows else rows if isinstance(rows,dict) else {}
+pytestmark=[pytest.mark.integration,pytest.mark.skipif(not os.environ.get('GENLAYER_PRIVATE_KEY'),
+    reason='Set GENLAYER_PRIVATE_KEY for real Studio consensus')]
 
 
 def failure_text(receipt):
-    result=leader(receipt).get("result",{})
-    if isinstance(result,dict):
-        payload=result.get("payload",{})
-        if isinstance(payload,str):
-            return payload
-        raw=payload.get("raw") if isinstance(payload,dict) else None
-        raw=raw or result.get("raw")
-        if isinstance(raw,str):
-            try:
-                return base64.b64decode(raw)[1:].decode(errors="replace")
-            except Exception:
-                pass
-        if isinstance(raw,list):
-            return bytes(raw[1:]).decode(errors="replace")
+    rows=(receipt.get('consensus_data') or {}).get('leader_receipt') or []
+    leader=rows[0] if isinstance(rows,list) and rows else rows if isinstance(rows,dict) else {}
+    result=leader.get('result',{})
+    payload=result.get('payload',{}) if isinstance(result,dict) else {}
+    raw=payload.get('raw') if isinstance(payload,dict) else None
+    raw=raw or result.get('raw') if isinstance(result,dict) else raw
+    if isinstance(raw,str):
+        try:return base64.b64decode(raw)[1:].decode(errors='replace')
+        except ValueError:pass
+    if isinstance(raw,list):return bytes(raw[1:]).decode(errors='replace')
     return json.dumps(result,default=str)
 
 
 class Live:
-    def __init__(self, report_name="studio-verification.json"):
-        self.deployment=json.loads((ROOT/"artifacts/deployment.json").read_text())
-        self.address=self.deployment["contract_address"]
-        self.payer=create_client(chain=studionet,account=create_account(os.environ["GENLAYER_PRIVATE_KEY"]))
-        secret_path=os.environ.get("GENLAYER_TEST_KEYS_FILE")
+    def __init__(self,report_name='studio-verification.json'):
+        self.deployment=json.loads((ROOT/'artifacts/deployment.json').read_text())
+        assert self.deployment['version']=='2.0.0'
+        self.address=self.deployment['contract_address']
+        self.payer=attach_transport(create_client(chain=studionet,account=create_account(os.environ['GENLAYER_PRIVATE_KEY'])))
+        secret_path=os.environ.get('GENLAYER_TEST_KEYS_FILE')
         if not secret_path:
-            fd,secret_path=tempfile.mkstemp(prefix="escrow-test-actors-",suffix=".json")
-            os.close(fd)
+            fd,secret_path=tempfile.mkstemp(prefix='escrow-actors-',suffix='.json');os.close(fd)
         self.secret_path=Path(secret_path)
-        if not self.secret_path.exists():
-            self.secret_path.parent.mkdir(parents=True,exist_ok=True)
-            self.secret_path.touch(mode=0o600)
-        self.secret_path.chmod(0o600)
-        if self.secret_path.stat().st_size:
-            keys=json.loads(self.secret_path.read_text())
+        self.secret_path.touch(mode=0o600,exist_ok=True);self.secret_path.chmod(0o600)
+        if self.secret_path.stat().st_size:keys=json.loads(self.secret_path.read_text())
         else:
-            keys={name:"0x"+secrets.token_hex(32) for name in ("payee","outsider")}
+            keys={name:'0x'+secrets.token_hex(32) for name in ('payee','outsider')}
             self.secret_path.write_text(json.dumps(keys))
-        self.payee=create_client(chain=studionet,account=create_account(keys["payee"]))
-        self.outsider=create_client(chain=studionet,account=create_account(keys["outsider"]))
-        for client in (self.payer,self.payee,self.outsider):
-            attach_transport(client)
-        self.bindings={name:EscrowClient(getattr(self,name),self.address) for name in ("payer","payee","outsider")}
-        self.manifest=json.loads((ROOT/"tests/evidence/manifest.json").read_text())["documents"]
-        self.run=secrets.token_hex(6)
-        self.path=ROOT/"artifacts"/report_name
-        self.report={"run_id":self.run,"network":"studionet","contract_address":self.address,
-             "source_sha256":self.deployment["source_sha256"],"started_at":int(time.time()),
-             "actors":{name:getattr(self,name).local_account.address for name in self.bindings},
-             "transactions":[],"scenarios":[]}
-        if self.path.exists() and os.environ.get("GENLAYER_RESUME_RUN"):
-            self.report=json.loads(self.path.read_text())
-            self.run=self.report["run_id"]
-        elif self.path.exists():
-            old=self.path.with_name(self.path.stem+"-"+str(int(time.time()))+".json")
-            self.path.rename(old)
-        self.save()
-        print("Recover actor keys from:",self.secret_path,flush=True)
-        for client in (self.payer,self.payee,self.outsider):
-            if client.get_balance(client.local_account.address)<10**15:
-                result=self.payer.provider.make_request("sim_fundAccount",[client.local_account.address,10**18])
-                assert "error" not in result,result
-                time.sleep(2)
+        for role in ('payee','outsider'):
+            setattr(self,role,attach_transport(create_client(chain=studionet,account=create_account(keys[role]))))
+        self.bindings={r:EscrowClient(getattr(self,r),self.address) for r in ('payer','payee','outsider')}
+        self.manifest=json.loads((ROOT/'tests/evidence/manifest.json').read_text())['documents']
+        self.path=ROOT/'artifacts'/report_name
+        self.report={'version':'2.0.0','run_id':secrets.token_hex(6),'contract_address':self.address,
+            'source_sha256':self.deployment['source_sha256'],'network':'studionet','started_at':int(time.time()),
+            'actors':{r:getattr(self,r).local_account.address for r in self.bindings},'transactions':[], 'scenarios':[]}
+        if self.path.exists():
+            if not os.environ.get('GENLAYER_RESUME_RUN'):raise RuntimeError('Existing journal: inspect it and set GENLAYER_RESUME_RUN=1 to resume')
+            self.report=json.loads(self.path.read_text());assert self.report['contract_address']==self.address
+        self.run=self.report['run_id'];self.save()
+        print('Actor recovery file:',self.secret_path,flush=True)
+        for role in self.bindings:
+            client=getattr(self,role)
+            if client.get_balance(client.local_account.address)<10**12:
+                self.payer.provider.make_request('sim_fundAccount',[client.local_account.address,10**18])
 
     def save(self):
-        temporary=self.path.with_suffix(".tmp")
-        temporary.write_text(json.dumps(self.report,indent=2,default=str)+"\n")
-        temporary.replace(self.path)
+        temp=self.path.with_suffix('.tmp');temp.write_text(json.dumps(self.report,indent=2,default=str)+'\n');temp.replace(self.path)
 
-    def doc(self,name):
-        return Document(**self.manifest[name])
+    def doc(self,name):return Document(**self.manifest[name])
+    def read(self,method,args=None,address=None,*,finalized=False):
+        return EscrowClient(self.payer,address or self.address)._read(method,args,finalized=finalized)
+    def balance(self,address):return self.payer.get_balance(address)
 
-    def read(self,method,args=None,address=None):
-        time.sleep(1)
-        return self.payer.read_contract(address=address or self.address,function_name=method,args=args or [])
-
-    def balance(self,address):
-        time.sleep(1)
-        return self.payer.get_balance(address)
-
-    def tx(self,role,method,args,value=0,*,error=None,address=None):
-        time.sleep(2)
-        client=getattr(self,role)
-        txid=client.write_contract(address=address or self.address,function_name=method,
-                                  args=args,value=value,leader_only=False)
-        entry={"method":method,"caller":client.local_account.address,"transaction_hash":txid,
-               "value":value,"expected":("payment_rejection" if method in ("create_escrow","dispute") else "revert") if error else "success","state":"SUBMITTED"}
-        self.report["transactions"].append(entry)
-        self.save()
-        print(method,txid,flush=True)
-        receipt=client.wait_for_transaction_receipt(transaction_hash=txid,
-                    status=TransactionStatus.FINALIZED if method=="withdraw" else TransactionStatus.ACCEPTED,
-                    interval=6000,retries=150,full_transaction=True)
+    def tx(self,role,method,args=None,value=0,*,error=None,address=None,key=None,finalized=False):
+        client=getattr(self,role);destination=address or self.address
+        operation=key or hashlib.sha256(json.dumps([role,destination,method,args,value,bool(error)],sort_keys=True).encode()).hexdigest()
+        entry=next((e for e in self.report['transactions'] if e['operation']==operation),None)
+        if entry is None:
+            time.sleep(1)
+            txid=client.write_contract(address=destination,function_name=method,args=args or [],value=value,leader_only=False)
+            entry={'operation':operation,'method':method,'caller':client.local_account.address,'address':destination,
+                'transaction_hash':txid,'value':value,'expected':'revert' if error else 'success','state':'SUBMITTED'}
+            self.report['transactions'].append(entry);self.save();print(method,txid,flush=True)
+        txid=entry['transaction_hash']
+        try:
+            receipt=EscrowClient(client,destination).wait(txid,finalized=finalized,retries=600,interval=8000)
+        except ExecutionFailed as failed:receipt=failed.receipt
         success=execution_succeeded(receipt)
-        votes=receipt.get("consensus_data",{}).get("votes",{})
-        entry.update(state="FINALIZED" if method=="withdraw" else "ACCEPTED",execution="SUCCESS" if success else "REVERT",
-                     votes=votes,agree_count=sum(str(v).lower()=="agree" for v in votes.values()))
-        if not success:
-            entry["error"]=failure_text(receipt)
-        self.save()
-        if error and method in ("create_escrow","dispute"):
-            assert success,receipt
-            outcome=payment_result(receipt)
-            assert outcome is not None and not outcome["accepted"],receipt
-            assert error in outcome["error"] and outcome["refund_credit"]==value,outcome
-            entry["payment_result"]=outcome
-            self.save()
-        elif error:
+        entry.update(state=transaction_status(receipt),execution='SUCCESS' if success else 'ERROR',
+                     decision=receipt.get('result_name',receipt.get('result')),votes=(receipt.get('consensus_data') or {}).get('votes',{}))
+        if error:
             assert not success,receipt
-            assert error in failure_text(receipt),failure_text(receipt)
-        else:
-            assert success,receipt
-        return receipt
+            entry['error']=failure_text(receipt);assert error in entry['error'],entry
+        else:assert success,receipt
+        self.save();return receipt
 
-    def create(self,label,*,terms="terms.md",delivery_period=3600,review_period=3600):
-        reference=self.run+":"+label
-        # Recover a funded creation after an interrupted read without depositing twice.
-        previous=next((entry for entry in self.report["transactions"]
-                       if entry.get("reference")==reference),None)
-        if previous:
-            self.bindings["payer"].wait(previous["transaction_hash"])
-            existing=self.bindings["payer"].find_escrow(self.payer.local_account.address,reference)
-            record=self.bindings["payer"].get_escrow(existing)
-            if record["status"] not in ("FUNDED","DELIVERED","DISPUTED"):
-                raise RuntimeError("Existing test scenario is terminal; reconcile its journal before resuming")
-            print("Recovered open escrow",existing,record["status"],flush=True)
-            return existing
-        doc=self.doc(terms)
-        # Exercise the shipped builder client for the funded creation.
-        time.sleep(2)
-        txid=self.bindings["payer"].create(reference,self.payee.local_account.address,doc,
-                    PRINCIPAL,delivery_period,review_period,1000)
-        self.report["transactions"].append({"method":"create_escrow","transaction_hash":txid,
-              "reference":reference,"value":PRINCIPAL,"state":"SUBMITTED"})
-        self.save()
-        print("create_escrow",txid,flush=True)
-        receipt=self.bindings["payer"].wait(txid,finalized=False)
-        self.report["transactions"][-1].update(state="ACCEPTED",execution="SUCCESS",
-                    votes=receipt.get("consensus_data",{}).get("votes",{}))
-        self.save()
-        eid=self.bindings["payer"].find_escrow(self.payer.local_account.address,reference,finalized=False)
-        assert eid
-        r=self.bindings["payer"].get_escrow(eid,finalized=False)
-        assert r["principal"]==PRINCIPAL and r["status"]=="FUNDED"
-        return eid
+    def deploy(self,source,args,*,key):
+        entry=next((e for e in self.report['transactions'] if e['operation']==key),None)
+        if entry is None:
+            txid=self.payer.deploy_contract(code=source,args=args,leader_only=False)
+            entry={'operation':key,'method':'deploy','transaction_hash':txid,'source_sha256':hashlib.sha256(source).hexdigest(),
+                   'state':'SUBMITTED','expected':'success'}
+            self.report['transactions'].append(entry);self.save();print('deploy',txid,flush=True)
+        receipt=self.bindings['payer'].wait(entry['transaction_hash'],retries=600,interval=8000)
+        address=receipt.get('contract_address') or receipt.get('to_address')
+        assert address;entry.update(state='FINALIZED',execution='SUCCESS',contract_address=address);self.save();return address
 
-    def deliver(self,eid,name="delivery-full.md"):
-        d=self.doc(name)
-        record=self.read("get_escrow",[eid])
-        if record["delivery"] is not None:
-            assert record["delivery"]["url"]==d.url and record["delivery"]["sha256"]==d.sha256
-            print("Recovered committed delivery",eid,flush=True)
-            return
-        self.tx("payee","claim_delivery",[eid,d.url,d.sha256])
+    def create(self,label,*,terms='terms.md',delivery_period=86400,review_period=86400,response_period=3600,
+               adjudication_period=86400,fallback_payee_bps=5000):
+        reference=self.run+':'+label
+        eid=self.bindings['payer'].find_escrow(self.payer.local_account.address,reference,finalized=False)
+        if eid:return eid
+        d=self.doc(terms)
+        self.tx('payer','create_escrow',[reference,self.payee.local_account.address,d.url,d.sha256,PRINCIPAL,
+            delivery_period,review_period,1000,response_period,adjudication_period,fallback_payee_bps],key='create:'+label)
+        eid=self.bindings['payer'].find_escrow(self.payer.local_account.address,reference,finalized=False);assert eid;return eid
 
-    def dispute(self,eid,name="dispute-good-faith.md"):
-        d=self.doc(name)
-        record=self.read("get_escrow",[eid])
-        bond=record["bond_required"]
-        if record["status"]=="DISPUTED":
-            assert record["dispute"]["url"]==d.url and record["dispute"]["sha256"]==d.sha256
-            assert record["bond_paid"]==bond
-            print("Recovered committed dispute",eid,flush=True)
-            return bond
-        self.tx("payer","dispute",[eid,d.url,d.sha256],value=bond)
-        return bond
+    def deliver(self,eid,name='delivery-full.md'):
+        r=self.read('get_escrow',[eid])
+        if r['delivery'] is not None:return
+        if not r['engagement_accepted']:self.tx('payee','accept_engagement',[eid])
+        d=self.doc(name);self.tx('payee','claim_delivery',[eid,d.url,d.sha256])
 
-    def finalize_journal(self):
-        # Pipeline accepted transactions to reduce redundant finality polling, then
-        # recheck every actual execution at FINALIZED before claiming completion.
-        for entry in self.report["transactions"]:
-            if entry["state"]=="FINALIZED":
-                continue
-            receipt=self.payer.wait_for_transaction_receipt(
-                transaction_hash=entry["transaction_hash"],status=TransactionStatus.FINALIZED,
-                interval=12000,retries=90)
-            succeeded=execution_succeeded(receipt)
-            assert succeeded==(entry.get("expected","success")!="revert"),receipt
-            entry["state"]="FINALIZED"
-            entry["finalized_execution"]="SUCCESS" if succeeded else "REVERT"
-            self.save()
-        self.report["all_transactions_finalized"]=True
-        self.save()
+    def dispute(self,eid,name='dispute-good-faith.md',*,close=True):
+        r=self.read('get_escrow',[eid]);d=self.doc(name)
+        if r['dispute'] is None:self.tx('payer','dispute',[eid,d.url,d.sha256,r['bond_required']])
+        if close:
+            r=self.read('get_escrow',[eid])
+            if not r['evidence_closed']:
+                for role in ('payer','payee'):
+                    if not r[role+'_ready']:self.tx(role,'finish_evidence',[eid])
+        return r['bond_required']
+
+    def scenario(self,name,**data):
+        self.report['scenarios']=[s for s in self.report['scenarios'] if s['case']!=name]
+        self.report['scenarios'].append({'case':name,'verified':True,**data});self.save()
 
     def check_accounting(self):
-        accounting=self.read("get_accounting")
-        assert accounting["conserved"]
-        actual=self.balance(self.address)
-        assert actual==accounting["accounted_balance"],(actual,accounting)
-        return accounting
+        a=self.read('get_accounting');assert a['conserved'] and a['solvent'],a
+        assert self.balance(self.address)==a['native_balance']==a['accounted_balance'],a
+        return a
+
+    def finalize_journal(self):
+        for entry in self.report['transactions']:
+            receipt=self.payer.get_transaction(transaction_hash=entry['transaction_hash'])
+            if transaction_status(receipt)!='FINALIZED':
+                try:receipt=self.bindings['payer'].wait(entry['transaction_hash'],retries=600,interval=12000)
+                except ExecutionFailed as failed:receipt=failed.receipt
+            assert transaction_status(receipt)=='FINALIZED',receipt
+            assert execution_succeeded(receipt)==(entry['expected']=='success'),receipt
+            entry['state']='FINALIZED';self.save()
+        discovered=[]
+        queue=[e['transaction_hash'] for e in self.report['transactions']]
+        seen=set(queue)
+        while queue:
+            parent=queue.pop(0)
+            for child in self.payer.get_triggered_transaction_ids(transaction_hash=parent):
+                if child in seen:continue
+                seen.add(child);queue.append(child)
+                receipt=self.payer.get_transaction(transaction_hash=child)
+                expected_failure=child in self.report.get('expected_failed_children',[])
+                if str(receipt.get('type'))=='0':
+                    source=receipt['from_address']
+                    receipt=EscrowClient(self.payer,source)._wait_native_transfer(child,receipt['to_address'],int(receipt['value']),retries=300,interval=8000)
+                    assert not expected_failure
+                else:
+                    try:
+                        receipt=self.bindings['payer'].wait(child,retries=300,interval=8000)
+                        assert not expected_failure,receipt
+                    except ExecutionFailed as failed:
+                        receipt=failed.receipt;assert expected_failure,receipt
+                discovered.append({'transaction_hash':child,'triggered_by':parent,'state':transaction_status(receipt),
+                    'type':receipt.get('type'),'recipient':receipt.get('to_address'),'value':receipt.get('value'),
+                    'expected':'failure' if expected_failure else 'success'})
+        self.report['emitted_transactions']=discovered
+        self.report['all_transactions_finalized']=True;self.save()
 
 
-@pytest.fixture(scope="module")
-def live():
-    instance=Live()
-    yield instance
-    instance.report["finished_at"]=int(time.time())
-    instance.save()
+@pytest.fixture(scope='module')
+def live():return Live()
 
 
-def test_01_deployed_source_schema_and_config(live):
-    assert hashlib.sha256((ROOT/"contracts/dispute_escrow.py").read_bytes()).hexdigest()==live.deployment["source_sha256"]
-    code=live.payer.provider.make_request("gen_getContractCode",[live.address])
-    assert base64.b64decode(code["result"])==(ROOT/"contracts/dispute_escrow.py").read_bytes()
-    time.sleep(2)
-    response=live.payer.provider.make_request("gen_getContractSchema",[live.address])
-    assert "error" not in response,response
-    config=live.bindings["payer"].get_config()
-    assert config["asset"]=="native GEN" and config["administrator"] is None
-    assert config["transfer_timing"]=="finalized"
-    live.check_accounting()
+def test_01_deployed_source_schema_and_deposit(live):
+    assert base64.b64decode(live.payer.provider.make_request('gen_getContractCode',[live.address])['result'])==(ROOT/'contracts/dispute_escrow.py').read_bytes()
+    assert live.read('get_config')['funding_owner'].lower()==live.payer.local_account.address.lower()
+    live.tx('payer','deposit',value=300000,key='initial-deposit',finalized=True)
+    payer=live.payer.local_account.address
+    payer_before=live.balance(payer)
+    pending=live.tx('payer','withdraw',[1,payer,'account','finality-guard-probe'])
+    live.report['provisional_withdrawal_accounting']=live.read('get_accounting');live.save()
+    live.tx('outsider','reconcile_deposits',error='Await finalized withdrawal',key='reconcile-while-provisional')
+    live.bindings['payer'].wait_withdrawal(pending['hash'],recipient=payer,amount=1,before_balance=payer_before,retries=600,interval=8000)
+    live.tx('outsider','reconcile_deposits',key='reconcile-after-finality',finalized=True)
+    live.tx('payer','deposit',value=17,key='deposit-after-withdrawal-finality',finalized=True)
+    live.check_accounting();live.scenario('source_schema_deposit_and_finality_guard')
 
 
-def test_02_funded_custody_auth_reverts_and_acceptance(live):
-    before=live.balance(live.address)
-    eid=live.create("accept")
-    assert live.balance(live.address)==before+PRINCIPAL
-    d=live.doc("delivery-full.md")
-    live.tx("outsider","claim_delivery",[eid,d.url,d.sha256],error="Only payee")
-    live.tx("payee","claim_delivery",[eid,d.url,"0"*64],error="SHA-256 mismatch")
-    live.deliver(eid)
-    live.tx("outsider","accept_delivery",[eid],error="Only payer")
-    payee_before=live.read("credit_of",[live.payee.local_account.address])
-    live.tx("payer","accept_delivery",[eid])
-    assert live.read("credit_of",[live.payee.local_account.address])==payee_before+PRINCIPAL
-    live.tx("payer","accept_delivery",[eid],error="DELIVERED")
-    live.check_accounting()
-    live.report["scenarios"].append({"case":"payer_acceptance","escrow_id":eid,"verified":True})
-    live.save()
+def test_02_prepaid_failure_auth_and_acceptance(live):
+    eid=live.create('accept');d=live.doc('delivery-full.md')
+    live.tx('outsider','claim_delivery',[eid,d.url,d.sha256],error='Only payee')
+    live.tx('payee','claim_delivery',[eid,d.url,d.sha256],error='accept engagement')
+    live.tx('payee','accept_engagement',[eid])
+    before=live.check_accounting()
+    live.tx('payee','claim_delivery',[eid,d.url,'0'*64],error='SHA-256 mismatch')
+    assert live.check_accounting()==before
+    live.deliver(eid);live.tx('outsider','accept_delivery',[eid],error='Only payer')
+    live.tx('payer','accept_delivery',[eid]);r=live.read('get_escrow',[eid]);assert r['payee_credit']==PRINCIPAL
+    live.tx('payer','accept_delivery',[eid],error='DELIVERED')
+    live.scenario('prepaid_failure_auth_acceptance',escrow_id=eid)
 
 
-@pytest.mark.parametrize("label,delivery,dispute,share,bad",[
-    ("partial","delivery-half.md","dispute-half.md",5000,False),
-    ("no-delivery","delivery-none.md","dispute-none.md",0,False),
-    ("bad-faith","delivery-full.md","dispute-bad-faith.md",10000,True),
-    ("honest-dispute","delivery-full.md","dispute-good-faith.md",10000,False),
-    ("prompt-injection","delivery-injection.md","dispute-none.md",0,False),
+@pytest.mark.parametrize('label,delivery,dispute,share,bad',[
+    ('partial','delivery-half.md','dispute-half.md',5000,False),
+    ('no-delivery','delivery-none.md','dispute-none.md',0,False),
+    ('bad-faith','delivery-full.md','dispute-bad-faith.md',10000,True),
+    ('honest-dispute','delivery-full.md','dispute-good-faith.md',10000,False),
+    ('prompt-injection','delivery-injection.md','dispute-none.md',0,False),
 ])
 def test_03_real_validator_adjudication(live,label,delivery,dispute,share,bad):
-    eid=live.create(label)
-    live.deliver(eid,delivery)
-    bond=live.dispute(eid,dispute)
-    assert live.read("get_escrow",[eid])["status"]=="DISPUTED"
-    if label=="partial":
-        live.tx("outsider","release_expired",[eid],error="DELIVERED")
-    receipt=live.tx("outsider","adjudicate",[eid])
-    votes=receipt.get("consensus_data",{}).get("votes",{})
-    assert len(votes)>=3 and sum(str(v).lower()=="agree" for v in votes.values())>=3,votes
-    r=live.read("get_escrow",[eid])
-    assert r["last_assessment"]["conclusive"] is True,r
-    assert r["payee_bps"]==share and r["payer_bad_faith"] is bad,r
-    payee=PRINCIPAL*share//10000+(bond if bad else 0)
-    assert r["payee_credit"]==payee and r["payer_credit"]==PRINCIPAL+bond-payee
-    assert r["assessment_count"]==1
-    if label=="partial":
-        live.tx("outsider","adjudicate",[eid],error="DISPUTED")
-    live.check_accounting()
-    live.report["scenarios"].append({"case":label,"escrow_id":eid,"payee_bps":share,
-        "payer_bad_faith":bad,"payee_credit":payee,"payer_credit":PRINCIPAL+bond-payee,
-        "assessment":r["last_assessment"],"verified":True})
-    live.save()
+    eid=live.create(label);live.deliver(eid,delivery);bond=live.dispute(eid,dispute)
+    receipt=live.tx('outsider','adjudicate',[eid])
+    votes=receipt.get('consensus_data',{}).get('votes',{})
+    assert sum(str(v).lower()=='agree' for v in votes.values())>=3,votes
+    r=live.read('get_escrow',[eid]);assert r['last_assessment']['conclusive'],r
+    assert r['payee_bps']==share and r['payer_bad_faith'] is bad,r
+    earned=PRINCIPAL*share//10000+(bond if bad else 0)
+    assert r['payee_credit']==earned and r['payer_credit']==PRINCIPAL+bond-earned
+    live.check_accounting();live.scenario(label,escrow_id=eid,assessment=r['last_assessment'],payee_credit=earned,payer_credit=r['payer_credit'])
 
 
-def test_04_inconclusive_preserves_funds_and_bilateral_exit(live):
-    eid=live.create("inconclusive",terms="terms-inconclusive.md")
-    live.deliver(eid,"delivery-inconclusive.md")
-    bond=live.dispute(eid,"dispute-inconclusive.md")
-    before=live.check_accounting()
-    live.tx("outsider","adjudicate",[eid])
-    r=live.read("get_escrow",[eid])
-    assert r["status"]=="DISPUTED" and r["last_assessment"]["conclusive"] is False,r
+def test_04_inconclusive_bilateral_and_deadline_fallback(live):
+    eid=live.create('inconclusive',terms='terms-inconclusive.md');live.deliver(eid,'delivery-inconclusive.md');bond=live.dispute(eid,'dispute-inconclusive.md')
+    before=live.check_accounting();live.tx('outsider','adjudicate',[eid]);r=live.read('get_escrow',[eid])
+    assert r['status']=='DISPUTED' and not r['last_assessment']['conclusive'];assert live.check_accounting()==before
+    live.tx('payer','offer_settlement',[eid,3000]);live.tx('payer','cancel_offer',[eid])
+    live.tx('payee','offer_settlement',[eid,3000]);live.tx('payer','offer_settlement',[eid,3000])
+    assert live.read('get_escrow',[eid])['payer_credit']==PRINCIPAL+bond-3000
+    eid2=live.create('fallback',response_period=1,adjudication_period=1,fallback_payee_bps=3333)
+    live.deliver(eid2);live.dispute(eid2,close=False);live.tx('outsider','resolve_expired_dispute',[eid2])
+    r=live.read('get_escrow',[eid2]);assert r['payee_credit']==PRINCIPAL*3333//10000 and not r['payer_bad_faith']
+    live.scenario('inconclusive_bilateral_deadline_fallback',escrow_ids=[eid,eid2]);live.check_accounting()
+
+
+def test_05_timeouts_and_rejection(live):
+    eid=live.create('undelivered',delivery_period=1);live.tx('outsider','refund_undelivered',[eid])
+    assert live.read('get_escrow',[eid])['payer_credit']==PRINCIPAL
+    eid2=live.create('unreviewed',review_period=1);live.deliver(eid2);live.tx('outsider','release_expired',[eid2])
+    assert live.read('get_escrow',[eid2])['payee_credit']==PRINCIPAL
+    eid3=live.create('rejected');live.tx('payee','reject_escrow',[eid3]);assert live.read('get_escrow',[eid3])['status']=='REFUNDED'
+    live.scenario('timeouts_rejection',escrow_ids=[eid,eid2,eid3])
+
+
+def test_06_rebuttal_wrong_bond_replay_and_recovery(live):
+    eid=live.create('rebuttal');live.deliver(eid,'delivery-half.md');d=live.doc('dispute-none.md');r=live.read('get_escrow',[eid])
+    before=live.check_accounting();live.tx('payer','dispute',[eid,d.url,d.sha256,r['bond_required']-1],error='exact dispute bond')
     assert live.check_accounting()==before
-    live.tx("payer","offer_settlement",[eid,3000])
-    live.tx("payer","cancel_offer",[eid])
-    live.tx("payee","offer_settlement",[eid,3000])
-    assert live.read("get_escrow",[eid])["status"]=="DISPUTED"
-    live.tx("payer","offer_settlement",[eid,3000])
-    r=live.read("get_escrow",[eid])
-    assert r["payee_credit"]==3000 and r["payer_credit"]==PRINCIPAL+bond-3000
-    live.check_accounting()
-    live.report["scenarios"].append({"case":"inconclusive_and_bilateral_exit","escrow_id":eid,"verified":True})
-    live.save()
+    live.dispute(eid,'dispute-none.md',close=False)
+    live.tx('outsider','adjudicate',[eid],error='Response window still open')
+    rebuttal=live.doc('payee-rebuttal.md');live.tx('payee','submit_evidence',[eid,rebuttal.url,rebuttal.sha256])
+    for role in ('payer','payee'):live.tx(role,'finish_evidence',[eid])
+    live.tx('outsider','adjudicate',[eid]);r=live.read('get_escrow',[eid]);assert r['payee_bps']==5000 and not r['payer_bad_faith'],r
+    assert r['supplements'][0]['submitted_by'].lower()==live.payee.local_account.address.lower()
+    # Failed nonpayable evidence calls never introduce additional value.
+    terms=live.doc('terms.md');before=live.check_accounting()
+    live.tx('payer','create_escrow',[r['reference'],r['payee'],terms.url,terms.sha256,PRINCIPAL,100,100,1000,100,100,5000],error='Reference already used')
+    assert live.check_accounting()==before
+    # Genuine retained-value failure on this deployment, recovered into its fixed owner.
+    live.tx('outsider','not_a_method',[],value=17,error='method',key='retained-value',finalized=True)
+    assert live.read('get_accounting')['unreconciled_deposits']==17
+    live.tx('outsider','reconcile_deposits',key='recover-retained-value',finalized=True)
+    live.check_accounting();live.scenario('rebuttal_prepaid_replay_retained_value_recovery',escrow_id=eid,recovered=17)
 
 
-def test_05_delivery_timeout_review_timeout_and_rejection(live):
-    eid=live.create("delivery-timeout",delivery_period=1)
-    live.tx("outsider","refund_undelivered",[eid])
-    assert live.read("get_escrow",[eid])["payer_credit"]==PRINCIPAL
-    eid2=live.create("review-timeout",review_period=1)
-    live.deliver(eid2)
-    live.tx("outsider","release_expired",[eid2])
-    assert live.read("get_escrow",[eid2])["payee_credit"]==PRINCIPAL
-    eid3=live.create("rejection")
-    live.tx("payee","reject_escrow",[eid3])
-    assert live.read("get_escrow",[eid3])["status"]=="REFUNDED"
-    live.check_accounting()
-    live.report["scenarios"].append({"case":"timeouts_and_rejection","escrow_ids":[eid,eid2,eid3],"verified":True})
-    live.save()
+def test_07_real_protocol_appeal(live):
+    eid=live.create('appeal');live.deliver(eid,'delivery-half.md');live.dispute(eid,'dispute-half.md')
+    receipt=live.tx('outsider','adjudicate',[eid]);txid=receipt['hash']
+    if 'appeal_ticket' not in live.report:
+        ticket=live.bindings['payer'].appeal(eid,txid)
+        live.report['appeal_ticket']=ticket.__dict__;live.save();print('appeal submitted',ticket.transaction_id,flush=True)
+    ticket=AppealTicket(**live.report['appeal_ticket'])
+    outcome=live.bindings['payer'].wait_appeal(ticket,retries=600,interval=8000)
+    assert outcome['appeal_observed'] and outcome['state'] in ('SETTLED','REFUNDED','DISPUTED'),outcome
+    assert outcome['escrow']==live.bindings['payer'].get_escrow(eid,finalized=True)
+    live.report['appeal_outcome']={k:v for k,v in outcome.items() if k!='receipt'}
+    entry=next(e for e in live.report['transactions'] if e['transaction_hash']==txid)
+    entry['expected']='success' if outcome['transaction_succeeded'] else 'revert'
+    entry['appeal_final_state']=outcome['state'];live.save()
+    if outcome['state']=='DISPUTED':
+        live.tx('payer','offer_settlement',[eid,5000]);live.tx('payee','offer_settlement',[eid,5000])
+    live.scenario('stored_protocol_appeal_refresh',escrow_id=eid,transaction_hash=txid,final_state=outcome['state'])
 
 
-def test_06_rejected_bonds_and_duplicate_reference_credits(live):
-    eid=live.create("bond-reverts")
-    live.deliver(eid)
-    doc=live.doc("dispute-half.md")
-    r=live.read("get_escrow",[eid])
-    before=live.balance(live.address)
-    live.tx("payer","dispute",[eid,doc.url,doc.sha256],value=r["bond_required"]-1,error="exact dispute bond")
-    live.tx("outsider","dispute",[eid,doc.url,doc.sha256],value=r["bond_required"],error="Only payer")
-    assert live.balance(live.address)==before+2*r["bond_required"]-1
-    assert live.read("get_escrow",[eid])["status"]=="DELIVERED"
-    live.check_accounting()
-    terms=live.doc("terms.md")
-    live.tx("payer","create_escrow",[r["reference"],r["payee"],terms.url,terms.sha256,100,100,1000],
-            value=PRINCIPAL,error="Reference already used")
-    assert live.balance(live.address)==before+2*r["bond_required"]-1+PRINCIPAL
-    live.tx("payer","create_escrow",[r["reference"]+":bad-document",r["payee"],terms.url,"0"*64,100,100,1000],
-            value=17,error="SHA-256 mismatch")
-    rejected_tx=live.report["transactions"][-1]["transaction_hash"]
-    with pytest.raises(PaymentRejected) as rejected:
-        live.bindings["payer"].wait(rejected_tx)
-    assert rejected.value.refund_credit==17
-    assert live.balance(live.address)==before+2*r["bond_required"]-1+PRINCIPAL+17
-    live.tx("payer","accept_delivery",[eid])
-    live.check_accounting()
-
-
-def test_07_native_withdrawals_to_account_and_real_intelligent_contract(live):
-    # Deploy a real receiver. Its receive method executes in a child transaction.
-    source=(ROOT/"tests/integration/contracts/value_receiver.py").read_bytes()
-    txid=live.payer.deploy_contract(code=source,args=[],leader_only=False)
-    live.report["transactions"].append({"method":"deploy_value_receiver","transaction_hash":txid,"state":"SUBMITTED"})
-    live.save()
-    receipt=live.payer.wait_for_transaction_receipt(transaction_hash=txid,
-             status=TransactionStatus.FINALIZED,interval=6000,retries=150)
-    assert execution_succeeded(receipt),receipt
-    receiver=receipt.get("contract_address") or receipt.get("to_address")
-    live.report["transactions"][-1].update(state="FINALIZED",execution="SUCCESS",contract_address=receiver)
-    live.save()
-    payer=live.payer.local_account.address
-    payee=live.payee.local_account.address
-    payer_credit=live.read("credit_of",[payer])
-    payee_credit=live.read("credit_of",[payee])
-    assert payer_credit>0 and payee_credit>0
-    outsider=live.outsider.local_account.address
-    outsider_credit=live.read("credit_of",[outsider])
-    live.tx("outsider","withdraw",[outsider_credit+1,payer,"account"],error="Insufficient withdrawal credit")
-    if outsider_credit:
-        live.tx("outsider","withdraw",[outsider_credit,outsider,"account"])
-    live.tx("payer","withdraw",[payer_credit+1,payer,"account"],error="Insufficient withdrawal credit")
-    before=live.balance(payee)
-    live.tx("payee","withdraw",[payee_credit,payee,"account"])
-    assert live.balance(payee)==before+payee_credit
-    live.tx("payer","withdraw",[payer_credit,receiver,"contract"])
-    # Child IC execution may finalize after its parent; follow the emitted transaction.
-    deadline=time.monotonic()+600
-    while time.monotonic()<deadline:
-        received=live.read("get_received",address=receiver)
-        if received==payer_credit:
-            break
-        time.sleep(6)
-    assert received==payer_credit
-    assert live.read("get_balance",address=receiver)==payer_credit
-    live.tx("payer","withdraw",[1,payer,"account"],error="Insufficient withdrawal credit")
-    assert live.read("credit_of",[payer])==0 and live.read("credit_of",[payee])==0
-    accounting=live.check_accounting()
-    assert accounting["locked_principal"]==0 and accounting["locked_bonds"]==0
-    assert accounting["withdrawal_credits"]==0 and accounting["accounted_balance"]==0
-    live.finalize_journal()
-    live.report.update(complete=True,final_accounting=accounting,
-                receiver_address=receiver,receiver_received=payer_credit,
-                payee_withdrawn=payee_credit)
-    live.save()
+def test_08_partial_account_and_safe_contract_withdrawals(live):
+    payer=live.payer.local_account.address;payee=live.payee.local_account.address
+    inbox=live.deploy((ROOT/'contracts/payout_inbox.py').read_bytes(),[payer,live.address],key='deploy-payout-inbox')
+    assert live.bindings['payer'].qualify_inbox(inbox)['owner'].lower()==payer.lower()
+    if 'inbox_before' not in live.report:
+        live.report['inbox_before']=live.balance(inbox);live.save()
+    before=live.report['inbox_before']
+    live.tx('payer','withdraw',[29,inbox,'contract','partial-inbox'],finalized=True)
+    parent=live.report['transactions'][-1]['transaction_hash']
+    transfer=live.bindings['payer'].wait_withdrawal(parent,recipient=inbox,amount=29,before_balance=before,retries=120,interval=8000)
+    assert transfer['children'] and live.balance(inbox)==before+29
+    if 'inbox_recovery_before' not in live.report:
+        live.report['inbox_recovery_before']=live.balance(payer);live.save()
+    account_before=live.report['inbox_recovery_before']
+    live.tx('payer','withdraw_to_account',[29,payer],address=inbox,finalized=True)
+    deadline=time.monotonic()+240
+    while live.balance(payer)<account_before+29 and time.monotonic()<deadline:time.sleep(8)
+    assert live.balance(payer)>=account_before+29
+    live.tx('payer','withdraw',[1,payer,'account','partial-inbox'],error='reference already used')
+    if 'remaining_withdrawal_plan' not in live.report:
+        live.report['remaining_withdrawal_plan']={}
+        for role in ('payer','payee'):
+            owner=getattr(live,role).local_account.address
+            live.report['remaining_withdrawal_plan'][role]={'amount':live.read('credit_of',[owner]),'before':live.balance(owner)}
+        live.save()
+    for role in ('payer','payee'):
+        owner=getattr(live,role).local_account.address
+        plan=live.report['remaining_withdrawal_plan'][role];credit=plan['amount'];before=plan['before']
+        receipt=live.tx(role,'withdraw',[credit,owner,'account','remaining-'+role],finalized=True)
+        txid=next(e['transaction_hash'] for e in reversed(live.report['transactions']) if e['method']=='withdraw' and e['caller'].lower()==owner.lower())
+        live.bindings[role].wait_withdrawal(txid,recipient=owner,amount=credit,before_balance=before,retries=120,interval=8000)
+    live.finalize_journal();a=live.check_accounting();assert a['accounted_balance']==0,a
+    live.report.update(complete=True,final_accounting=a,payout_inbox=inbox,finished_at=int(time.time()));live.save()
+    live.scenario('partial_withdrawal_safe_inbox_eoa',inbox=inbox)

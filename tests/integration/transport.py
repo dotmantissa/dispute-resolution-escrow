@@ -24,7 +24,7 @@ class StudioProvider(GenLayerProvider):
                 response=requests.post(self.url,
                     json={"jsonrpc":"2.0","id":int(time.time()*1000),"method":method,"params":params},
                     headers={"Content-Type":"application/json","User-Agent":"genlayer-escrow-verification"},
-                    timeout=90)
+                    timeout=(6,90))
                 if response.status_code>=500:
                     raise requests.exceptions.HTTPError(f"Studio gateway HTTP {response.status_code}")
                 result=response.json()

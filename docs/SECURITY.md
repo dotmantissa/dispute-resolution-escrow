@@ -1,51 +1,49 @@
-# Security and operating model
+# Security and operating assumptions
 
-## Custody boundaries
+## Exact economic agreement
 
-The contract holds native GEN only. It does not accept ERC-20 claims, bridge receipts or an off-chain balance as payment. Each creation attaches a positive principal and each dispute attaches the exact bond. Nonpayable authorization and state errors revert before changing escrow state. Supported payable validation failures return an explicit rejection and credit the full incoming amount to its actual sender, including unauthorized dispute payments and duplicate funding attempts. They do not create or alter an escrow.
+Validators independently assess the original terms and committed evidence. They must exactly match the tuple that controls settlement: conclusiveness, earned basis points and bad faith. No tolerance can admit a different payout bucket. Integer arithmetic conserves principal and bond, including rounding. The exhaustive direct test compares all 103 valid economic states against one another, covering 10609 ordered pairs.
 
-Settlement allocates the entire principal and bond once. It preserves integer value, updates the aggregate liability ledger and cannot be replayed. Withdrawals spend only the immediate sender's existing credit and debit it before emitting an asynchronous transfer. There is no administrator, pause key, upgrade path, forced dispute default or privileged withdrawal.
+The leader's prose explanation is not binding case law. Explanations and fetch observations never enter a later case or determine money. Their wording is not claimed to have exact multi-validator agreement.
 
-Rejected payment credits are deliberate application outcomes, not VM execution failures. This preserves value under the failed-payable-call behavior observed on Studio. Malformed ABI input, unsupported payable targets and unexpected VM failures remain subject to the network's own value-handling rules.
+## Native custody
 
-The accounting invariant is checked by tests across many independent escrows. The view itself is a record of liabilities, so operators should compare it with the native network balance. Value sent outside supported payable methods is not automatically assigned or recoverable.
+Studio can retain attached value after rejected execution or consensus. Prepaid custody addresses that behavior structurally: only deterministic deposits receive value, and every receipt belongs to one immutable owner. Evidence calls lock existing credit without receiving new value. Permissionless reconciliation credits only that owner after protecting all existing liabilities.
 
-## Evidence integrity and limits
+Never send a different payer's funds to someone else's book expecting sender-specific recovery. A direct gift or malformed funded call benefits the configured owner. There is no administrator sweep or receipt oracle. Confirm ownership in the SDK before funding.
 
-A source URL does not prove authenticity, authorship, receipt or completeness. A malicious party can publish a false statement. Validators must evaluate the evidence rather than assume submitted statements are facts. Public acknowledgments, independently signed records and verifiable deliverables are stronger than unsupported claims.
+Native transfers execute asynchronously. The contract rejects reconciliation while authenticated finalized self-acknowledgements remain pending. Finalize earlier withdrawals before reconciling or funding further activity. Follow both parent and child outcomes. Book withdrawal references prevent replay of a previously emitted withdrawal; a failed arbitrary recipient is not an automatic refund to the book.
 
-The exact original terms, delivery and dispute snapshots are committed by SHA-256 and agreed at submission. Adjudicators re-fetch the sources independently and verify their commitments. If a source changes or becomes unavailable they retain the earlier committed snapshot. This blocks later replacement and availability-based custody attacks. It does not prove that a signed statement is authentic unless the text and verification context support that conclusion.
+The supported inbox uses actual native balance as its recovery authority. Only its owner can withdraw. The SDK verifies exact source plus owner/book configuration. A custom receiver may falsely accept preflight, reject its callback or offer no recovery interface; raw low-level integrations assume that risk. Do not mix unrelated beneficiaries in one inbox.
 
-The supported evidence format is public bounded UTF-8 text. Documents are not rendered, linked pages are not recursively fetched, images are not interpreted, and authenticated systems are not accessed. A document must include the facts required to evaluate the promise. Secrets cannot be removed from public on-chain history after publication.
+## Documentary truth and confidentiality
 
-HTTPS hostname filtering rejects several unsafe forms. DNS rebinding, public names resolving to private addresses and redirects remain the network's responsibility. Do not treat this syntax filter as a complete SSRF boundary. Network sandboxing and request limits must protect validator infrastructure.
+Hashes establish byte integrity, not truth, legal identity, physical receipt or authorship of third-party statements. A transaction authenticates the submitting address. It does not authenticate opponent quotations, a purported signature pasted into text, an attachment's origin or private delivery. Applications requiring those facts must provide independently verifiable evidence and explain how it relates to the original promise.
 
-## Model and consensus risk
+Terms, evidence URLs, snapshots and rulings are public. Private documents, customer secrets, credentials and unredacted personal information should not be submitted. The contract does not retrieve authenticated content or use an application server's private assertions as an oracle.
 
-The prompt treats evidence as untrusted data and directs evaluators to disregard embedded role changes or payout instructions. Validator code independently repeats the substantive task and compares every field controlling money. It does not accept a leader's answer merely because its JSON is valid. The public test evidence includes a direct prompt-injection attempt.
+The prompt treats evidence as untrusted data, rejects instructions embedded in it, limits bad faith to affirmative evidence of knowing abuse, and refuses to count repetition as corroboration. These controls reduce manipulation; they cannot prove that an LLM never makes a factual or interpretive mistake. GenLayer consensus and appeals remain the adjudication trust mechanism.
 
-Consensus reduces reliance on one evaluator. It cannot guarantee factual correctness, independence of model training or immunity to persuasive malicious evidence. A majority can agree on the wrong conclusion. The displayed reason is the leader's explanation and need not match each validator's wording. Exact payout agreement can also reduce liveness for ambiguous cases. No tolerance silently alters a fractional award.
+## Source availability and network isolation
 
-Bad faith requires affirmative evidence of knowing abuse plus a conclusive full-delivery finding. Losing a dispute alone does not forfeit the bond. A determined dishonest payer may still avoid a penalty if intent cannot be established. A bond deters abuse only to the extent its chosen amount, available evidence and expected penalty justify that economic claim. The registry does not promise that every frivolous dispute becomes economically irrational.
+Creation commits exact nonempty UTF-8 bytes through strict equality. Later assessment independently re-fetches every URL, verifies the digest, and uses a reverified stored snapshot when an origin changes or fails. A page that disappears before its first snapshot cannot be admitted. The source-availability tests separately change and delete the actual public URLs and observe validator requests at the origin.
 
-## Deadlines and liveness
+The SDK rejects private DNS answers, explicit ports, numeric address tricks, local names and unsafe redirects, pins a public address per connection and verifies TLS/SNI against the original hostname. It does not consult proxy environment variables. Contract URL syntax matches the structural policy, but validator-side DNS resolution and redirects are delegated to GenVM's networking sandbox. A regex does not replace that sandbox.
 
-The payer commits funds before the payee accepts the work. The payer can recover a never-claimed engagement at its delivery deadline; the payee may reject it earlier. Once delivery is claimed, the payer must submit a dispute before its review deadline. Network processing delays and document fetch failures matter, so human review periods should include operating margin.
+Bodies and accumulated case data are bounded. A page larger than 32768 bytes, invalid UTF-8, whitespace-only content, NUL or a digest mismatch is rejected. The public fixture corpus is revision-pinned and independently hashed.
 
-No unilateral timeout decides a disputed payment. If consensus is persistently inconclusive, unavailable or unable to agree, funds remain locked until a conclusive retry or matching settlement offers. This protects against an arbitrary forced refund or payout but makes disputed liveness conditional. Integrators must disclose that tradeoff to their users.
+## Dispute liveness and consent
 
-Time-based transitions require an explicit transaction. Anyone can submit them, but the network does not run background work for the escrow. A keeper or application process should monitor deadlines and submit the appropriate call.
+The payee explicitly accepts the engagement before claiming delivery. Each party gets a response opportunity; one cannot close it early alone. Supplements are bounded to three per party. Independent 32768-byte party allowances prevent either side from exhausting the opponent's capacity. The 16384-byte terms cap reserves space for the payer's initial dispute. Total case evidence is bounded to 65536 bytes. Both parties may declare readiness, or the response period expires.
 
-## Transfers, appeals and recipient failures
+Model consensus can fail or remain inconclusive. Matching bilateral offers provide a voluntary exit. After a fixed deadline, anyone can apply the fallback split explicitly recorded at creation and accepted by the payee. The fallback is a negotiated risk allocation and may differ from what a panel would have awarded. Applications must display it before acceptance rather than describing it as a guaranteed fair judicial result.
 
-Settlement credits are separate from payout. Native transfers execute on finalization. Builders should wait for finalized evidence and settlement before initiating dependent financial actions, and track protocol appeals through the normal network lifecycle. The contract relies on GenLayer's ordering, rollback and finalization rules; it does not implement a second independent finality protocol.
+The bond floor is 10% and its actual rate is visible before acceptance. A bond deters abuse only to the extent that its cost exceeds the expected benefit of a bad-faith dispute. The contract cannot guarantee the economics of every external marketplace.
 
-An account withdrawal uses the EVM interface. An IC withdrawal calls `receive_escrow()` with native value. Emission is asynchronous, and a failed child transaction may not refund the parent. An incorrect or rejecting recipient can lose its funds. Test recipient compatibility, select the correct recipient kind and follow any child transaction to completion. No operator can mint replacement credits after a failed finalized withdrawal.
+## Client and protocol boundaries
 
-Studio balances are test balances managed by its database. Studio coverage does not validate real-network ghost-contract execution, fee estimation, EVM fallback behavior or gas consumption. Those properties require qualification on the intended fee-charging network before handling funds there.
+A successful leader is insufficient evidence of consensus. The SDK requires authoritative majority agreement, accepted/finalized lifecycle and successful execution. Unknown, contradictory, rejected or timed-out receipts fail closed. Default waits require finality; provisional reads and previews are explicitly marked.
 
-## Verification and reporting
+Protocol appeals are separate from an additional contract-level court or administrator. The SDK persists appeal IDs, polls the original transaction, observes round progression and refreshes finalized case storage. An upheld appeal need not change the award. No application should promise that every appeal succeeds or changes a ruling.
 
-The checked-in tests cover deterministic validation, storage, deadlines, replay protection and conservation, as well as real Studio custody, HTTP evidence, model judgments, validator votes and recipient balances. Evidence and transaction hashes are included in the artifacts. Successful tests establish the observed cases, not a formal proof or an independent security audit.
-
-Report vulnerabilities through the repository's private security reporting feature if available, or contact the repository owner without publishing exploit instructions against active escrow funds.
+Studio is a hosted development network with faucet balances, rate limits and asynchronous processing. Its tests establish behavior on that network and pinned runtime, not production economic security on every future network version. A new network or runner requires repeat qualification. Private signing keys and publication credentials never belong in the repository or transaction journals.

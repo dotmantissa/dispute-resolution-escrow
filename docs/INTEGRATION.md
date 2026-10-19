@@ -1,161 +1,183 @@
-# Builder integration guide
+# Builder integration
 
-## Choose the agreement before accepting funds
+## Deploy a payer's book
 
-Publish the original promise as a public UTF-8 document. It should identify the purchased deliverables, acceptance criteria, delivery method, exclusions and the relative value of separately payable milestones. If the transaction concerns a physical item or private work, provide independently checkable evidence; unsupported opposing statements can remain inconclusive.
-
-The contract records one terms document at creation. It does not merge later private messages, fetch linked attachments or infer a new agreement from a party's demands. Put the relevant material directly in the committed text. Provide a digest of the exact raw response. Both parties should compare the on-chain snapshot with their agreement before work begins.
-
-Choose a delivery period and a review period between one second and one year. The short minimum supports machine-driven integrations and testing, but a human marketplace should provide enough time for payment confirmation, delivery inspection, network delays and dispute submission. The payer chooses a bond rate between 1 and 10000 basis points. A marketplace that wants substantial deterrence should require its own minimum rate when presenting or accepting an engagement.
-
-## Sign as the correct party
-
-Each party uses its own account. The binding never holds keys or acts as a relay.
+Install the package from the repository as described in the README. Keep signing keys in your application's secret manager or environment, outside Git. The contract accepts EOA or Intelligent Contract payer addresses.
 
 ```python
 import os
+from pathlib import Path
 from genlayer_py import create_account, create_client
 from genlayer_py.chains import studionet
 from genlayer_escrow import EscrowClient
 
-payer_client = create_client(
-    chain=studionet,
-    account=create_account(os.environ['PAYER_PRIVATE_KEY']),
-)
-payee_client = create_client(
-    chain=studionet,
-    account=create_account(os.environ['PAYEE_PRIVATE_KEY']),
-)
-address = os.environ['ESCROW_ADDRESS']
-payer = EscrowClient(payer_client, address)
-payee = EscrowClient(payee_client, address)
+account = create_account(os.environ['GENLAYER_PRIVATE_KEY'])
+chain = create_client(chain=studionet, account=account)
+source = Path('contracts/dispute_escrow.py').read_bytes()
+tx_id = chain.deploy_contract(code=source, args=[account.address], leader_only=False)
+# Persist tx_id before polling. Resume this ID after an interruption.
+receipt = EscrowClient(chain, account.address).wait(tx_id)
+book_address = receipt.get('contract_address') or receipt['to_address']
+escrow = EscrowClient(chain, book_address)
+assert escrow.get_config()['funding_owner'].lower() == account.address.lower()
 ```
 
-A contract acting as a party must initiate the message itself. The primitive checks the immediate sender, so a user's signature does not authorize a different intermediary contract automatically.
+The constructor sets custody ownership permanently. Every native receipt at that book belongs to that payer. A marketplace must create a book for each payer rather than pool independent payers in one deployment. Payee credits are tracked separately within each book.
 
-## Create a funded engagement
+For an IC payer, deploy with the IC's address, fund the book intentionally, and have that IC emit the nonpayable creation, dispute and payer actions. Authorization uses the immediate contract caller. The real `PartyAccount` integration fixture demonstrates this flow, including owner-restricted forwarding. An EOA controlling that IC cannot call payer methods directly on its behalf.
+
+## Fund and commit an engagement
+
+Fetch the terms through the hardened SDK transport. Use exact plain UTF-8 documents with stable public HTTPS URLs. The payee must be able to inspect the terms, all periods and the fallback allocation before accepting.
 
 ```python
 from genlayer_escrow import Document
 
-terms = Document.fetch(os.environ['TERMS_URL'])
-reference = 'service-order-1842'
-tx_id = payer.create(
-    reference=reference,
-    payee=payee_client.local_account.address,
+terms = Document.fetch(os.environ['ESCROW_TERMS_URL'])
+principal = 10_000
+bond_rate = 1000
+bond = (principal * bond_rate + 9999) // 10000
+
+# Value enters only through this deterministic deposit operation.
+deposit_id = escrow.deposit(principal + bond)
+escrow.wait(deposit_id)
+
+create_id = escrow.create(
+    reference=os.environ['ESCROW_REFERENCE'],
+    payee=os.environ['ESCROW_PAYEE_ADDRESS'],
     terms=terms,
-    principal=10**18,
-    delivery_period=604800,
+    principal=principal,
+    delivery_period=7 * 86400,
     review_period=86400,
-    bond_bps=1000,
+    bond_bps=bond_rate,
+    response_period=86400,
+    adjudication_period=7 * 86400,
+    fallback_payee_bps=5000,
 )
-# Save tx_id and reference durably in the application's own database now.
-payer.wait(tx_id)
-escrow_id = payer.find_escrow(payer_client.local_account.address, reference)
-record = payer.get_escrow(escrow_id)
-assert record['principal'] == 10**18
-assert record['bond_required'] == 10**17
+escrow.wait(create_id)
+escrow_id = escrow.find_escrow(account.address, os.environ['ESCROW_REFERENCE'])
+record = escrow.get_escrow(escrow_id)
+assert record['principal'] == principal
 ```
 
-`Document.fetch` verifies that the off-chain response is bounded UTF-8 text and computes its digest. The contract then independently fetches and verifies the same bytes across validators. A changed document causes submission to fail. A caller that already has the exact published bytes can use `Document.from_bytes(url, content)` instead.
+The 5000-basis-point fallback in this example is an explicit 50% deadline allocation, not a prediction about a future ruling. Select a split appropriate to the actual engagement and display it clearly to both parties.
 
-A timeout while waiting does not establish that submission failed. Follow the stored transaction ID first. After creation, use the payer-scoped reference lookup to recover the record. Do not replace an uncertain reference with a new reference and pay twice. For expected payable validation failures, `wait()` raises `PaymentRejected`: the full incoming payment is already a confirmed withdrawal credit for its sender. Read `error.result` and `error.refund_credit`, then withdraw that credit. The original escrow is unchanged. For unexpected execution failures or malformed calls, inspect the receipt and protocol value-handling behavior before resubmitting.
+`deposit` refuses a locally signed deposit for a different funding owner. Lower-level direct gifts remain permitted by the contract and benefit its configured owner. A failed deposit on Studio may retain value before state commits. Inspect `get_accounting()['unreconciled_deposits']`, then call nonpayable `reconcile_deposits` after pending withdrawals finalize. That operation always credits the configured owner, never its caller.
 
-## Submit delivery
+## Payee acceptance and delivery
 
-```python
-delivery = Document.fetch(os.environ['DELIVERY_EVIDENCE_URL'])
-tx_id = payee.claim_delivery(escrow_id, delivery)
-payee.wait(tx_id)
-record = payer.get_escrow(escrow_id)
-assert record['status'] == 'DELIVERED'
-review_deadline = record['review_deadline']
-```
-
-Delivery can be claimed once, strictly before the delivery deadline. It freezes the delivery evidence and opens the review clock. The payer can call `accept_delivery` to allocate the full principal immediately. If no dispute is submitted in time, anyone can call `release_expired` at or after the review deadline. An indexer or application must submit timeout actions; the contract does not wake itself up.
-
-## Raise and resolve a dispute
+Use a separate signed client for each party. All reads default to finalized state.
 
 ```python
-dispute_evidence = Document.fetch(os.environ['DISPUTE_EVIDENCE_URL'])
-record = payer.get_escrow(escrow_id)
-tx_id = payer.dispute(
-    escrow_id,
-    dispute_evidence,
-    bond=record['bond_required'],
+payee_chain = create_client(
+    chain=studionet,
+    account=create_account(os.environ['GENLAYER_PAYEE_PRIVATE_KEY']),
 )
-payer.wait(tx_id)
-tx_id = payer.adjudicate(escrow_id)
-payer.wait(tx_id)
-record = payer.get_escrow(escrow_id)
-assessment = record['last_assessment']
+payee = EscrowClient(payee_chain, book_address)
+payee.wait(payee.accept_engagement(escrow_id))
+delivery = Document.fetch(os.environ['ESCROW_DELIVERY_URL'])
+payee.wait(payee.claim_delivery(escrow_id, delivery))
 ```
 
-Only the payer may submit the dispute, and the transaction must attach the exact required bond before the review deadline. Adjudication is permissionless and does not require another deposit into the escrow. The submitting account remains responsible for any network fees.
+The payer can accept delivery with `escrow.wait(escrow.accept_delivery(escrow_id))`. If delivery is not claimed before its deadline, anyone can call `refund_undelivered`. Once the review period expires without a dispute, anyone can call `release_expired`. Applications should run a permissionless keeper for these actions and the dispute fallback. Contract timestamps and eligibility checks remain authoritative.
 
-If the assessment is conclusive, `payee_credit`, `payer_credit`, `payee_bps`, `payer_bad_faith` and `settlement_reason` show the allocation. The bond returns to the payer unless validators establish clear bad faith. If the result is inconclusive, the record remains `DISPUTED`, and no credits are created. The parties can retry adjudication or negotiate a split.
-
-A wrong bond amount, unauthorized payer or invalid committed document returns `accepted=false` and credits all incoming value to the actual sender. The dispute is not opened. This is distinct from losing a properly opened dispute.
-
-The escrow bond is independent of GenLayer's protocol appeal bonds. To challenge the validator result, follow the network's transaction appeal rules and track finality. The application should link to the adjudication transaction and its consensus receipts rather than presenting a local model preview as authoritative.
-
-## Negotiate a split
+## Dispute and response
 
 ```python
-# Both approve 60% of principal for the payee; any bond returns to payer.
-tx_id = payer.offer_settlement(escrow_id, 6000)
-payer.wait(tx_id)
-tx_id = payee.offer_settlement(escrow_id, 6000)
-payee.wait(tx_id)
+record = escrow.get_escrow(escrow_id)
+dispute_evidence = Document.fetch(os.environ['ESCROW_DISPUTE_URL'])
+escrow.wait(escrow.dispute(
+    escrow_id, dispute_evidence, bond=record['bond_required'],
+))
+
+rebuttal = Document.fetch(os.environ['ESCROW_PAYEE_REBUTTAL_URL'])
+payee.wait(payee.submit_evidence(escrow_id, rebuttal))
+
+# Both parties independently choose when their own submissions are complete.
+escrow.wait(escrow.finish_evidence(escrow_id))
+payee.wait(payee.finish_evidence(escrow_id))
+judgment_id = escrow.adjudicate(escrow_id)
+escrow.wait(judgment_id)
+record = escrow.get_escrow(escrow_id)
 ```
 
-Offers settle only when both current offers match. Either party can replace or cancel its own offer while the escrow remains open. Delivery and dispute transitions clear previous offers. A builder should show the latest offer and escrow state before requesting consent. Settlement cannot be repeated after either terminal state.
+A dispute requires sufficient existing credit. Its bond is an argument, not attached value. Applications can top up through `deposit` beforehand. The minimum bond rate is 10% of principal, rounded up to the next wei.
 
-## Withdraw
+The response window closes at its deadline or when both parties finish. Each party may submit three supplements before declaring readiness, within its independent 32768-byte evidence allowance. Terms are capped at 16384 bytes to reserve payer dispute space. Record authorship is authenticated by the transaction sender. Opponent quotes, signatures asserted in text and external claims are not authenticated just because a party submits them.
+
+An inconclusive judgment leaves the case `DISPUTED`. Before the resolution deadline, the same committed case can be reassessed. Matching `offer_settlement` calls from the two parties settle an agreed split; `cancel_offer` cancels only the caller's proposal. At or after the resolution deadline, `resolve_expired_dispute` applies the previously accepted fallback and returns the bond. A keeper may submit any eligible permissionless action.
+
+## Durable polling and protocol appeals
+
+The default `wait` requires finality, majority agreement and successful VM execution. `finalized=False` returns a provisional accepted result that an appeal can change. Never release an off-chain asset based on that preview. Lifecycle names alone do not prove success.
 
 ```python
-credit = payee.credit_of(payee_client.local_account.address)
-if credit:
-    tx_id = payee.withdraw(
-        credit,
-        payee_client.local_account.address,
-        recipient_kind='account',
-    )
-    payee.wait(tx_id)
+import json
+from dataclasses import asdict
+from pathlib import Path
+from genlayer_escrow import AppealTicket, PollingTimeout, ExecutionFailed
+
+# Only decided transactions still within the protocol's appeal opportunity qualify.
+ticket = escrow.appeal(escrow_id, judgment_id)
+Path('appeal-ticket.json').write_text(json.dumps(asdict(ticket)))
+
+# A new process can resume without submitting another appeal.
+stored = AppealTicket(**json.loads(Path('appeal-ticket.json').read_text()))
+outcome = escrow.wait_appeal(stored)
+assert outcome['state'] != 'APPEAL_PENDING'
+record = outcome['escrow']
 ```
 
-Credits accumulate across escrows. Partial withdrawals are supported. Only the credit owner may spend them, although the owner may choose a different destination. Recipient kind `account` uses a native transfer through GenVM's EVM recipient interface. A rejecting EVM contract is not a safe substitute for an EOA.
+The ticket stores the original intelligent transaction ID, appeal submission ID, case ID and prior round markers. On Studio, the pinned SDK returns the original ID for appeal submission. Polling follows that ID through appeal processing and then refreshes the case from finalized contract storage. It does not reuse a cached pre-appeal ruling. `APPEAL_NOT_OBSERVED` means finality was seen without evidence that the requested appeal ran; do not report it as a completed appeal.
 
-For an Intelligent Contract recipient, pass `recipient_kind='contract'`. The receiver must implement `@gl.public.write.payable def receive_escrow(self) -> None`. The real receiver used in network verification is in [tests/integration/contracts/value_receiver.py](../tests/integration/contracts/value_receiver.py). It records `gl.message.value` and exposes its native balance. A production receiver should also check its expected sender and account for the incoming funds under its own application rules.
+Appeals can uphold a ruling, replace it, or leave the case unresolved. `transaction_succeeded` reports the resulting operation independently of the refreshed case status. A `PollingTimeout` retains the same transaction ID and last receipt so callers can resume. `ExecutionFailed` retains the failed receipt. Neither exception authorizes automatic write resubmission.
 
-The outgoing value is held by an asynchronous finalized message. A finalized withdrawal parent does not by itself prove a child recipient successfully executed. Follow the triggered transaction IDs and verify the receiving state or EOA balance. Failed child execution may permanently lose the value; the primitive does not credit it back automatically.
+## Withdraw to an account
 
-## Use the contract directly from another IC
-
-Read the schema in `artifacts/schema.json` for parameter types and payable flags. Calls from another Intelligent Contract use the standard SDK:
+Use an owner-scoped idempotency reference and persist the submitted ID before polling.
 
 ```python
-registry = gl.get_contract_at(Address(registry_address))
-registry.emit(value=u256(principal), on='finalized').create_escrow(
-    reference, payee_address, terms_url, terms_sha256,
-    delivery_period, review_period, bond_bps,
+amount = escrow.credit_of(account.address)
+recipient = account.address
+before = chain.get_balance(recipient)
+withdrawal_id = escrow.withdraw(amount, recipient, reference='invoice-42-final')
+# Persist withdrawal_id, amount, recipient and before before continuing.
+transfer = escrow.wait_withdrawal(
+    withdrawal_id, recipient=recipient, amount=amount, before_balance=before,
 )
 ```
 
-The asynchronous create call has no synchronous return value. Once it finalizes, the calling contract's address is the payer:
+The contract returns `EMITTED` when it has spent credit and scheduled a finalized transfer. This is not a receipt from the recipient. For account transfers, the SDK follows the exact type-0 child from the book, requires finalized status and its authoritative native-credit flag, and checks destination and amount. Native transfers have no validator decision; Intelligent Contract children and acknowledgement messages must independently reach successful consensus. Serialize withdrawal tracking and retain its parameters.
+
+## Withdraw to an Intelligent Contract
+
+Deploy the provided inbox with the credit owner's address and the book address. The SDK requires the exact published source hash and matching owner/book configuration before contract-mode submission.
 
 ```python
-registry = gl.get_contract_at(Address(registry_address))
-escrow_id = registry.view().find_escrow(gl.message.contract_address.as_hex, reference)
-record = registry.view().get_escrow(escrow_id)
+inbox_id = chain.deploy_contract(
+    code=Path('contracts/payout_inbox.py').read_bytes(),
+    args=[account.address, book_address],
+    leader_only=False,
+)
+inbox_receipt = escrow.wait(inbox_id)
+inbox_address = inbox_receipt.get('contract_address') or inbox_receipt['to_address']
+amount = escrow.credit_of(account.address)
+before = chain.get_balance(inbox_address)
+withdrawal_id = escrow.withdraw(
+    amount, inbox_address, recipient_kind='contract', reference='invoice-42-inbox',
+)
+transfer = escrow.wait_withdrawal(
+    withdrawal_id, recipient=inbox_address, amount=amount, before_balance=before,
+)
+assert transfer['children']
 ```
 
-Keep settlement authority in the calling contract's own access control. A generic public forwarding function would let any user act as that contract's payer or payee. For incoming withdrawals, implement the payable receiver method described above. Use finalized messages for custody transitions and follow child execution rather than assuming that emission means success.
+The owner can later call `withdraw_to_account(amount, recipient)` on the inbox using its signed chain client. Follow that transfer through finality and actual delivery before issuing another inbox withdrawal. Its recovery uses the native balance, including value retained after a rejected callback.
 
-## Application state and transaction receipts
+A preflight view cannot guarantee arbitrary custom receiver execution. The lower-level book supports that interface for advanced integrations, but the default SDK rejects unknown receiver source. `RecipientExecutionFailed` includes both parent and failed child receipts. Do not repeat the parent withdrawal: its credit has already been spent and the recipient may already hold the value. Inspect and recover through the recipient's own custody interface.
 
-The Python binding defaults its views to `latest-final`. Use `finalized=False` only for pending UI previews. Its write methods return a transaction ID without retrying submission. `wait()` requests finalization, checks actual execution success and raises `ExecutionFailed` with the receipt attached if execution failed. A successfully executed payable rejection raises `PaymentRejected` with its explicit result and refund credit. You can request an accepted preview with `wait(tx_id, finalized=False)`, but it remains appealable.
+## Version 1 migration
 
-The core SDK and RPC remain available for inspection, appeal submission and fee handling. This binding targets the pinned SDK and tested Studio deployment. Before using it on a fee-charging network, qualify that network's current transaction fee API, balances, native transfer behavior and receipt semantics.
+Version 2 is a fresh deployment with a breaking API. The earlier published book `0xA9BAc09D9813c890292Cb862323130D4508E7f30` was audited with zero native balance and zero liabilities; no user funds were migrated. Historic transactions remain at that address and in Git history.
 
-A useful application journal records the escrow reference, contract address, chain, operation, transaction ID, expected value, lifecycle status and execution result. Evidence documents and escrow records are public, so do not place credentials, personal secrets or private keys in them.
+Existing applications must deploy a payer-bound v2 book, change payable creation/dispute calls to prepaid nonpayable calls, add explicit payee acceptance, display the deadline fallback, and track finality plus recipient delivery. Do not treat old verification artifacts as evidence for a new source hash or continue funding a superseded address.
