@@ -138,6 +138,17 @@ class Live:
 
     def create(self,label,*,terms="terms.md",delivery_period=3600,review_period=3600):
         reference=self.run+":"+label
+        # Recover a funded creation after an interrupted read without depositing twice.
+        previous=next((entry for entry in self.report["transactions"]
+                       if entry.get("reference")==reference),None)
+        if previous:
+            self.bindings["payer"].wait(previous["transaction_hash"])
+            existing=self.bindings["payer"].find_escrow(self.payer.local_account.address,reference)
+            record=self.bindings["payer"].get_escrow(existing)
+            if record["status"] not in ("FUNDED","DELIVERED","DISPUTED"):
+                raise RuntimeError("Existing test scenario is terminal; reconcile its journal before resuming")
+            print("Recovered open escrow",existing,record["status"],flush=True)
+            return existing
         doc=self.doc(terms)
         # Exercise the shipped builder client for the funded creation.
         time.sleep(2)
@@ -159,11 +170,22 @@ class Live:
 
     def deliver(self,eid,name="delivery-full.md"):
         d=self.doc(name)
+        record=self.read("get_escrow",[eid])
+        if record["delivery"] is not None:
+            assert record["delivery"]["url"]==d.url and record["delivery"]["sha256"]==d.sha256
+            print("Recovered committed delivery",eid,flush=True)
+            return
         self.tx("payee","claim_delivery",[eid,d.url,d.sha256])
 
     def dispute(self,eid,name="dispute-good-faith.md"):
         d=self.doc(name)
-        bond=self.read("get_escrow",[eid])["bond_required"]
+        record=self.read("get_escrow",[eid])
+        bond=record["bond_required"]
+        if record["status"]=="DISPUTED":
+            assert record["dispute"]["url"]==d.url and record["dispute"]["sha256"]==d.sha256
+            assert record["bond_paid"]==bond
+            print("Recovered committed dispute",eid,flush=True)
+            return bond
         self.tx("payer","dispute",[eid,d.url,d.sha256],value=bond)
         return bond
 
