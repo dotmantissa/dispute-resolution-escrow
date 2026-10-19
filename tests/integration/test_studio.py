@@ -321,12 +321,30 @@ def test_06_rebuttal_wrong_bond_replay_and_recovery(live):
 
 
 def test_07_real_protocol_appeal(live):
-    eid=live.create('appeal');live.deliver(eid,'delivery-half.md');live.dispute(eid,'dispute-half.md')
-    receipt=live.tx('outsider','adjudicate',[eid]);txid=receipt['hash']
     if 'appeal_ticket' not in live.report:
-        ticket=live.bindings['payer'].appeal(eid,txid)
-        live.report['appeal_ticket']=ticket.__dict__;live.save();print('appeal submitted',ticket.transaction_id,flush=True)
+        expired=live.report.setdefault('expired_appeal_opportunities',[])
+        for attempt in range(3):
+            label='appeal' if attempt==0 else 'appeal-retry-'+str(attempt)
+            if any(e['label']==label for e in expired):continue
+            eid=live.create(label);live.deliver(eid,'delivery-half.md');live.dispute(eid,'dispute-half.md')
+            receipt=live.tx('outsider','adjudicate',[eid]);txid=receipt['hash']
+            if transaction_status(receipt)!='FINALIZED':
+                try:ticket=live.bindings['payer'].appeal(eid,txid)
+                except ValueError:
+                    receipt=live.payer.get_transaction(transaction_hash=txid)
+                    if transaction_status(receipt)!='FINALIZED':raise
+                else:
+                    live.report['appeal_ticket']=ticket.__dict__;live.save()
+                    print('appeal submitted',ticket.transaction_id,flush=True);break
+            # Gateway downtime can hide the entire provisional appeal window.
+            # Preserve its original result; never pretend a late appeal succeeded.
+            expired.append({'label':label,'escrow_id':eid,'transaction_hash':txid,'observed_state':'FINALIZED'})
+            live.save();print('Appeal opportunity expired before submission:',txid,flush=True)
+            if live.read('get_escrow',[eid])['status']=='DISPUTED':
+                live.tx('payer','offer_settlement',[eid,5000]);live.tx('payee','offer_settlement',[eid,5000])
+        assert 'appeal_ticket' in live.report,'RPC prevented timely appeal submission in three distinct cases'
     ticket=AppealTicket(**live.report['appeal_ticket'])
+    eid=ticket.escrow_id;txid=ticket.transaction_id
     outcome=live.bindings['payer'].wait_appeal(ticket,retries=600,interval=8000)
     assert outcome['appeal_observed'] and outcome['state'] in ('SETTLED','REFUNDED','DISPUTED'),outcome
     assert outcome['escrow']==live.bindings['payer'].get_escrow(eid,finalized=True)
