@@ -1,0 +1,121 @@
+{
+  "version": "2.0.0",
+  "run_id": "aa3d35abc62f",
+  "contract_address": "0x7F4E59ce063474D6949630b6858Ebcb322f652Fb",
+  "source_sha256": "73dcf3b32f7e51b295663c124b0a92b10bbe9df605b31afbd8e17e70566f89df",
+  "network": "studionet",
+  "started_at": 1792447615,
+  "actors": {
+    "payer": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+    "payee": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
+    "outsider": "0x10B55466540e0E24D5733752ED6A843d0D708c8c"
+  },
+  "transactions": [
+    {
+      "operation": "deploy-rejected-deposit-harness",
+      "method": "deploy",
+      "transaction_hash": "0x176f66ade03c607f0afd0cc2f65b47788eb5546612dc25cb2babc71c73561b26",
+      "source_sha256": "73dcf3b32f7e51b295663c124b0a92b10bbe9df605b31afbd8e17e70566f89df",
+      "state": "FINALIZED",
+      "expected": "success",
+      "execution": "SUCCESS",
+      "contract_address": "0x7F4E59ce063474D6949630b6858Ebcb322f652Fb"
+    },
+    {
+      "operation": "funded-rejection",
+      "method": "reject_funded_consensus",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "address": "0x7F4E59ce063474D6949630b6858Ebcb322f652Fb",
+      "transaction_hash": "0x1e92f0f58d88156b49e2553c25444cd3997bb6652df1f83491b554df281256f0",
+      "value": 17,
+      "expected": "revert",
+      "state": "FINALIZED",
+      "execution": "CONSENSUS_REJECTED",
+      "decision": "MAJORITY_DISAGREE",
+      "votes": {
+        "0x6a4179A851B3747A458baD2f089AB2EeFE0eBbAb": "disagree",
+        "0x7bf4Ea55363bbe73A4dd5b3900bf03c978A63b6e": "disagree",
+        "0x8Ce1805d6970d54748dE7160b5b395dCC5c71F44": "idle",
+        "0xad7d13f269CeAd4379E64a1A3a0803a827e70B43": "disagree",
+        "0xf1C7551292319EE334e2D8A24eAC108Bd4C63b21": "idle"
+      }
+    },
+    {
+      "operation": "reconcile-failed-consensus",
+      "method": "reconcile_deposits",
+      "caller": "0x10B55466540e0E24D5733752ED6A843d0D708c8c",
+      "address": "0x7F4E59ce063474D6949630b6858Ebcb322f652Fb",
+      "transaction_hash": "0x11765bc86512d7af72751e9f98287661f50c47b52d23ce9e91af0a6172a7509f",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x17ac0CaefB18205c737e64ee582c9245A28ca1f9": "idle",
+        "0x8a876C3F3a4783Bd123982bcBF3c672dc0239004": "agree",
+        "0x9244De5F20cB75A0c51d79A9A3208D00a99aFc10": "agree",
+        "0xe7eEe8a1c1690b0322d795B80A76ab2Cd1a0eAFd": "agree",
+        "0xf1C7551292319EE334e2D8A24eAC108Bd4C63b21": "idle"
+      }
+    },
+    {
+      "operation": "52d6c6f8768fbcd87070e7111160188c7b59e648c75d2d09aaf1b6a71318ea7d",
+      "method": "withdraw",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "address": "0x7F4E59ce063474D6949630b6858Ebcb322f652Fb",
+      "transaction_hash": "0x8a6a98408b89d7d91fec810b6179517b97a3e807728bf204df884f38917b9c70",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x1242E9f5bf9b253327f130E8802b7b2F438A21Ef": "agree",
+        "0x17ac0CaefB18205c737e64ee582c9245A28ca1f9": "idle",
+        "0x5Bbbd7cdD63c0ba7f088038Cb049bDDAbE4F6fd1": "idle",
+        "0xa21bc502E3578E4b3039be8c59a257198f7c3f19": "agree",
+        "0xf1C7551292319EE334e2D8A24eAC108Bd4C63b21": "agree"
+      }
+    }
+  ],
+  "scenarios": [],
+  "emitted_transactions": [
+    {
+      "transaction_hash": "0xa5eaad576a61c75e8a832e2adafb620a6e29efc76691a1620a866041d05e2a9a",
+      "triggered_by": "0x8a6a98408b89d7d91fec810b6179517b97a3e807728bf204df884f38917b9c70",
+      "state": "FINALIZED",
+      "type": 0,
+      "recipient": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "value": 17,
+      "expected": "success"
+    },
+    {
+      "transaction_hash": "0xd47f02056ca97dfc6d98cf6fd6a4fe0dd21a77d15781839cdbb1b3847191ea6d",
+      "triggered_by": "0x8a6a98408b89d7d91fec810b6179517b97a3e807728bf204df884f38917b9c70",
+      "state": "FINALIZED",
+      "type": 2,
+      "recipient": "0x7F4E59ce063474D6949630b6858Ebcb322f652Fb",
+      "value": 0,
+      "expected": "success"
+    }
+  ],
+  "all_transactions_finalized": true,
+  "complete": true,
+  "production_source_sha256": "ea4af6e7c194a176e33031a65ff7f2357e5c8854156209144a684bdb7dea1951",
+  "harness": "production source plus deliberate all-validator rejection method",
+  "final_accounting": {
+    "accounted_balance": 0,
+    "conserved": true,
+    "escrow_count": 0,
+    "locked_bonds": 0,
+    "locked_principal": 0,
+    "native_balance": 0,
+    "pending_withdrawals": 0,
+    "solvent": true,
+    "total_deposited": 17,
+    "total_withdrawn": 17,
+    "unreconciled_deposits": 0,
+    "withdrawal_credits": 0
+  }
+}

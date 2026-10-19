@@ -1,6 +1,11 @@
 {
   "ctor": {
-    "params": [],
+    "params": [
+      [
+        "funding_owner",
+        "string"
+      ]
+    ],
     "kwparams": {}
   },
   "methods": {
@@ -8,6 +13,34 @@
       "params": [
         [
           "escrow_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "null",
+      "payable": false
+    },
+    "accept_engagement": {
+      "params": [
+        [
+          "escrow_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "null",
+      "payable": false
+    },
+    "acknowledge_withdrawal": {
+      "params": [
+        [
+          "owner",
+          "string"
+        ],
+        [
+          "reference",
           "string"
         ]
       ],
@@ -79,6 +112,10 @@
           "string"
         ],
         [
+          "principal",
+          "int"
+        ],
+        [
           "delivery_period",
           "int"
         ],
@@ -89,12 +126,24 @@
         [
           "bond_bps",
           "int"
+        ],
+        [
+          "response_period",
+          "int"
+        ],
+        [
+          "adjudication_period",
+          "int"
+        ],
+        [
+          "fallback_payee_bps",
+          "int"
         ]
       ],
       "kwparams": {},
       "readonly": false,
-      "ret": "dict",
-      "payable": true
+      "ret": "string",
+      "payable": false
     },
     "credit_of": {
       "params": [
@@ -106,6 +155,13 @@
       "kwparams": {},
       "readonly": true,
       "ret": "int"
+    },
+    "deposit": {
+      "params": [],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "int",
+      "payable": true
     },
     "dispute": {
       "params": [
@@ -120,12 +176,16 @@
         [
           "evidence_sha256",
           "string"
+        ],
+        [
+          "bond",
+          "int"
         ]
       ],
       "kwparams": {},
       "readonly": false,
-      "ret": "dict",
-      "payable": true
+      "ret": "null",
+      "payable": false
     },
     "find_escrow": {
       "params": [
@@ -141,6 +201,18 @@
       "kwparams": {},
       "readonly": true,
       "ret": "string"
+    },
+    "finish_evidence": {
+      "params": [
+        [
+          "escrow_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "null",
+      "payable": false
     },
     "get_accounting": {
       "params": [],
@@ -165,6 +237,21 @@
       "readonly": true,
       "ret": "dict"
     },
+    "get_withdrawal": {
+      "params": [
+        [
+          "owner",
+          "string"
+        ],
+        [
+          "reference",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": true,
+      "ret": "dict"
+    },
     "offer_settlement": {
       "params": [
         [
@@ -179,6 +266,13 @@
       "kwparams": {},
       "readonly": false,
       "ret": "null",
+      "payable": false
+    },
+    "reconcile_deposits": {
+      "params": [],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "int",
       "payable": false
     },
     "refund_undelivered": {
@@ -217,6 +311,38 @@
       "ret": "null",
       "payable": false
     },
+    "resolve_expired_dispute": {
+      "params": [
+        [
+          "escrow_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "null",
+      "payable": false
+    },
+    "submit_evidence": {
+      "params": [
+        [
+          "escrow_id",
+          "string"
+        ],
+        [
+          "evidence_url",
+          "string"
+        ],
+        [
+          "evidence_sha256",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "null",
+      "payable": false
+    },
     "withdraw": {
       "params": [
         [
@@ -230,11 +356,15 @@
         [
           "recipient_kind",
           "string"
+        ],
+        [
+          "reference",
+          "string"
         ]
       ],
       "kwparams": {},
       "readonly": false,
-      "ret": "null",
+      "ret": "dict",
       "payable": false
     }
   }

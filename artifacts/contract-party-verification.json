@@ -1,0 +1,334 @@
+{
+  "version": "2.0.0",
+  "run_id": "6dc55e5e0e81",
+  "contract_address": "0x8bFe262CE35375b557F60aE28497B42F1552780a",
+  "source_sha256": "ea4af6e7c194a176e33031a65ff7f2357e5c8854156209144a684bdb7dea1951",
+  "network": "studionet",
+  "started_at": 1792448514,
+  "actors": {
+    "payer": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+    "payee": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
+    "outsider": "0x10B55466540e0E24D5733752ED6A843d0D708c8c"
+  },
+  "transactions": [
+    {
+      "operation": "deploy-party",
+      "method": "deploy",
+      "transaction_hash": "0x674166a832a91232fc0e9d327a39be2b5811f7a57d157f973d94378d8b99dd68",
+      "source_sha256": "144fdba826f0192b062def36ebadcc0d2b8641a5b55b1d81b65a232dc298fbd8",
+      "state": "FINALIZED",
+      "expected": "success",
+      "execution": "SUCCESS",
+      "contract_address": "0xb4e4BA7c83f8339D78e3061794C936d17620d6f6"
+    },
+    {
+      "operation": "deploy-party-book",
+      "method": "deploy",
+      "transaction_hash": "0x6067f82dad56bb9fff9a0eb3c2bc7f3ca0c4fa48c7a91351534715bd4c05ab79",
+      "source_sha256": "ea4af6e7c194a176e33031a65ff7f2357e5c8854156209144a684bdb7dea1951",
+      "state": "FINALIZED",
+      "expected": "success",
+      "execution": "SUCCESS",
+      "contract_address": "0x8bFe262CE35375b557F60aE28497B42F1552780a"
+    },
+    {
+      "operation": "f246c8eaddf4d403e1a43bcd9f4aab7b739c70f7cee0c99f9d07e879fb72ff62",
+      "method": "configure",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "address": "0xb4e4BA7c83f8339D78e3061794C936d17620d6f6",
+      "transaction_hash": "0xc4552ad327a4358dea59141aff41725b097eaca1296cdf4a2ffa490239e88059",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x1242E9f5bf9b253327f130E8802b7b2F438A21Ef": "agree",
+        "0x40533175AfBbAee2c030F88259Afb5aEDbCF0E05": "agree",
+        "0x6a4179A851B3747A458baD2f089AB2EeFE0eBbAb": "agree",
+        "0xb0925568bFbCF00aADBcA053E6D0E1628ff3d530": "agree",
+        "0xf1C7551292319EE334e2D8A24eAC108Bd4C63b21": "agree"
+      }
+    },
+    {
+      "operation": "party-deposit",
+      "method": "deposit",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "address": "0x8bFe262CE35375b557F60aE28497B42F1552780a",
+      "transaction_hash": "0x10bb007a212ec806b43c4ca5891ecd453598c831cecbd696713b803f518a502d",
+      "value": 10018,
+      "expected": "success",
+      "state": "FINALIZED",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x2FcBC452425f2F1e102c5c04b4331fcB46ee1c00": "agree",
+        "0x5Bbbd7cdD63c0ba7f088038Cb049bDDAbE4F6fd1": "agree",
+        "0x6a4179A851B3747A458baD2f089AB2EeFE0eBbAb": "agree",
+        "0x9244De5F20cB75A0c51d79A9A3208D00a99aFc10": "agree",
+        "0xad7d13f269CeAd4379E64a1A3a0803a827e70B43": "agree"
+      }
+    },
+    {
+      "operation": "26b8ba1b14a32e1c51bf99a52949f4eea264f97e355c5c138b6276c76fefc356",
+      "method": "create",
+      "caller": "0x10B55466540e0E24D5733752ED6A843d0D708c8c",
+      "address": "0xb4e4BA7c83f8339D78e3061794C936d17620d6f6",
+      "transaction_hash": "0x99a943e91ed46162720b6a2e1346ae3c0dc40f7da4a8b91c7c8f771350e0a8ef",
+      "value": 0,
+      "expected": "revert",
+      "state": "FINALIZED",
+      "execution": "ERROR",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x1242E9f5bf9b253327f130E8802b7b2F438A21Ef": "idle",
+        "0x8a876C3F3a4783Bd123982bcBF3c672dc0239004": "agree",
+        "0x9244De5F20cB75A0c51d79A9A3208D00a99aFc10": "agree",
+        "0xa21bc502E3578E4b3039be8c59a257198f7c3f19": "agree",
+        "0xe7eEe8a1c1690b0322d795B80A76ab2Cd1a0eAFd": "idle"
+      },
+      "error": "[EXPECTED] Only party owner"
+    },
+    {
+      "operation": "30234980909cf06fce6237cd1f2c7d2fc0ff40b7ccdd5624d67a91366852f79d",
+      "method": "create",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "address": "0xb4e4BA7c83f8339D78e3061794C936d17620d6f6",
+      "transaction_hash": "0x4bc86be6cea8458c3011be224997158447e6418183efe4986a1eb93dc5263d80",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x2FcBC452425f2F1e102c5c04b4331fcB46ee1c00": "idle",
+        "0x6a4179A851B3747A458baD2f089AB2EeFE0eBbAb": "agree",
+        "0x9244De5F20cB75A0c51d79A9A3208D00a99aFc10": "idle",
+        "0xa21bc502E3578E4b3039be8c59a257198f7c3f19": "agree",
+        "0xad7d13f269CeAd4379E64a1A3a0803a827e70B43": "agree"
+      }
+    },
+    {
+      "operation": "7d75071f7f64effaeb1ddd74b024a2eeaac2b8e0be6c74bd5e78822903a028d3",
+      "method": "accept_delivery",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "address": "0x8bFe262CE35375b557F60aE28497B42F1552780a",
+      "transaction_hash": "0xf99f2626abea193d4cea3af30b5c39094141b26c20e3957f73382920fb3f6929",
+      "value": 0,
+      "expected": "revert",
+      "state": "FINALIZED",
+      "execution": "ERROR",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x1dEcE6A694520b1d3a2e24b9f28500858C756BDb": "idle",
+        "0x40533175AfBbAee2c030F88259Afb5aEDbCF0E05": "agree",
+        "0x7bf4Ea55363bbe73A4dd5b3900bf03c978A63b6e": "agree",
+        "0x8Ce1805d6970d54748dE7160b5b395dCC5c71F44": "agree",
+        "0x8a876C3F3a4783Bd123982bcBF3c672dc0239004": "idle"
+      },
+      "error": "[EXPECTED] Only payer"
+    },
+    {
+      "operation": "41dbe7cd5bf5480e329b6abb78814be99fae2ca7ec0c841f5d03cb7e8ed87fc9",
+      "method": "accept_engagement",
+      "caller": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
+      "address": "0x8bFe262CE35375b557F60aE28497B42F1552780a",
+      "transaction_hash": "0x2babad71a6dcd2f24882760b1ff982b0198a6796222c5c92f787f135e748e95a",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x7bf4Ea55363bbe73A4dd5b3900bf03c978A63b6e": "idle",
+        "0x892C437da9b9CA0b6017B6f046F58E3526B46ec6": "agree",
+        "0xA712cB25a4002666FA9D09477251f238dD9e06b3": "agree",
+        "0xad7d13f269CeAd4379E64a1A3a0803a827e70B43": "agree",
+        "0xf1C7551292319EE334e2D8A24eAC108Bd4C63b21": "idle"
+      }
+    },
+    {
+      "operation": "e8ac96c26de7d63a804a87cedd5673f1568d7052d62e4056df19823550558568",
+      "method": "claim_delivery",
+      "caller": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
+      "address": "0x8bFe262CE35375b557F60aE28497B42F1552780a",
+      "transaction_hash": "0xe2f8d727303d3c59c279c6faad7f5a11fa10580f494031f8923b8e675fb1794b",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x0B50B270Eba5D9B780272C4Cf4720260177e761D": "agree",
+        "0x1dEcE6A694520b1d3a2e24b9f28500858C756BDb": "idle",
+        "0x6a4179A851B3747A458baD2f089AB2EeFE0eBbAb": "agree",
+        "0x9244De5F20cB75A0c51d79A9A3208D00a99aFc10": "idle",
+        "0xa21bc502E3578E4b3039be8c59a257198f7c3f19": "agree"
+      }
+    },
+    {
+      "operation": "14b06d17d812d4ea6fb85c245eba9d517151ed3104db402f1d6933e456fd0f0a",
+      "method": "accept_delivery",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "address": "0xb4e4BA7c83f8339D78e3061794C936d17620d6f6",
+      "transaction_hash": "0x8eef97663413fd22b97625bc10f5003481197a791ef707710ccb26cd33e26d5b",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x17ac0CaefB18205c737e64ee582c9245A28ca1f9": "agree",
+        "0x40533175AfBbAee2c030F88259Afb5aEDbCF0E05": "agree",
+        "0x5Bbbd7cdD63c0ba7f088038Cb049bDDAbE4F6fd1": "agree",
+        "0x9244De5F20cB75A0c51d79A9A3208D00a99aFc10": "agree",
+        "0xad7d13f269CeAd4379E64a1A3a0803a827e70B43": "agree"
+      }
+    },
+    {
+      "operation": "786f4f048ad85f14242b871eb64c64e11f1ef2dec638db4fe6e9aa5c22edf4d5",
+      "method": "withdraw",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "address": "0xb4e4BA7c83f8339D78e3061794C936d17620d6f6",
+      "transaction_hash": "0xc519d02f5506d2aea64e0219326f93ff2587fd15163f936d68efe6daa8542c2d",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x1242E9f5bf9b253327f130E8802b7b2F438A21Ef": "idle",
+        "0x17ac0CaefB18205c737e64ee582c9245A28ca1f9": "agree",
+        "0x40533175AfBbAee2c030F88259Afb5aEDbCF0E05": "agree",
+        "0x5Bbbd7cdD63c0ba7f088038Cb049bDDAbE4F6fd1": "idle",
+        "0xA712cB25a4002666FA9D09477251f238dD9e06b3": "agree"
+      }
+    },
+    {
+      "operation": "706f2e72f3f118d409ab87c4ae6a7cab5390fab5b3da8b8054ac68ee3b719f18",
+      "method": "withdraw",
+      "caller": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
+      "address": "0x8bFe262CE35375b557F60aE28497B42F1552780a",
+      "transaction_hash": "0xeff050402ec2f6146b278becf208357ce319d572b10f9d65a1d28ba2fc6f8b75",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x0B50B270Eba5D9B780272C4Cf4720260177e761D": "agree",
+        "0x1242E9f5bf9b253327f130E8802b7b2F438A21Ef": "agree",
+        "0x17ac0CaefB18205c737e64ee582c9245A28ca1f9": "agree",
+        "0x5Bbbd7cdD63c0ba7f088038Cb049bDDAbE4F6fd1": "agree",
+        "0xf29b6947ed298d139FC2655DB15D868C9AbB3091": "agree"
+      }
+    }
+  ],
+  "scenarios": [],
+  "child_transactions": [
+    {
+      "transaction_hash": "0x31572b8f3ca5f164a8880445bee199119ce9ef73f94e0c5e78afe0ecc7089116",
+      "success": true,
+      "decision": "MAJORITY_AGREE",
+      "value": 0,
+      "recipient": "0x8bFe262CE35375b557F60aE28497B42F1552780a"
+    },
+    {
+      "transaction_hash": "0x3e632ff286879dcca7bee0b65f45dceb025944766c276beb6386ec161cf531f5",
+      "success": true,
+      "decision": "MAJORITY_AGREE",
+      "value": 0,
+      "recipient": "0x8bFe262CE35375b557F60aE28497B42F1552780a"
+    },
+    {
+      "transaction_hash": "0x404b0f2925254a6089909cf09739703dcd4ef664228f729e85e3ea59215313e2",
+      "success": true,
+      "decision": "MAJORITY_AGREE",
+      "value": 0,
+      "recipient": "0x8bFe262CE35375b557F60aE28497B42F1552780a"
+    }
+  ],
+  "emitted_transactions": [
+    {
+      "transaction_hash": "0x31572b8f3ca5f164a8880445bee199119ce9ef73f94e0c5e78afe0ecc7089116",
+      "triggered_by": "0x4bc86be6cea8458c3011be224997158447e6418183efe4986a1eb93dc5263d80",
+      "state": "FINALIZED",
+      "type": 2,
+      "recipient": "0x8bFe262CE35375b557F60aE28497B42F1552780a",
+      "value": 0,
+      "expected": "success"
+    },
+    {
+      "transaction_hash": "0x3e632ff286879dcca7bee0b65f45dceb025944766c276beb6386ec161cf531f5",
+      "triggered_by": "0x8eef97663413fd22b97625bc10f5003481197a791ef707710ccb26cd33e26d5b",
+      "state": "FINALIZED",
+      "type": 2,
+      "recipient": "0x8bFe262CE35375b557F60aE28497B42F1552780a",
+      "value": 0,
+      "expected": "success"
+    },
+    {
+      "transaction_hash": "0x404b0f2925254a6089909cf09739703dcd4ef664228f729e85e3ea59215313e2",
+      "triggered_by": "0xc519d02f5506d2aea64e0219326f93ff2587fd15163f936d68efe6daa8542c2d",
+      "state": "FINALIZED",
+      "type": 2,
+      "recipient": "0x8bFe262CE35375b557F60aE28497B42F1552780a",
+      "value": 0,
+      "expected": "success"
+    },
+    {
+      "transaction_hash": "0x594cee473cb2236d17ba3ce8f8f1d08376b43b3bf278f807d1c7d15821698298",
+      "triggered_by": "0xeff050402ec2f6146b278becf208357ce319d572b10f9d65a1d28ba2fc6f8b75",
+      "state": "FINALIZED",
+      "type": 0,
+      "recipient": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
+      "value": 10001,
+      "expected": "success"
+    },
+    {
+      "transaction_hash": "0x593cea87bf33c566558b52c2ff6fb58e013c8c65cb4f5dc875793c402c705ab7",
+      "triggered_by": "0xeff050402ec2f6146b278becf208357ce319d572b10f9d65a1d28ba2fc6f8b75",
+      "state": "FINALIZED",
+      "type": 2,
+      "recipient": "0x8bFe262CE35375b557F60aE28497B42F1552780a",
+      "value": 0,
+      "expected": "success"
+    },
+    {
+      "transaction_hash": "0x142aa48ba3cf57f86559c00346d499dea956fde356c828f2372b363c7a8550f3",
+      "triggered_by": "0x404b0f2925254a6089909cf09739703dcd4ef664228f729e85e3ea59215313e2",
+      "state": "FINALIZED",
+      "type": 0,
+      "recipient": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "value": 17,
+      "expected": "success"
+    },
+    {
+      "transaction_hash": "0x8bd73d9a4db0b34df85ce1654a2d599416f1e2a517978e162155706a214b8a4d",
+      "triggered_by": "0x404b0f2925254a6089909cf09739703dcd4ef664228f729e85e3ea59215313e2",
+      "state": "FINALIZED",
+      "type": 2,
+      "recipient": "0x8bFe262CE35375b557F60aE28497B42F1552780a",
+      "value": 0,
+      "expected": "success"
+    }
+  ],
+  "all_transactions_finalized": true,
+  "complete": true,
+  "actor_address": "0xb4e4BA7c83f8339D78e3061794C936d17620d6f6",
+  "escrow_id": "1",
+  "final_accounting": {
+    "accounted_balance": 0,
+    "conserved": true,
+    "escrow_count": 1,
+    "locked_bonds": 0,
+    "locked_principal": 0,
+    "native_balance": 0,
+    "pending_withdrawals": 0,
+    "solvent": true,
+    "total_deposited": 10018,
+    "total_withdrawn": 10018,
+    "unreconciled_deposits": 0,
+    "withdrawal_credits": 0
+  }
+}
