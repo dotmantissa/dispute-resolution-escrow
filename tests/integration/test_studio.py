@@ -121,7 +121,7 @@ class Live:
         print(method,txid,flush=True)
         receipt=client.wait_for_transaction_receipt(transaction_hash=txid,
                     status=TransactionStatus.FINALIZED if method=="withdraw" else TransactionStatus.ACCEPTED,
-                    interval=6000,retries=150)
+                    interval=6000,retries=150,full_transaction=True)
         success=execution_succeeded(receipt)
         votes=receipt.get("consensus_data",{}).get("votes",{})
         entry.update(state="FINALIZED" if method=="withdraw" else "ACCEPTED",execution="SUCCESS" if success else "REVERT",

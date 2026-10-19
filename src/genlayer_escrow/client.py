@@ -3,6 +3,7 @@
 import base64
 from dataclasses import dataclass
 import hashlib
+import json
 import re
 import urllib.request
 
@@ -39,6 +40,8 @@ def payment_result(receipt: dict):
     try:
         if isinstance(payload, dict) and isinstance(payload.get("raw"), list):
             value = calldata.decode(bytes(payload["raw"]))
+        elif isinstance(payload, dict) and isinstance(payload.get("readable"), str):
+            value = json.loads(payload["readable"])
         elif isinstance(result.get("raw"), str):
             raw = base64.b64decode(result["raw"])
             if not raw or raw[0] != 0:
@@ -125,7 +128,7 @@ class EscrowClient:
         receipt = self.client.wait_for_transaction_receipt(
             transaction_hash=transaction_id,
             status=TransactionStatus.FINALIZED if finalized else TransactionStatus.ACCEPTED,
-            retries=retries, interval=interval)
+            retries=retries, interval=interval, full_transaction=True)
         if not execution_succeeded(receipt):
             raise ExecutionFailed(receipt)
         outcome = payment_result(receipt)

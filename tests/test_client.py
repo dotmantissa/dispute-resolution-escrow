@@ -77,3 +77,10 @@ def test_payment_result_decodes_rejected_credit_without_calling_it_execution_fai
     assert payment_result(receipt)==value
     error=PaymentRejected(receipt,value)
     assert error.refund_credit==1001 and error.result==value and error.receipt is receipt
+
+
+def test_payment_result_decodes_simplified_sdk_receipt():
+    from genlayer_escrow import payment_result
+    value={"accepted":False,"method":"create_escrow","escrow_id":"","refund_credit":17,"error":"Hash mismatch"}
+    receipt={"consensus_data":{"leader_receipt":[{"execution_result":"SUCCESS","result":{"payload":{"readable":json.dumps(value)}}}]}}
+    assert payment_result(receipt)==value
