@@ -1,0 +1,143 @@
+{
+  "run_id": "530b9726ba40",
+  "network": "studionet",
+  "contract_address": "0xA9BAc09D9813c890292Cb862323130D4508E7f30",
+  "source_sha256": "5bfd2f5f39ca81af72f6d2a0162e402382b918a19aab25fedc9b7ec5415ed7e5",
+  "started_at": 1792415250,
+  "actors": {
+    "payer": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+    "payee": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
+    "outsider": "0x10B55466540e0E24D5733752ED6A843d0D708c8c"
+  },
+  "transactions": [
+    {
+      "method": "create_escrow",
+      "transaction_hash": "0xfed7e2f75bce94bec46ddf6901ea4694cfe5817b2a54350069fc0853c83dc420",
+      "reference": "530b9726ba40:changed-origin",
+      "value": 10001,
+      "state": "FINALIZED",
+      "execution": "SUCCESS",
+      "votes": {
+        "0x1242E9f5bf9b253327f130E8802b7b2F438A21Ef": "agree",
+        "0x17ac0CaefB18205c737e64ee582c9245A28ca1f9": "agree",
+        "0x892C437da9b9CA0b6017B6f046F58E3526B46ec6": "idle",
+        "0x8Ce1805d6970d54748dE7160b5b395dCC5c71F44": "agree",
+        "0x8a876C3F3a4783Bd123982bcBF3c672dc0239004": "idle"
+      },
+      "finalized_execution": "SUCCESS"
+    },
+    {
+      "method": "claim_delivery",
+      "caller": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
+      "transaction_hash": "0x826dcbfe3e90db78887794f11eb33e80259f1e0fa6f13e29cfb15500a3200166",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "execution": "SUCCESS",
+      "votes": {
+        "0x40533175AfBbAee2c030F88259Afb5aEDbCF0E05": "idle",
+        "0x892C437da9b9CA0b6017B6f046F58E3526B46ec6": "agree",
+        "0x8a876C3F3a4783Bd123982bcBF3c672dc0239004": "idle",
+        "0x9244De5F20cB75A0c51d79A9A3208D00a99aFc10": "agree",
+        "0xe7eEe8a1c1690b0322d795B80A76ab2Cd1a0eAFd": "agree"
+      },
+      "agree_count": 3,
+      "finalized_execution": "SUCCESS"
+    },
+    {
+      "method": "dispute",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "transaction_hash": "0xbe5c86e19bf79f47e34ca41a77c81dbc614def905f081ee0ae8d52704f77446d",
+      "value": 1001,
+      "expected": "success",
+      "state": "FINALIZED",
+      "execution": "SUCCESS",
+      "votes": {
+        "0x40533175AfBbAee2c030F88259Afb5aEDbCF0E05": "idle",
+        "0x892C437da9b9CA0b6017B6f046F58E3526B46ec6": "agree",
+        "0xa21bc502E3578E4b3039be8c59a257198f7c3f19": "agree",
+        "0xad7d13f269CeAd4379E64a1A3a0803a827e70B43": "idle",
+        "0xf1C7551292319EE334e2D8A24eAC108Bd4C63b21": "agree"
+      },
+      "agree_count": 3,
+      "finalized_execution": "SUCCESS"
+    },
+    {
+      "method": "adjudicate",
+      "caller": "0x10B55466540e0E24D5733752ED6A843d0D708c8c",
+      "transaction_hash": "0x515d922a262cfb1c7450fefe30c66f5952d4f35af57a5c5a3a97a5ef736dbadf",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "execution": "SUCCESS",
+      "votes": {
+        "0x0B50B270Eba5D9B780272C4Cf4720260177e761D": "agree",
+        "0x1242E9f5bf9b253327f130E8802b7b2F438A21Ef": "idle",
+        "0x1dEcE6A694520b1d3a2e24b9f28500858C756BDb": "idle",
+        "0xad7d13f269CeAd4379E64a1A3a0803a827e70B43": "agree",
+        "0xe7eEe8a1c1690b0322d795B80A76ab2Cd1a0eAFd": "agree"
+      },
+      "agree_count": 3,
+      "finalized_execution": "SUCCESS"
+    },
+    {
+      "method": "withdraw",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "transaction_hash": "0x8f88ab14e7e4eb6a281cdd40585c299f635ef83a3157b5b719183d2fa805573e",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "execution": "SUCCESS",
+      "votes": {
+        "0x40533175AfBbAee2c030F88259Afb5aEDbCF0E05": "agree",
+        "0x9244De5F20cB75A0c51d79A9A3208D00a99aFc10": "agree",
+        "0xA712cB25a4002666FA9D09477251f238dD9e06b3": "agree",
+        "0xb0925568bFbCF00aADBcA053E6D0E1628ff3d530": "agree",
+        "0xf1C7551292319EE334e2D8A24eAC108Bd4C63b21": "agree"
+      },
+      "agree_count": 5
+    },
+    {
+      "method": "withdraw",
+      "caller": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
+      "transaction_hash": "0x5efb101f74a8c42055232f0febf17c444e8ec0594c9d9f0f46c922ef301a8347",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "execution": "SUCCESS",
+      "votes": {
+        "0x5Bbbd7cdD63c0ba7f088038Cb049bDDAbE4F6fd1": "idle",
+        "0xa21bc502E3578E4b3039be8c59a257198f7c3f19": "idle",
+        "0xe7eEe8a1c1690b0322d795B80A76ab2Cd1a0eAFd": "agree",
+        "0xf1C7551292319EE334e2D8A24eAC108Bd4C63b21": "agree",
+        "0xf29b6947ed298d139FC2655DB15D868C9AbB3091": "agree"
+      },
+      "agree_count": 3
+    }
+  ],
+  "scenarios": [],
+  "mutable_gist": "https://gist.github.com/dotmantissa/830ffb3b9e1afd78a8e81be271c53bc1",
+  "all_transactions_finalized": true,
+  "complete": true,
+  "finished_at": 1792415509,
+  "escrow_id": "12",
+  "origin_changed": true,
+  "origin_deleted": true,
+  "original_snapshots_preserved": true,
+  "final_accounting": {
+    "accounted_balance": 0,
+    "conserved": true,
+    "escrow_count": 12,
+    "locked_bonds": 0,
+    "locked_principal": 0,
+    "total_deposited": 139038,
+    "total_withdrawn": 139038,
+    "withdrawal_credits": 0
+  },
+  "assessment": {
+    "conclusive": true,
+    "payee_bps": 5000,
+    "payer_bad_faith": false,
+    "reason": "Original terms define four independently priced sections, each earning exactly 25%. Delivery evidence contains Installation with the exact required command and Funding stating create_escrow is payable and native GEN value is principal, satisfying sections 1 and 2. Dispute and Withdrawal sections are absent, and the delivery text itself acknowledges they were not written; payer also confirms only two sections delivered and accepts 50% earned. No evidence supports bad faith; payer's position matches the terms and delivered work. Award 2 of 4 sections = 50% = 5000 bps."
+  }
+}

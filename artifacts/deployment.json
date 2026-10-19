@@ -1,0 +1,20 @@
+{
+  "network": "studionet",
+  "rpc": "https://studio.genlayer.com/api",
+  "deployer": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+  "source": "contracts/dispute_escrow.py",
+  "source_sha256": "5bfd2f5f39ca81af72f6d2a0162e402382b918a19aab25fedc9b7ec5415ed7e5",
+  "transaction_hash": "0xbfdd2029b19685f6574b81d41c5142c9a104659c23f6dc1b1ff38fa8e44d889e",
+  "state": "FINALIZED",
+  "contract_address": "0xA9BAc09D9813c890292Cb862323130D4508E7f30",
+  "explorer_url": "https://explorer-studio.genlayer.com/address/0xA9BAc09D9813c890292Cb862323130D4508E7f30",
+  "execution_result": "SUCCESS",
+  "verified_at": 1792412177,
+  "votes": {
+    "0x17ac0CaefB18205c737e64ee582c9245A28ca1f9": "agree",
+    "0x8Ce1805d6970d54748dE7160b5b395dCC5c71F44": "agree",
+    "0x9244De5F20cB75A0c51d79A9A3208D00a99aFc10": "agree",
+    "0xb0925568bFbCF00aADBcA053E6D0E1628ff3d530": "agree",
+    "0xf29b6947ed298d139FC2655DB15D868C9AbB3091": "agree"
+  }
+}

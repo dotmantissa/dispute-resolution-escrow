@@ -85,6 +85,8 @@ The payer and payee use separate signed clients. [The integration guide](docs/IN
 
 ## Verify
 
+[The verification record](docs/VERIFICATION.md) describes the 148 passing local cases, completed Studio scenarios, finalized transaction journals and exact native-value balances.
+
 ```bash
 genvm-lint check contracts/dispute_escrow.py
 genvm-lint check tests/integration/contracts/value_receiver.py

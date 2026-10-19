@@ -1,0 +1,32 @@
+{
+  "python": "3.14.4",
+  "packages": {
+    "genlayer-py": "0.16.3",
+    "genlayer-test": "0.29.2",
+    "genvm-linter": "0.11.0",
+    "pytest": "9.1.1"
+  },
+  "contract_source_sha256": "5bfd2f5f39ca81af72f6d2a0162e402382b918a19aab25fedc9b7ec5415ed7e5",
+  "commands": [
+    {
+      "command": "genvm-lint check contracts/dispute_escrow.py --json",
+      "result": "passed",
+      "note": "Pinned runtime verified on Studio; informational newer-runner notice."
+    },
+    {
+      "command": "genvm-lint check tests/integration/contracts/value_receiver.py --json",
+      "result": "passed"
+    },
+    {
+      "command": "pytest tests/direct tests/test_client.py -q --tb=short",
+      "result": "148 passed",
+      "direct_cases": 118,
+      "client_cases": 30,
+      "duration_seconds": 16.22
+    },
+    {
+      "command": "pip wheel . --no-deps; install wheel in independent venv and verify public API",
+      "result": "passed"
+    }
+  ]
+}

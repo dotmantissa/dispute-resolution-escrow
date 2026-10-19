@@ -1,0 +1,241 @@
+{
+  "ctor": {
+    "params": [],
+    "kwparams": {}
+  },
+  "methods": {
+    "accept_delivery": {
+      "params": [
+        [
+          "escrow_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "null",
+      "payable": false
+    },
+    "adjudicate": {
+      "params": [
+        [
+          "escrow_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "dict",
+      "payable": false
+    },
+    "cancel_offer": {
+      "params": [
+        [
+          "escrow_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "null",
+      "payable": false
+    },
+    "claim_delivery": {
+      "params": [
+        [
+          "escrow_id",
+          "string"
+        ],
+        [
+          "evidence_url",
+          "string"
+        ],
+        [
+          "evidence_sha256",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "null",
+      "payable": false
+    },
+    "create_escrow": {
+      "params": [
+        [
+          "reference",
+          "string"
+        ],
+        [
+          "payee",
+          "string"
+        ],
+        [
+          "terms_url",
+          "string"
+        ],
+        [
+          "terms_sha256",
+          "string"
+        ],
+        [
+          "delivery_period",
+          "int"
+        ],
+        [
+          "review_period",
+          "int"
+        ],
+        [
+          "bond_bps",
+          "int"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "dict",
+      "payable": true
+    },
+    "credit_of": {
+      "params": [
+        [
+          "owner",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": true,
+      "ret": "int"
+    },
+    "dispute": {
+      "params": [
+        [
+          "escrow_id",
+          "string"
+        ],
+        [
+          "evidence_url",
+          "string"
+        ],
+        [
+          "evidence_sha256",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "dict",
+      "payable": true
+    },
+    "find_escrow": {
+      "params": [
+        [
+          "payer",
+          "string"
+        ],
+        [
+          "reference",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": true,
+      "ret": "string"
+    },
+    "get_accounting": {
+      "params": [],
+      "kwparams": {},
+      "readonly": true,
+      "ret": "dict"
+    },
+    "get_config": {
+      "params": [],
+      "kwparams": {},
+      "readonly": true,
+      "ret": "dict"
+    },
+    "get_escrow": {
+      "params": [
+        [
+          "escrow_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": true,
+      "ret": "dict"
+    },
+    "offer_settlement": {
+      "params": [
+        [
+          "escrow_id",
+          "string"
+        ],
+        [
+          "payee_bps",
+          "int"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "null",
+      "payable": false
+    },
+    "refund_undelivered": {
+      "params": [
+        [
+          "escrow_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "null",
+      "payable": false
+    },
+    "reject_escrow": {
+      "params": [
+        [
+          "escrow_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "null",
+      "payable": false
+    },
+    "release_expired": {
+      "params": [
+        [
+          "escrow_id",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "null",
+      "payable": false
+    },
+    "withdraw": {
+      "params": [
+        [
+          "amount",
+          "int"
+        ],
+        [
+          "recipient",
+          "string"
+        ],
+        [
+          "recipient_kind",
+          "string"
+        ]
+      ],
+      "kwparams": {},
+      "readonly": false,
+      "ret": "null",
+      "payable": false
+    }
+  }
+}
