@@ -6,9 +6,9 @@ A successful dispute can refund all or part of the principal. A clearly bad-fait
 
 ## Deployed contract
 
-Studio contract: [`0x927618F84379DF9cd8657eFB549D8b2d56794eEe`](https://explorer-studio.genlayer.com/address/0x927618F84379DF9cd8657eFB549D8b2d56794eEe).
+Studio contract: [`0xA9BAc09D9813c890292Cb862323130D4508E7f30`](https://explorer-studio.genlayer.com/address/0xA9BAc09D9813c890292Cb862323130D4508E7f30).
 
-Deployment transaction: [`0xe952775f0aeb73179b629abfd681ae6c5e2499e23188d2d46fae17f61143a418`](https://explorer-studio.genlayer.com/tx/0xe952775f0aeb73179b629abfd681ae6c5e2499e23188d2d46fae17f61143a418).
+Deployment transaction: [`0xbfdd2029b19685f6574b81d41c5142c9a104659c23f6dc1b1ff38fa8e44d889e`](https://explorer-studio.genlayer.com/tx/0xbfdd2029b19685f6574b81d41c5142c9a104659c23f6dc1b1ff38fa8e44d889e).
 
 The address, transaction, source hash and finalized execution result are recorded in [artifacts/deployment.json](artifacts/deployment.json). [artifacts/schema.json](artifacts/schema.json) contains the deployed interface. The explorer link is included in the manifest.
 
@@ -22,6 +22,7 @@ Studio uses database-backed balances and test GEN. It supports the native-value 
 - Immutable snapshots that preserve the agreement if a public source changes or disappears.
 - Independent validator assessment with exact agreement on the payout share and bad-faith finding.
 - Delivery deadlines, review windows, voluntary acceptance, negotiated settlement and withdrawals.
+- Explicit payable acceptance results and sender-owned credits for rejected payments.
 - An installable Python binding that uses the real GenLayer SDK and defaults to finalized reads.
 
 ## Install
@@ -77,6 +78,8 @@ escrow_id = escrow.find_escrow(account.address, 'marketplace-order-1842')
 record = escrow.get_escrow(escrow_id)
 assert record['status'] == 'FUNDED'
 ```
+
+Supported payable calls return an explicit acceptance result. A rejected request creates a withdrawal credit for all attached value. The binding raises `PaymentRejected` after successful execution of that refund-credit path; inspect its `refund_credit` and withdraw normally.
 
 The payer and payee use separate signed clients. [The integration guide](docs/INTEGRATION.md) covers the complete workflow, payable calls, contract recipients, retries, finality and cross-contract use. [The technical reference](docs/TECHNICAL.md) specifies every method and financial rule. [The architecture](docs/ARCHITECTURE.md) explains the consensus boundary and failure paths.
 

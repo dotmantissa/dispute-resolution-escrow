@@ -17,7 +17,7 @@ import pytest
 from genlayer_py import create_account, create_client
 from genlayer_py.chains import studionet
 from genlayer_py.types import TransactionStatus
-from genlayer_escrow import Document, EscrowClient, execution_succeeded
+from genlayer_escrow import Document, EscrowClient, execution_succeeded, payment_result, PaymentRejected
 from tests.integration.transport import attach_transport
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -115,7 +115,7 @@ class Live:
         txid=client.write_contract(address=address or self.address,function_name=method,
                                   args=args,value=value,leader_only=False)
         entry={"method":method,"caller":client.local_account.address,"transaction_hash":txid,
-               "value":value,"expected":"revert" if error else "success","state":"SUBMITTED"}
+               "value":value,"expected":("payment_rejection" if method in ("create_escrow","dispute") else "revert") if error else "success","state":"SUBMITTED"}
         self.report["transactions"].append(entry)
         self.save()
         print(method,txid,flush=True)
@@ -129,7 +129,14 @@ class Live:
         if not success:
             entry["error"]=failure_text(receipt)
         self.save()
-        if error:
+        if error and method in ("create_escrow","dispute"):
+            assert success,receipt
+            outcome=payment_result(receipt)
+            assert outcome is not None and not outcome["accepted"],receipt
+            assert error in outcome["error"] and outcome["refund_credit"]==value,outcome
+            entry["payment_result"]=outcome
+            self.save()
+        elif error:
             assert not success,receipt
             assert error in failure_text(receipt),failure_text(receipt)
         else:
@@ -199,7 +206,7 @@ class Live:
                 transaction_hash=entry["transaction_hash"],status=TransactionStatus.FINALIZED,
                 interval=12000,retries=90)
             succeeded=execution_succeeded(receipt)
-            assert succeeded==(entry.get("expected","success")=="success"),receipt
+            assert succeeded==(entry.get("expected","success")!="revert"),receipt
             entry["state"]="FINALIZED"
             entry["finalized_execution"]="SUCCESS" if succeeded else "REVERT"
             self.save()
@@ -265,7 +272,8 @@ def test_03_real_validator_adjudication(live,label,delivery,dispute,share,bad):
     live.deliver(eid,delivery)
     bond=live.dispute(eid,dispute)
     assert live.read("get_escrow",[eid])["status"]=="DISPUTED"
-    live.tx("outsider","release_expired",[eid],error="DELIVERED")
+    if label=="partial":
+        live.tx("outsider","release_expired",[eid],error="DELIVERED")
     receipt=live.tx("outsider","adjudicate",[eid])
     votes=receipt.get("consensus_data",{}).get("votes",{})
     assert len(votes)>=3 and sum(str(v).lower()=="agree" for v in votes.values())>=3,votes
@@ -275,7 +283,8 @@ def test_03_real_validator_adjudication(live,label,delivery,dispute,share,bad):
     payee=PRINCIPAL*share//10000+(bond if bad else 0)
     assert r["payee_credit"]==payee and r["payer_credit"]==PRINCIPAL+bond-payee
     assert r["assessment_count"]==1
-    live.tx("outsider","adjudicate",[eid],error="DISPUTED")
+    if label=="partial":
+        live.tx("outsider","adjudicate",[eid],error="DISPUTED")
     live.check_accounting()
     live.report["scenarios"].append({"case":label,"escrow_id":eid,"payee_bps":share,
         "payer_bad_faith":bad,"payee_credit":payee,"payer_credit":PRINCIPAL+bond-payee,
@@ -320,7 +329,7 @@ def test_05_delivery_timeout_review_timeout_and_rejection(live):
     live.save()
 
 
-def test_06_exact_bond_and_duplicate_reference_rollback(live):
+def test_06_rejected_bonds_and_duplicate_reference_credits(live):
     eid=live.create("bond-reverts")
     live.deliver(eid)
     doc=live.doc("dispute-half.md")
@@ -328,11 +337,20 @@ def test_06_exact_bond_and_duplicate_reference_rollback(live):
     before=live.balance(live.address)
     live.tx("payer","dispute",[eid,doc.url,doc.sha256],value=r["bond_required"]-1,error="exact dispute bond")
     live.tx("outsider","dispute",[eid,doc.url,doc.sha256],value=r["bond_required"],error="Only payer")
-    assert live.balance(live.address)==before
+    assert live.balance(live.address)==before+2*r["bond_required"]-1
+    assert live.read("get_escrow",[eid])["status"]=="DELIVERED"
+    live.check_accounting()
     terms=live.doc("terms.md")
     live.tx("payer","create_escrow",[r["reference"],r["payee"],terms.url,terms.sha256,100,100,1000],
             value=PRINCIPAL,error="Reference already used")
-    assert live.balance(live.address)==before
+    assert live.balance(live.address)==before+2*r["bond_required"]-1+PRINCIPAL
+    live.tx("payer","create_escrow",[r["reference"]+":bad-document",r["payee"],terms.url,"0"*64,100,100,1000],
+            value=17,error="SHA-256 mismatch")
+    rejected_tx=live.report["transactions"][-1]["transaction_hash"]
+    with pytest.raises(PaymentRejected) as rejected:
+        live.bindings["payer"].wait(rejected_tx)
+    assert rejected.value.refund_credit==17
+    assert live.balance(live.address)==before+2*r["bond_required"]-1+PRINCIPAL+17
     live.tx("payer","accept_delivery",[eid])
     live.check_accounting()
 
@@ -354,7 +372,11 @@ def test_07_native_withdrawals_to_account_and_real_intelligent_contract(live):
     payer_credit=live.read("credit_of",[payer])
     payee_credit=live.read("credit_of",[payee])
     assert payer_credit>0 and payee_credit>0
-    live.tx("outsider","withdraw",[1,payer,"account"],error="Insufficient withdrawal credit")
+    outsider=live.outsider.local_account.address
+    outsider_credit=live.read("credit_of",[outsider])
+    live.tx("outsider","withdraw",[outsider_credit+1,payer,"account"],error="Insufficient withdrawal credit")
+    if outsider_credit:
+        live.tx("outsider","withdraw",[outsider_credit,outsider,"account"])
     live.tx("payer","withdraw",[payer_credit+1,payer,"account"],error="Insufficient withdrawal credit")
     before=live.balance(payee)
     live.tx("payee","withdraw",[payee_credit,payee,"account"])

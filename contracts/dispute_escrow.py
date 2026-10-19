@@ -197,16 +197,16 @@ class DisputeEscrow(gl.Contract):
     locked_principal: u256
     locked_bonds: u256
     credit_liability: u256
-    total_deposited: u256
-    total_withdrawn: u256
+    total_deposited: str
+    total_withdrawn: str
 
     def __init__(self):
         self.next_id = u256(1)
         self.locked_principal = u256(0)
         self.locked_bonds = u256(0)
         self.credit_liability = u256(0)
-        self.total_deposited = u256(0)
-        self.total_withdrawn = u256(0)
+        self.total_deposited = "0"
+        self.total_withdrawn = "0"
 
     def _load(self, escrow_id: str) -> dict:
         _require(escrow_id in self.escrows, "Unknown escrow")
@@ -247,8 +247,27 @@ class DisputeEscrow(gl.Contract):
                       payee_credit=payee_total, payer_credit=payer_total, settlement_reason=reason)
         self._save(record)
 
+    def _reject_payment(self, method: str, error: str) -> dict:
+        value = int(gl.message.value)
+        self._credit(gl.message.sender_address.as_hex, value)
+        self.credit_liability = u256(int(self.credit_liability) + value)
+        self.total_deposited = str(int(self.total_deposited) + value)
+        return {"accepted": False, "method": method, "escrow_id": "",
+                "refund_credit": value, "error": error}
+
     @gl.public.write.payable
     def create_escrow(self, reference: str, payee: str, terms_url: str, terms_sha256: str,
+                      delivery_period: int, review_period: int, bond_bps: int) -> dict:
+        """Create a funded record or preserve a rejected payment as sender-owned credit."""
+        try:
+            escrow_id = self._create_escrow(reference, payee, terms_url, terms_sha256,
+                                             delivery_period, review_period, bond_bps)
+            return {"accepted": True, "method": "create_escrow", "escrow_id": escrow_id,
+                    "refund_credit": 0, "error": ""}
+        except gl.vm.UserError as error:
+            return self._reject_payment("create_escrow", error.message)
+
+    def _create_escrow(self, reference: str, payee: str, terms_url: str, terms_sha256: str,
                       delivery_period: int, review_period: int, bond_bps: int) -> str:
         """Fund a new escrow. The reference is unique per payer and cannot be reused."""
         payer = gl.message.sender_address
@@ -268,8 +287,7 @@ class DisputeEscrow(gl.Contract):
         principal = int(gl.message.value)
         _require(principal > 0, "Escrow requires positive native value")
         bond = (principal * bond_bps + BPS - 1) // BPS
-        _require(int(self.total_deposited) + principal + bond <= MAX_VALUE,
-                 "Registry value limit exceeded")
+        _require(principal + bond <= MAX_VALUE, "Principal plus required bond exceeds uint256 capacity")
         text = _snapshot(terms_url, terms_sha256)
         escrow_id = str(int(self.next_id))
         stamp = _now()
@@ -289,7 +307,7 @@ class DisputeEscrow(gl.Contract):
         self.references[key] = escrow_id
         self.next_id = u256(int(self.next_id) + 1)
         self.locked_principal = u256(int(self.locked_principal) + principal)
-        self.total_deposited = u256(int(self.total_deposited) + principal)
+        self.total_deposited = str(int(self.total_deposited) + principal)
         return escrow_id
 
     @gl.public.write
@@ -314,21 +332,28 @@ class DisputeEscrow(gl.Contract):
         self._settle(record, BPS, False, "Payer accepted delivery")
 
     @gl.public.write.payable
-    def dispute(self, escrow_id: str, evidence_url: str, evidence_sha256: str) -> None:
+    def dispute(self, escrow_id: str, evidence_url: str, evidence_sha256: str) -> dict:
+        """Open a dispute or preserve rejected incoming value as caller-owned credit."""
+        try:
+            self._dispute(escrow_id, evidence_url, evidence_sha256)
+            return {"accepted": True, "method": "dispute", "escrow_id": escrow_id,
+                    "refund_credit": 0, "error": ""}
+        except gl.vm.UserError as error:
+            return self._reject_payment("dispute", error.message)
+
+    def _dispute(self, escrow_id: str, evidence_url: str, evidence_sha256: str) -> None:
         record = self._load(escrow_id)
         self._party(record, "payer")
         _require(record["status"] == "DELIVERED", "Dispute requires DELIVERED status")
         _require(_now() < record["review_deadline"], "Review window closed")
         _require(int(gl.message.value) == record["bond_required"], "Send the exact dispute bond")
-        _require(int(self.total_deposited) + record["bond_required"] <= MAX_VALUE,
-                 "Registry value limit exceeded")
         text = _snapshot(evidence_url, evidence_sha256)
         record.update(status="DISPUTED", bond_paid=record["bond_required"],
                       dispute={"role": "payer_dispute", "url": evidence_url,
                                "sha256": evidence_sha256, "text": text},
                       payer_offer=-1, payee_offer=-1)
         self.locked_bonds = u256(int(self.locked_bonds) + record["bond_required"])
-        self.total_deposited = u256(int(self.total_deposited) + record["bond_required"])
+        self.total_deposited = str(int(self.total_deposited) + record["bond_required"])
         self._save(record)
 
     @gl.public.write
@@ -417,7 +442,7 @@ class DisputeEscrow(gl.Contract):
         _require(amount <= available, "Insufficient withdrawal credit")
         self.credits[owner] = u256(available - amount)
         self.credit_liability = u256(int(self.credit_liability) - amount)
-        self.total_withdrawn = u256(int(self.total_withdrawn) + amount)
+        self.total_withdrawn = str(int(self.total_withdrawn) + amount)
         if recipient_kind == "account":
             _ChainRecipient(destination).emit_transfer(value=u256(amount))
         else:

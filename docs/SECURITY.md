@@ -2,9 +2,11 @@
 
 ## Custody boundaries
 
-The contract holds native GEN only. It does not accept ERC-20 claims, bridge receipts or an off-chain balance as payment. Each creation attaches a positive principal and each dispute attaches the exact bond. Unauthorized calls, duplicate references, invalid evidence commitments and invalid state transitions revert before an escrow's financial state is changed.
+The contract holds native GEN only. It does not accept ERC-20 claims, bridge receipts or an off-chain balance as payment. Each creation attaches a positive principal and each dispute attaches the exact bond. Nonpayable authorization and state errors revert before changing escrow state. Supported payable validation failures return an explicit rejection and credit the full incoming amount to its actual sender, including unauthorized dispute payments and duplicate funding attempts. They do not create or alter an escrow.
 
 Settlement allocates the entire principal and bond once. It preserves integer value, updates the aggregate liability ledger and cannot be replayed. Withdrawals spend only the immediate sender's existing credit and debit it before emitting an asynchronous transfer. There is no administrator, pause key, upgrade path, forced dispute default or privileged withdrawal.
+
+Rejected payment credits are deliberate application outcomes, not VM execution failures. This preserves value under the failed-payable-call behavior observed on Studio. Malformed ABI input, unsupported payable targets and unexpected VM failures remain subject to the network's own value-handling rules.
 
 The accounting invariant is checked by tests across many independent escrows. The view itself is a record of liabilities, so operators should compare it with the native network balance. Value sent outside supported payable methods is not automatically assigned or recoverable.
 

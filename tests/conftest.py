@@ -60,7 +60,7 @@ def create(escrow, direct_vm, direct_alice, direct_bob, evidence):
         direct_vm.sender = direct_alice
         direct_vm.value = principal
         doc = evidence[terms]
-        result = escrow.create_escrow(reference or f"order-{sequence}",
+        result = escrow._create_escrow(reference or f"order-{sequence}",
                     payee or direct_bob.as_hex, doc["url"], doc["sha256"],
                     delivery_period, review_period, bond_bps)
         direct_vm.value = 0
@@ -82,7 +82,7 @@ def disputed(delivered, escrow, direct_vm, direct_alice, evidence):
     doc = evidence["dispute-good-faith.md"]
     direct_vm.sender = direct_alice
     direct_vm.value = escrow.get_escrow(delivered)["bond_required"]
-    escrow.dispute(delivered, doc["url"], doc["sha256"])
+    escrow._dispute(delivered, doc["url"], doc["sha256"])
     direct_vm.value = 0
     return delivered
 

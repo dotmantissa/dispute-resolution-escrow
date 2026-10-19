@@ -64,3 +64,16 @@ def test_client_rejects_invalid_bond_before_submission(bond):
     binding=EscrowClient(sdk,"0x"+"12"*20)
     with pytest.raises(ValueError,match="Bond"):
         binding.dispute("1",Document("https://evidence.example.com/dispute","0"*64),bond=bond)
+
+
+def test_payment_result_decodes_rejected_credit_without_calling_it_execution_failure():
+    import base64
+    from genlayer_py.abi import calldata
+    from genlayer_escrow import payment_result,PaymentRejected
+    value={"accepted":False,"method":"dispute","escrow_id":"","refund_credit":1001,"error":"Only payer"}
+    raw=base64.b64encode(b"\x00"+calldata.encode(value)).decode()
+    receipt={"consensus_data":{"leader_receipt":[{"execution_result":"SUCCESS","result":{"raw":raw}}]}}
+    assert execution_succeeded(receipt)
+    assert payment_result(receipt)==value
+    error=PaymentRejected(receipt,value)
+    assert error.refund_credit==1001 and error.result==value and error.receipt is receipt

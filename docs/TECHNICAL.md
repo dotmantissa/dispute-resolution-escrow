@@ -4,7 +4,7 @@
 
 `DisputeEscrow()` deploys an empty registry. A funded `create_escrow` call creates each payment record atomically. No payment record exists without a positive principal. Native amounts are wei, with 10^18 wei per GEN. The source pins a concrete GenVM runner in its first line.
 
-The registry stores JSON records in `TreeMap[str, str]`, payer-reference lookups in `TreeMap[str, str]`, withdrawal credits in `TreeMap[Address, u256]` and aggregate accounting in `u256` fields. Escrow IDs are consecutive decimal strings, starting at `"1"`. Reads use direct indexed lookups. There are no scans over the registry or unbounded collection-return methods.
+The registry stores JSON records in `TreeMap[str, str]`, payer-reference lookups in `TreeMap[str, str]`, withdrawal credits in `TreeMap[Address, u256]` and current custody liabilities in `u256` fields. Lifetime deposit and withdrawal counters use decimal strings in storage and return integers through the view, allowing total throughput to exceed a single uint256 balance. Escrow IDs are consecutive decimal strings, starting at `"1"`. Reads use direct indexed lookups. There are no scans over the registry or unbounded collection-return methods.
 
 Payer references contain 1 to 128 characters without surrounding whitespace. A reference can be used once by each payer, including after its escrow is settled. `find_escrow` supports recovery after a submission timeout. A duplicate reference reverts rather than receiving a second payment.
 
@@ -37,10 +37,10 @@ The payee accepts the documented engagement when claiming delivery. The payer ca
 
 | Method | Caller | Preconditions and effect |
 |---|---|---|
-| `create_escrow(reference, payee, terms_url, terms_sha256, delivery_period, review_period, bond_bps) -> str` | Anyone, payable | Positive native value becomes principal. Different nonzero payee, unique reference, valid committed terms. Returns escrow ID. |
+| `create_escrow(reference, payee, terms_url, terms_sha256, delivery_period, review_period, bond_bps) -> dict` | Anyone, payable | Positive native value becomes principal. Different nonzero payee, unique reference, valid committed terms. Returns an explicit acceptance result containing the escrow ID. |
 | `claim_delivery(id, evidence_url, evidence_sha256)` | Payee | `FUNDED`, before delivery deadline. Commits evidence and opens review. |
 | `accept_delivery(id)` | Payer | `DELIVERED`. Allocates all principal to payee. |
-| `dispute(id, evidence_url, evidence_sha256)` | Payer, payable | `DELIVERED`, before review deadline, exact bond. Commits payer evidence and freezes uncontested release. |
+| `dispute(id, evidence_url, evidence_sha256) -> dict` | Payer, payable | `DELIVERED`, before review deadline, exact bond. Commits payer evidence and freezes uncontested release. |
 | `adjudicate(id) -> dict` | Anyone | `DISPUTED`. Runs independent consensus assessment. Conclusive results settle; inconclusive results record a reason and preserve custody. |
 | `release_expired(id)` | Anyone | `DELIVERED`, review deadline reached. Allocates all principal to payee. |
 | `refund_undelivered(id)` | Anyone | `FUNDED`, delivery deadline reached. Allocates all principal to payer. |
@@ -93,7 +93,19 @@ total_deposited = locked_principal + locked_bonds
                   + withdrawal_credits + total_withdrawn
 ```
 
-The aggregate deposit counter is limited to uint256 capacity. This is a lifetime accounting limit; withdrawals do not reset it. Arithmetic uses Python integers before checked conversion to `u256`. There is no floating-point money arithmetic.
+A single escrow's principal plus possible bond must fit uint256 capacity. Lifetime audit counters are decimal strings in storage and are not limited to a single native balance. Arithmetic uses Python integers before checked conversion to `u256` for current custody and credits. There is no floating-point money arithmetic.
+
+## Rejected incoming payments
+
+Studio's observed value behavior retains native value on a reverted payable call. The supported payable entry points therefore catch expected request and evidence-validation errors before changing escrow state. They return an explicit result and allocate all incoming value to the immediate sender's withdrawal credit:
+
+```json
+{"accepted":false,"method":"dispute","escrow_id":"","refund_credit":1001,"error":"[EXPECTED] Only payer"}
+```
+
+A valid request returns `accepted=true`, its escrow ID, zero refund credit and an empty error. A rejected creation does not use its reference or create an escrow. A rejected dispute does not change the escrow, commit evidence or lock a bond. The refund belongs to the actual sender, including an unauthorized third party. It is recorded in total deposits and withdrawal liabilities, so actual custody remains conserved.
+
+These rejected requests execute successfully at the VM level because they preserve incoming money. Builders must inspect the application result as well as execution success. The Python binding raises `PaymentRejected` with that result and the confirmed refund credit. Nonpayable errors continue to revert. Malformed ABI calls, unsupported methods and unexpected VM failures fall under protocol value-handling rules and are not supported refund-credit entry paths.
 
 ## Evidence and consensus
 

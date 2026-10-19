@@ -59,7 +59,7 @@ assert record['bond_required'] == 10**17
 
 `Document.fetch` verifies that the off-chain response is bounded UTF-8 text and computes its digest. The contract then independently fetches and verifies the same bytes across validators. A changed document causes submission to fail. A caller that already has the exact published bytes can use `Document.from_bytes(url, content)` instead.
 
-A timeout while waiting does not establish that submission failed. Follow the stored transaction ID first. After creation, use the payer-scoped reference lookup to recover the record. Do not replace an uncertain reference with a new reference and pay twice. After an actual execution failure, inspect the receipt and network value-refund behavior before resubmitting.
+A timeout while waiting does not establish that submission failed. Follow the stored transaction ID first. After creation, use the payer-scoped reference lookup to recover the record. Do not replace an uncertain reference with a new reference and pay twice. For expected payable validation failures, `wait()` raises `PaymentRejected`: the full incoming payment is already a confirmed withdrawal credit for its sender. Read `error.result` and `error.refund_credit`, then withdraw that credit. The original escrow is unchanged. For unexpected execution failures or malformed calls, inspect the receipt and protocol value-handling behavior before resubmitting.
 
 ## Submit delivery
 
@@ -94,6 +94,8 @@ assessment = record['last_assessment']
 Only the payer may submit the dispute, and the transaction must attach the exact required bond before the review deadline. Adjudication is permissionless and does not require another deposit into the escrow. The submitting account remains responsible for any network fees.
 
 If the assessment is conclusive, `payee_credit`, `payer_credit`, `payee_bps`, `payer_bad_faith` and `settlement_reason` show the allocation. The bond returns to the payer unless validators establish clear bad faith. If the result is inconclusive, the record remains `DISPUTED`, and no credits are created. The parties can retry adjudication or negotiate a split.
+
+A wrong bond amount, unauthorized payer or invalid committed document returns `accepted=false` and credits all incoming value to the actual sender. The dispute is not opened. This is distinct from losing a properly opened dispute.
 
 The escrow bond is independent of GenLayer's protocol appeal bonds. To challenge the validator result, follow the network's transaction appeal rules and track finality. The application should link to the adjudication transaction and its consensus receipts rather than presenting a local model preview as authoritative.
 
@@ -152,7 +154,7 @@ Keep settlement authority in the calling contract's own access control. A generi
 
 ## Application state and transaction receipts
 
-The Python binding defaults its views to `latest-final`. Use `finalized=False` only for pending UI previews. Its write methods return a transaction ID without retrying submission. `wait()` requests finalization, checks actual execution success and raises `ExecutionFailed` with the receipt attached if execution failed. You can request an accepted preview with `wait(tx_id, finalized=False)`, but it remains appealable.
+The Python binding defaults its views to `latest-final`. Use `finalized=False` only for pending UI previews. Its write methods return a transaction ID without retrying submission. `wait()` requests finalization, checks actual execution success and raises `ExecutionFailed` with the receipt attached if execution failed. A successfully executed payable rejection raises `PaymentRejected` with its explicit result and refund credit. You can request an accepted preview with `wait(tx_id, finalized=False)`, but it remains appealable.
 
 The core SDK and RPC remain available for inspection, appeal submission and fee handling. This binding targets the pinned SDK and tested Studio deployment. Before using it on a fee-charging network, qualify that network's current transaction fee API, balances, native transfer behavior and receipt semantics.
 

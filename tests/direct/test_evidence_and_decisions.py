@@ -43,7 +43,7 @@ def test_hash_mismatch_does_not_create_escrow(escrow,direct_vm,direct_bob,eviden
     direct_vm.value=10
     before=escrow.get_accounting()
     with direct_vm.expect_revert("mismatch"):
-        escrow.create_escrow("mismatch",direct_bob.as_hex,evidence["terms.md"]["url"],"0"*64,100,100,1000)
+        escrow._create_escrow("mismatch",direct_bob.as_hex,evidence["terms.md"]["url"],"0"*64,100,100,1000)
     assert escrow.get_accounting()==before
 
 

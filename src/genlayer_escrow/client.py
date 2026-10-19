@@ -1,11 +1,13 @@
 """Small typed bindings over the real genlayer-py client, without custody or relaying."""
 
+import base64
 from dataclasses import dataclass
 import hashlib
 import re
 import urllib.request
 
 from genlayer_py.types import TransactionHashVariant, TransactionStatus
+from genlayer_py.abi import calldata
 from web3 import Web3
 
 
@@ -15,6 +17,40 @@ class ExecutionFailed(RuntimeError):
     def __init__(self, receipt):
         super().__init__("GenLayer contract execution failed; inspect exception.receipt")
         self.receipt = receipt
+
+
+class PaymentRejected(RuntimeError):
+    """The supported payable call rejected its request and credited the incoming value."""
+
+    def __init__(self, receipt, result):
+        super().__init__(result["error"])
+        self.receipt = receipt
+        self.result = result
+        self.refund_credit = result["refund_credit"]
+
+
+def payment_result(receipt: dict):
+    rows = (receipt.get("consensus_data") or {}).get("leader_receipt") or []
+    leader = rows[0] if isinstance(rows, list) and rows else rows if isinstance(rows, dict) else {}
+    result = leader.get("result") or {}
+    if not isinstance(result, dict):
+        return None
+    payload = result.get("payload")
+    try:
+        if isinstance(payload, dict) and isinstance(payload.get("raw"), list):
+            value = calldata.decode(bytes(payload["raw"]))
+        elif isinstance(result.get("raw"), str):
+            raw = base64.b64decode(result["raw"])
+            if not raw or raw[0] != 0:
+                return None
+            value = calldata.decode(raw[1:])
+        else:
+            return None
+    except (ValueError, TypeError, IndexError):
+        return None
+    if isinstance(value, dict) and type(value.get("accepted")) is bool and value.get("method") in ("create_escrow", "dispute"):
+        return value
+    return None
 
 
 def execution_succeeded(receipt: dict) -> bool:
@@ -92,6 +128,9 @@ class EscrowClient:
             retries=retries, interval=interval)
         if not execution_succeeded(receipt):
             raise ExecutionFailed(receipt)
+        outcome = payment_result(receipt)
+        if outcome is not None and not outcome["accepted"]:
+            raise PaymentRejected(receipt, outcome)
         return receipt
 
     def create(self, reference: str, payee: str, terms: Document, principal: int,

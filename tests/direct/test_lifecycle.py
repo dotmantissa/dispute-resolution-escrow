@@ -125,7 +125,7 @@ def test_dispute_and_release_have_nonoverlapping_boundaries(delivered, escrow, d
     direct_vm.value = r["bond_required"]
     d = evidence["dispute-good-faith.md"]
     with direct_vm.expect_revert("window closed"):
-        escrow.dispute(delivered,d["url"],d["sha256"])
+        escrow._dispute(delivered,d["url"],d["sha256"])
     direct_vm.value = 0
     direct_vm.sender = direct_charlie
     escrow.release_expired(delivered)
@@ -140,7 +140,7 @@ def test_dispute_requires_exact_bond(delivered, escrow, direct_vm, direct_alice,
     d = evidence["dispute-half.md"]
     before = escrow.get_accounting()
     with direct_vm.expect_revert("exact dispute bond"):
-        escrow.dispute(delivered,d["url"],d["sha256"])
+        escrow._dispute(delivered,d["url"],d["sha256"])
     assert escrow.get_accounting() == before
     assert escrow.get_escrow(delivered)["status"] == "DELIVERED"
 
@@ -212,7 +212,7 @@ def test_phase_transition_invalidates_old_offers(create, escrow, direct_vm, dire
     direct_vm.sender = direct_alice
     direct_vm.value = escrow.get_escrow(eid)["bond_required"]
     d = evidence["dispute-half.md"]
-    escrow.dispute(eid,d["url"],d["sha256"])
+    escrow._dispute(eid,d["url"],d["sha256"])
     assert escrow.get_escrow(eid)["payee_offer"] == -1
 
 
