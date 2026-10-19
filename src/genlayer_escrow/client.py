@@ -152,6 +152,8 @@ class EscrowClient:
         owner = self.get_config()['funding_owner']
         if self.client.local_account.address.lower() != owner.lower():
             raise ValueError('This deposit would benefit a different funding owner')
+        if self.get_accounting().get('pending_withdrawals', 0):
+            raise ValueError('Await finalized withdrawal acknowledgements before depositing')
         return self._write('deposit', value=amount)
 
     def reconcile_deposits(self):
@@ -232,21 +234,43 @@ class EscrowClient:
             children = self.client.get_triggered_transaction_ids(transaction_hash=transaction_id)
             matched = []
             for child in children:
+                candidate = self.client.get_transaction(transaction_hash=child)
+                native = str(candidate.get('type')) == '0'
                 try:
-                    result = self.wait(child, retries=retries, interval=interval)
+                    if native:
+                        result = self._wait_native_transfer(child, recipient, amount,
+                            retries=retries, interval=interval)
+                    else:
+                        result = self.wait(child, retries=retries, interval=interval)
                 except ExecutionFailed as error:
                     raise RecipientExecutionFailed(parent, error.receipt) from error
                 destination = result.get('to_address') or result.get('recipient') or result.get('contract_address')
                 if str(destination).lower() == recipient.lower() and int(result.get('value') or 0) == amount:
                     matched.append(child)
             balance = self.client.get_balance(recipient)
-            if record['recipient_kind'] == 'contract' and matched:
+            if matched:
                 return {'parent': parent, 'children': matched, 'recipient_balance': balance}
-            if record['recipient_kind'] == 'account' and balance >= before_balance + amount:
-                return {'parent': parent, 'children': children, 'recipient_balance': balance}
             if attempt + 1 < retries:
                 time.sleep(interval / 1000)
         raise PollingTimeout(transaction_id, parent)
+
+    def _wait_native_transfer(self, transaction_id, recipient, amount, *, retries, interval):
+        """Studio type-0 transfers have no validator decision; require native credit proof."""
+        last = {}
+        for attempt in range(retries):
+            last = self.client.get_transaction(transaction_hash=transaction_id)
+            if (str(last.get('type')) != '0' or str(last.get('to_address', '')).lower() != recipient.lower()
+                    or int(last.get('value') or 0) != amount
+                    or str(last.get('from_address', '')).lower() != self.address.lower()):
+                raise ValueError('Native child does not match the expected book transfer')
+            status = transaction_status(last)
+            if status in ('FINALIZED', 'CANCELED'):
+                if status != 'FINALIZED' or last.get('value_credited') is not True:
+                    raise ExecutionFailed(last)
+                return last
+            if attempt + 1 < retries:
+                time.sleep(interval / 1000)
+        raise PollingTimeout(transaction_id, last)
 
     @staticmethod
     def _round_count(receipt):

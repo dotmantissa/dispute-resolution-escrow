@@ -6,7 +6,6 @@ beneficiary's ability to withdraw retained value in a later nonpayable transacti
 Use one inbox per beneficiary and escrow account. No administrator can redirect it.
 """
 from genlayer import *
-from genlayer.py.public_abi import StorageType
 import re
 
 
@@ -28,10 +27,12 @@ class PayoutInbox(gl.Contract):
     owner: Address
     escrow_account: Address
     total_emitted: str
+    withdrawal_pending: bool
 
     def __init__(self, owner: str, escrow_account: str):
         self.owner = _address(owner)
         self.total_emitted = "0"
+        self.withdrawal_pending = False
         self.escrow_account = _address(escrow_account)
         if self.owner == gl.message.contract_address:
             raise gl.vm.UserError("[EXPECTED] Inbox cannot own itself")
@@ -51,7 +52,7 @@ class PayoutInbox(gl.Contract):
         return {"version": "2.0.0", "owner": self.owner.as_hex,
                 "escrow_account": self.escrow_account.as_hex,
                 "custody": "native-balance", "native_balance": int(self.balance),
-                "total_emitted": int(self.total_emitted)}
+                "total_emitted": int(self.total_emitted), "withdrawal_pending": self.withdrawal_pending}
 
     @gl.public.write
     def withdraw_to_account(self, amount: int, recipient: str) -> None:
@@ -62,10 +63,17 @@ class PayoutInbox(gl.Contract):
             raise gl.vm.UserError("[EXPECTED] Cannot withdraw to this inbox")
         if type(amount) is not int or not 0 < amount <= int(self.balance):
             raise gl.vm.UserError("[EXPECTED] Amount outside native balance")
-        if int(self.total_emitted) > 0:
-            finalized = gl.get_contract_at(gl.message.contract_address).view(
-                state=StorageType.LATEST_FINAL).get_config()
-            if finalized["total_emitted"] != int(self.total_emitted):
-                raise gl.vm.UserError("[EXPECTED] Finalize earlier inbox withdrawal first")
+        if self.withdrawal_pending:
+            raise gl.vm.UserError("[EXPECTED] Await finalized inbox withdrawal acknowledgement")
+        self.withdrawal_pending = True
         self.total_emitted = str(int(self.total_emitted) + amount)
         _Account(destination).emit_transfer(value=u256(amount))
+        gl.get_contract_at(gl.message.contract_address).emit(on="finalized").acknowledge_withdrawal()
+
+    @gl.public.write
+    def acknowledge_withdrawal(self) -> None:
+        if gl.message.sender_address != gl.message.contract_address:
+            raise gl.vm.UserError("[EXPECTED] Only finalized inbox self-message")
+        if not self.withdrawal_pending:
+            raise gl.vm.UserError("[EXPECTED] No pending inbox withdrawal")
+        self.withdrawal_pending = False

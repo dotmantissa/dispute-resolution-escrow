@@ -64,3 +64,28 @@ def test_lifetime_audit_counters_can_exceed_uint256(escrow,fund):
     fund(10)
     assert escrow.get_accounting()['total_deposited']==ceiling+10
     assert escrow.get_accounting()['conserved']
+
+
+def test_pending_emission_cannot_be_recredited_before_authenticated_ack(escrow,direct_vm,direct_alice,direct_bob,direct_charlie,module,fund):
+    fund(100)
+    escrow.withdraw(25,direct_bob.as_hex,'account','pending-native')
+    assert escrow.credit_of(direct_alice.as_hex)==75
+    assert escrow.get_accounting()['pending_withdrawals']==1
+    direct_vm.sender=direct_charlie
+    with direct_vm.expect_revert('Await finalized withdrawal'):escrow.reconcile_deposits()
+    with direct_vm.expect_revert('Only finalized self-message'):
+        escrow.acknowledge_withdrawal(direct_alice.as_hex,'pending-native')
+    # The host debits outgoing value at parent finality before dispatching its ack.
+    address=module.gl.message.contract_address
+    direct_vm.deal(address,75)
+    direct_vm.sender=address
+    escrow.acknowledge_withdrawal(direct_alice.as_hex,'pending-native')
+    assert escrow.get_withdrawal(direct_alice.as_hex,'pending-native')['state']=='EMISSION_FINALIZED'
+    assert escrow.get_accounting()['pending_withdrawals']==0
+    with direct_vm.expect_revert('already acknowledged'):
+        escrow.acknowledge_withdrawal(direct_alice.as_hex,'pending-native')
+    direct_vm.sender=direct_charlie
+    assert escrow.reconcile_deposits()==0
+    assert escrow.credit_of(direct_alice.as_hex)==75
+    fund(17)
+    assert escrow.credit_of(direct_alice.as_hex)==92

@@ -55,7 +55,7 @@ def test_inbox_configuration_mismatch_fails_closed(field,value):
 
 def test_success_tracks_the_actual_child_id():
     trace=PayoutTrace();outcome=EscrowClient(trace,BOOK).wait_withdrawal('parent-stored-id',recipient=INBOX,amount=17,before_balance=0,retries=1,interval=0)
-    assert outcome['children']==['child-stored-id'] and trace.polled==['parent-stored-id','child-stored-id']
+    assert outcome['children']==['child-stored-id'] and trace.polled==['parent-stored-id','child-stored-id','child-stored-id']
 
 
 def test_rejected_child_is_not_parent_success_even_when_native_value_arrived():
@@ -76,3 +76,21 @@ def test_parent_return_must_bind_expected_recipient_and_amount():
     for recipient,amount in ((OWNER,17),(INBOX,18)):
         with pytest.raises(ValueError,match='does not match'):
             EscrowClient(trace,BOOK).wait_withdrawal('parent-stored-id',recipient=recipient,amount=amount,before_balance=0,retries=1,interval=0)
+
+
+def test_real_studio_native_transfer_shape_succeeds_without_consensus():
+    trace=PayoutTrace()
+    trace.parent=returning({'state':'EMITTED','amount':17,'recipient':INBOX,'recipient_kind':'account'})
+    trace.child={'status':7,'type':0,'value':17,'value_credited':True,
+                 'from_address':BOOK,'to_address':INBOX,'result':5,'result_name':'NO_MAJORITY','consensus_data':None}
+    outcome=EscrowClient(trace,BOOK).wait_withdrawal('parent-stored-id',recipient=INBOX,amount=17,before_balance=0,retries=1,interval=0)
+    assert outcome['children']==['child-stored-id']
+
+
+def test_native_transfer_without_actual_credit_fails_closed():
+    trace=PayoutTrace()
+    trace.parent=returning({'state':'EMITTED','amount':17,'recipient':INBOX,'recipient_kind':'account'})
+    trace.child={'status':7,'type':0,'value':17,'value_credited':False,
+                 'from_address':BOOK,'to_address':INBOX,'result':5,'consensus_data':None}
+    with pytest.raises(RecipientExecutionFailed):
+        EscrowClient(trace,BOOK).wait_withdrawal('parent-stored-id',recipient=INBOX,amount=17,before_balance=0,retries=1,interval=0)

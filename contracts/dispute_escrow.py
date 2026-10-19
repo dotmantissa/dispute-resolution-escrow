@@ -10,7 +10,6 @@ See docs/ARCHITECTURE.md and docs/INTEGRATION.md for the trust and finality mode
 """
 
 from genlayer import *
-from genlayer.py.public_abi import StorageType
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -232,7 +231,7 @@ class DisputeEscrow(gl.Contract):
     total_withdrawn: str
     funding_owner: Address
     withdrawals: TreeMap[str, str]
-    has_withdrawn: bool
+    pending_withdrawals: u256
 
     def __init__(self, funding_owner: str):
         self.funding_owner = _address(funding_owner)
@@ -243,7 +242,7 @@ class DisputeEscrow(gl.Contract):
         self.credit_liability = u256(0)
         self.total_deposited = "0"
         self.total_withdrawn = "0"
-        self.has_withdrawn = False
+        self.pending_withdrawals = u256(0)
 
     def _load(self, escrow_id: str) -> dict:
         _require(escrow_id in self.escrows, "Unknown escrow")
@@ -278,13 +277,10 @@ class DisputeEscrow(gl.Contract):
         return int(self.locked_principal) + int(self.locked_bonds) + int(self.credit_liability)
 
     def _reconcile(self) -> int:
-        # Accepted withdrawals spend ledger credit before their finalized messages
-        # debit native balance. Never mistake that reserved value for a new deposit.
-        if self.has_withdrawn:
-            finalized = gl.get_contract_at(gl.message.contract_address).view(
-                state=StorageType.LATEST_FINAL).get_accounting()
-            _require(finalized["total_withdrawn"] == int(self.total_withdrawn),
-                     "Finalize earlier withdrawals before reconciling deposits")
+        # Only a self-message emitted at parent finality can clear this reservation.
+        # Native debits occur before those finalized messages are dispatched.
+        _require(int(self.pending_withdrawals) == 0,
+                 "Await finalized withdrawal acknowledgements before reconciling deposits")
         balance = int(self.balance)
         owed = self._liabilities()
         _require(balance >= owed, "Native balance below existing liabilities")
@@ -572,7 +568,7 @@ class DisputeEscrow(gl.Contract):
             _require(allowed is True, "Recipient has not accepted transfer")
         self._spend(owner, amount)
         self.total_withdrawn = str(int(self.total_withdrawn) + amount)
-        self.has_withdrawn = True
+        self.pending_withdrawals = u256(int(self.pending_withdrawals) + 1)
         record = {"owner": owner.as_hex, "reference": reference, "recipient": destination.as_hex,
                   "recipient_kind": recipient_kind, "amount": amount, "state": "EMITTED"}
         self.withdrawals[key] = json.dumps(record, sort_keys=True)
@@ -580,7 +576,23 @@ class DisputeEscrow(gl.Contract):
             _ChainRecipient(destination).emit_transfer(value=u256(amount))
         else:
             gl.get_contract_at(destination).emit(value=u256(amount), on="finalized").receive_escrow()
+        gl.get_contract_at(gl.message.contract_address).emit(on="finalized").acknowledge_withdrawal(
+            owner.as_hex, reference)
         return record
+
+    @gl.public.write
+    def acknowledge_withdrawal(self, owner: str, reference: str) -> None:
+        """Authenticated finalized emission, not a statement of recipient success."""
+        _require(gl.message.sender_address == gl.message.contract_address,
+                 "Only finalized self-message may acknowledge withdrawal")
+        key = _address(owner).as_hex.lower() + ":" + reference
+        _require(key in self.withdrawals, "Unknown withdrawal")
+        record = json.loads(self.withdrawals[key])
+        _require(record["state"] == "EMITTED", "Withdrawal already acknowledged")
+        _require(int(self.pending_withdrawals) > 0, "No pending withdrawal")
+        record["state"] = "EMISSION_FINALIZED"
+        self.withdrawals[key] = json.dumps(record, sort_keys=True)
+        self.pending_withdrawals = u256(int(self.pending_withdrawals) - 1)
 
     @gl.public.view
     def get_withdrawal(self, owner: str, reference: str) -> dict:
@@ -606,7 +618,8 @@ class DisputeEscrow(gl.Contract):
         deposited, withdrawn = int(self.total_deposited), int(self.total_withdrawn)
         balance = int(self.balance)
         accounted = principal + bonds + credits
-        return {"escrow_count": int(self.next_id) - 1, "locked_principal": principal,
+        return {"escrow_count": int(self.next_id) - 1, "pending_withdrawals": int(self.pending_withdrawals),
+                "locked_principal": principal,
                 "locked_bonds": bonds, "withdrawal_credits": credits, "total_deposited": deposited,
                 "total_withdrawn": withdrawn, "accounted_balance": accounted, "native_balance": balance,
                 "unreconciled_deposits": max(0, balance - accounted), "solvent": balance >= accounted,

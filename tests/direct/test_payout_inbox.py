@@ -40,3 +40,23 @@ def test_receive_auth_and_owner_recovery_of_raw_balance(inbox,direct_vm,direct_a
     # Direct mode records outbound messages. Real delivery is asserted on Studio.
     assert inbox.get_config()["native_balance"]==71
     # Native transfers are delivered by the host, outside the direct-mode VM.
+
+
+def test_inbox_serializes_outgoing_native_reservations(inbox,direct_vm,direct_alice,direct_bob):
+    address=direct_vm._contract_address
+    direct_vm.deal(address,100)
+    direct_vm.sender=direct_alice
+    inbox.withdraw_to_account(25,direct_bob.as_hex)
+    assert inbox.get_config()['withdrawal_pending']
+    with direct_vm.expect_revert('Await finalized inbox'):
+        inbox.withdraw_to_account(25,direct_bob.as_hex)
+    with direct_vm.expect_revert('Only finalized inbox'):
+        inbox.acknowledge_withdrawal()
+    direct_vm.deal(address,75)
+    direct_vm.sender=address
+    inbox.acknowledge_withdrawal()
+    assert not inbox.get_config()['withdrawal_pending']
+    with direct_vm.expect_revert('No pending inbox'):
+        inbox.acknowledge_withdrawal()
+    direct_vm.sender=direct_alice
+    inbox.withdraw_to_account(75,direct_bob.as_hex)
