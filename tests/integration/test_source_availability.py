@@ -37,7 +37,8 @@ def test_real_changed_and_missing_origins_use_consensus_committed_snapshots():
     gist=github("/gists","POST",{"description":"Escrow immutable snapshot availability verification",
         "public":True,"files":{name:{"content":text} for name,text in contents.items()}})
     gist_id=gist["id"]
-    mutable={name:{"url":f"https://gist.githubusercontent.com/dotmantissa/{gist_id}/raw/{name}",
+    owner=gist["owner"]["login"]
+    mutable={name:{"url":f"https://gist.githubusercontent.com/{owner}/{gist_id}/raw/{name}",
                     "sha256":hashlib.sha256(text.encode()).hexdigest()}
              for name,text in contents.items()}
     live.manifest=live.manifest|mutable

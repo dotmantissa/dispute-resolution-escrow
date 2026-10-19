@@ -59,6 +59,9 @@ class Live:
             fd,secret_path=tempfile.mkstemp(prefix="escrow-test-actors-",suffix=".json")
             os.close(fd)
         self.secret_path=Path(secret_path)
+        if not self.secret_path.exists():
+            self.secret_path.parent.mkdir(parents=True,exist_ok=True)
+            self.secret_path.touch(mode=0o600)
         self.secret_path.chmod(0o600)
         if self.secret_path.stat().st_size:
             keys=json.loads(self.secret_path.read_text())
