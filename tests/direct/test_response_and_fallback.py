@@ -109,3 +109,22 @@ def test_exact_consensus_compatibility_for_all_parseable_payouts(module):
             if same:
                 for p in [1,10001,10**18,(1<<255)-1]:
                     assert allocation(leader,p,1001)==allocation(validator,p,1001)
+
+
+def test_opponent_cannot_consume_reserved_evidence_capacity(create,escrow,direct_vm,direct_alice,direct_bob):
+    eid=create()
+    record=escrow.get_escrow(eid)
+    # Budget checks operate on detached records before any persistent state update.
+    payee={'submitted_by':record['payee'],'text':'x'*32768}
+    escrow._document_budget(record,payee)
+    assert record['payee_document_bytes']==32768
+    payer={'submitted_by':record['payer'],'text':'x'*16384}
+    escrow._document_budget(record,payer)
+    assert record['payer_document_bytes']>=16384
+    with direct_vm.expect_revert('Party evidence'):
+        escrow._document_budget(record,{'submitted_by':record['payee'],'text':'y'})
+
+
+def test_terms_cap_guarantees_space_for_initial_dispute(module):
+    assert module.MAX_PARTY_BYTES-module.MAX_TERMS_BYTES>=16384
+    assert 2*module.MAX_PARTY_BYTES==module.MAX_CASE_BYTES

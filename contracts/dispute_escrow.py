@@ -10,6 +10,7 @@ See docs/ARCHITECTURE.md and docs/INTEGRATION.md for the trust and finality mode
 """
 
 from genlayer import *
+from genlayer.py.public_abi import StorageType
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -22,6 +23,8 @@ MAX_URL = 2048
 MAX_PERIOD = 365 * 86400
 MIN_BOND_BPS = 1000
 MAX_CASE_BYTES = 65536
+MAX_TERMS_BYTES = 16384
+MAX_PARTY_BYTES = 32768
 MAX_SUPPLEMENTS_PER_PARTY = 3
 ZERO = "0x" + "00" * 20
 TERMINAL = ("SETTLED", "REFUNDED")
@@ -229,6 +232,7 @@ class DisputeEscrow(gl.Contract):
     total_withdrawn: str
     funding_owner: Address
     withdrawals: TreeMap[str, str]
+    has_withdrawn: bool
 
     def __init__(self, funding_owner: str):
         self.funding_owner = _address(funding_owner)
@@ -239,6 +243,7 @@ class DisputeEscrow(gl.Contract):
         self.credit_liability = u256(0)
         self.total_deposited = "0"
         self.total_withdrawn = "0"
+        self.has_withdrawn = False
 
     def _load(self, escrow_id: str) -> dict:
         _require(escrow_id in self.escrows, "Unknown escrow")
@@ -273,6 +278,13 @@ class DisputeEscrow(gl.Contract):
         return int(self.locked_principal) + int(self.locked_bonds) + int(self.credit_liability)
 
     def _reconcile(self) -> int:
+        # Accepted withdrawals spend ledger credit before their finalized messages
+        # debit native balance. Never mistake that reserved value for a new deposit.
+        if self.has_withdrawn:
+            finalized = gl.get_contract_at(gl.message.contract_address).view(
+                state=StorageType.LATEST_FINAL).get_accounting()
+            _require(finalized["total_withdrawn"] == int(self.total_withdrawn),
+                     "Finalize earlier withdrawals before reconciling deposits")
         balance = int(self.balance)
         owed = self._liabilities()
         _require(balance >= owed, "Native balance below existing liabilities")
@@ -303,6 +315,9 @@ class DisputeEscrow(gl.Contract):
     def _document_budget(self, record: dict, document: dict) -> None:
         size = len(document["text"].encode("utf-8"))
         _require(record["document_bytes"] + size <= MAX_CASE_BYTES, "Case evidence exceeds 65536 bytes")
+        counter = "payer_document_bytes" if document["submitted_by"] == record["payer"] else "payee_document_bytes"
+        _require(record[counter] + size <= MAX_PARTY_BYTES, "Party evidence exceeds 32768 bytes")
+        record[counter] += size
         record["document_bytes"] += size
 
     @gl.public.write
@@ -330,6 +345,8 @@ class DisputeEscrow(gl.Contract):
         _require(int(self.credits.get(self.funding_owner, u256(0))) >= principal,
                  "Insufficient prepaid credit")
         document = self._document("original_terms", terms_url, terms_sha256)
+        _require(len(document["text"].encode("utf-8")) <= MAX_TERMS_BYTES,
+                 "Terms exceed 16384 bytes; reserve payer dispute capacity")
         eid = str(int(self.next_id))
         stamp = _now()
         record = {"id": eid, "reference": reference, "payer": self.funding_owner.as_hex,
@@ -343,6 +360,7 @@ class DisputeEscrow(gl.Contract):
                   "payer_ready": False, "payee_ready": False,
                   "terms": document, "delivery": None, "dispute": None, "supplements": [],
                   "document_bytes": len(document["text"].encode("utf-8")),
+                  "payer_document_bytes": len(document["text"].encode("utf-8")), "payee_document_bytes": 0,
                   "last_assessment": None, "assessment_count": 0, "payer_offer": -1, "payee_offer": -1,
                   "payee_bps": -1, "payer_bad_faith": False, "payee_credit": 0,
                   "payer_credit": 0, "settled_at": 0, "settlement_reason": ""}
@@ -554,6 +572,7 @@ class DisputeEscrow(gl.Contract):
             _require(allowed is True, "Recipient has not accepted transfer")
         self._spend(owner, amount)
         self.total_withdrawn = str(int(self.total_withdrawn) + amount)
+        self.has_withdrawn = True
         record = {"owner": owner.as_hex, "reference": reference, "recipient": destination.as_hex,
                   "recipient_kind": recipient_kind, "amount": amount, "state": "EMITTED"}
         self.withdrawals[key] = json.dumps(record, sort_keys=True)
@@ -597,7 +616,8 @@ class DisputeEscrow(gl.Contract):
     def get_config(self) -> dict:
         return {"version": "2.0.0", "funding_owner": self.funding_owner.as_hex, "asset": "native GEN",
                 "basis_points": BPS, "min_bond_bps": MIN_BOND_BPS, "max_document_bytes": MAX_DOCUMENT_BYTES,
-                "max_case_bytes": MAX_CASE_BYTES, "max_supplements_per_party": MAX_SUPPLEMENTS_PER_PARTY,
+                "max_case_bytes": MAX_CASE_BYTES, "max_terms_bytes": MAX_TERMS_BYTES,
+                "max_party_bytes": MAX_PARTY_BYTES, "max_supplements_per_party": MAX_SUPPLEMENTS_PER_PARTY,
                 "max_period_seconds": MAX_PERIOD, "adjudication_increment_bps": 100, "administrator": None,
                 "deposit_policy": "all native receipts belong to immutable funding_owner; reconcile by balance",
                 "evidence_policy": "sha256-pinned UTF-8 snapshots with authenticated submitter",

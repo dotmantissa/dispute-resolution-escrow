@@ -1,2 +1,2 @@
-"""Source identity of the supported recoverable payout inbox."""
-PAYOUT_INBOX_SOURCE_SHA256 = '1b7f0856321296da85499320388de2a492ae0b052b42ec36add729d5cfea17b9'
+"""Exact source qualification for the supported native-balance payout inbox."""
+PAYOUT_INBOX_SOURCE_SHA256 = '336414090ac87250f886eae8d4aab0efce21a46a50eb38622a7fba6111d8fbe0'
