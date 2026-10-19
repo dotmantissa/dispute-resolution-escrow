@@ -26,6 +26,8 @@ def main():
     digest = hashlib.sha256(source).hexdigest()
     if path.exists():
         data = json.loads(path.read_text())
+        if data["deployer"].lower() != account.address.lower():
+            raise RuntimeError("Recorded deployment belongs to another signer; archive artifacts/deployment.json before deploying your own book")
         if data["source_sha256"] != digest:
             raise RuntimeError("Source changed since recorded deployment; archive the old manifest before redeploying")
         txid = data["transaction_hash"]

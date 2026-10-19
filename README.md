@@ -61,7 +61,7 @@ Direct mode uses the official storage/calldata machinery. Public evidence bytes 
 
 ## Verify on Studio
 
-Set `GENLAYER_PRIVATE_KEY` outside the repository. `GENLAYER_TEST_KEYS_FILE` should name a protected external file containing test actor keys; the runner creates it if necessary. Deploy with `python -m tests.integration.deploy`, then run:
+Set `GENLAYER_PRIVATE_KEY` outside the repository. `GENLAYER_TEST_KEYS_FILE` should name a protected external file containing test actor keys; the runner creates it if necessary. The shipped artifacts describe the published qualification run. Before a fresh run, archive its deployment manifest, schema and live verification reports outside the checkout. Deploy with `python -m tests.integration.deploy`, then run:
 
 ```bash
 python -m pytest tests/integration/test_studio.py -v -s -x
@@ -70,7 +70,7 @@ python -m pytest tests/integration/test_custody_faults.py -v -s -x
 
 The source-availability suite additionally requires `ESCROW_EVIDENCE_ORIGIN`, a real public HTTPS tunnel to the test server on `127.0.0.1:18765`. Set it to `auto` to create a fresh anonymous SSH tunnel for each case. Its documentation explains the origin and request logging. No production component depends on this test tunnel.
 
-Studio quotas can pause a run. Submitted IDs are journaled before polling. Resume an interrupted run with the same keys, deployment and `GENLAYER_RESUME_RUN=1`; inspect the journal and case state first. Never blindly repeat a deposit or deployment after an ambiguous submission error. Run a fresh deployment for a new full test run; test journals reject accidental overwrite.
+Studio quotas can pause a run. Submitted IDs are journaled before polling. Resume an interrupted run with the same keys, deployment and `GENLAYER_RESUME_RUN=1`; inspect the journal and case state first. The deployment helper resumes its recorded transaction only for the same signer and source. Never blindly repeat a deposit or deployment after an ambiguous submission error. Run a fresh deployment for a new full test run; test journals reject accidental overwrite.
 
 ## Scope
 
