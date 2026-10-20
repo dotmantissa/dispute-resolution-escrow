@@ -30,9 +30,27 @@ The Studio suite exercises actual independent validators, public HTTP requests, 
 
 The source-availability suite runs a real public HTTPS origin exposing only in-memory test documents. It separately changes and deletes the exact committed URLs, observes them before adjudication, and records multiple evaluator requests plus the stored snapshot-use observations. No provider API or cached immutable URL substitutes for the tested origin.
 
+## Completed isolated live checks
+
+These reports reached successful completion on their own recorded books. All parent and emitted transactions finalized, including explicitly expected negative fixtures. Each book ended with zero native balance, zero liabilities and no pending withdrawals. The source and positive-payout suites passed together in 1117.67 seconds.
+
+| Report | Parent transactions | Emitted transactions | Ending native balance |
+| --- | ---: | ---: | ---: |
+| [Rejected funded consensus and owner recovery](../artifacts/rejected-consensus-recovery.json) | 4 | 2 | 0 |
+| [Declining/failed recipient and retained-value recovery](../artifacts/recipient-failure-verification.json) | 8 | 6 | 0 |
+| [Actual Intelligent Contract payer lifecycle](../artifacts/contract-party-verification.json) | 12 | 7 | 0 |
+| [Exact changed and deleted URLs with snapshot fallback](../artifacts/source-availability-verification.json) | 17 | 4 | 0 |
+| [Partial production inbox transfer, owner recovery and account payouts](../artifacts/positive-payout-verification.json) | 12 | 8 | 0 |
+
+The main suite established its earlier lifecycle and economic scenarios, but its successful validator appeal was followed by missing source and a failed payout. It remains incomplete. The current inventory contains 313 tests, including 17 integration items; 313 passing tests are not claimed. Source integrity and post-appeal payout safety must pass before a release is qualified.
+
+The final [component verification](../artifacts/component-verification.json) re-read deployed source and accounting for four healthy books and the production inbox. Their current balances and liabilities were zero. The same check reconfirmed that the affected book's source was unavailable while its balance remained 300033 faucet test wei. The report explicitly withholds release qualification.
+
 ## Reproduction
 
 Follow the README installation and test commands. Real tests require an external signing key and durable external actor-key file. The public main suite writes a transaction journal before polling and refuses to overwrite an existing run. Set `GENLAYER_RESUME_RUN=1` only after checking the existing case state and using the same deployment and keys.
+
+`GENLAYER_TEST_DEPLOYMENT_FILE` can name an external deployment manifest for a separate matching-source qualification book. Each report records its actual address. This allows component checks to remain isolated from a failed appeal; it does not qualify the failed deployment or bypass the release gate.
 
 Set `ESCROW_EVIDENCE_ORIGIN=auto` to create a fresh anonymous SSH tunnel per source case, or provide your own HTTPS reverse tunnel to the loopback server on port 18765. The automatic option requires the system SSH client and reads no user SSH configuration or identities. The origin must be reachable through public HTTPS by the Studio validators. The test exposes no filesystem or public state-changing endpoint. Stop the tunnel when verification finishes.
 

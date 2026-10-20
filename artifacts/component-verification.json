@@ -1,0 +1,131 @@
+{
+  "version": "2.0.0",
+  "component_verification_complete": true,
+  "release_qualified": false,
+  "status": "BLOCKED_STUDIO_APPEAL_STATE",
+  "verified_at": 1792468191,
+  "source_sha256": "ea4af6e7c194a176e33031a65ff7f2357e5c8854156209144a684bdb7dea1951",
+  "local_tests_passed": 296,
+  "independent_installed_sdk_tests_passed": 158,
+  "reports": {
+    "rejected-consensus-recovery": {
+      "complete": true,
+      "address": "0x7F4E59ce063474D6949630b6858Ebcb322f652Fb",
+      "parent_transactions": 4,
+      "emitted_transactions": 2
+    },
+    "recipient-failure-verification": {
+      "complete": true,
+      "address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+      "parent_transactions": 8,
+      "emitted_transactions": 6
+    },
+    "contract-party-verification": {
+      "complete": true,
+      "address": "0x8bFe262CE35375b557F60aE28497B42F1552780a",
+      "parent_transactions": 12,
+      "emitted_transactions": 7
+    },
+    "source-availability-verification": {
+      "complete": true,
+      "address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+      "parent_transactions": 17,
+      "emitted_transactions": 4
+    },
+    "positive-payout-verification": {
+      "complete": true,
+      "address": "0x5da04B7dF368D74e775e331A1B8154C1aad47E7d",
+      "parent_transactions": 12,
+      "emitted_transactions": 8
+    }
+  },
+  "currently_healthy_books": {
+    "0x7F4E59ce063474D6949630b6858Ebcb322f652Fb": {
+      "source_sha256": "73dcf3b32f7e51b295663c124b0a92b10bbe9df605b31afbd8e17e70566f89df",
+      "accounting": {
+        "accounted_balance": 0,
+        "conserved": true,
+        "escrow_count": 0,
+        "locked_bonds": 0,
+        "locked_principal": 0,
+        "native_balance": 0,
+        "pending_withdrawals": 0,
+        "solvent": true,
+        "total_deposited": 17,
+        "total_withdrawn": 17,
+        "unreconciled_deposits": 0,
+        "withdrawal_credits": 0
+      }
+    },
+    "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65": {
+      "source_sha256": "ea4af6e7c194a176e33031a65ff7f2357e5c8854156209144a684bdb7dea1951",
+      "accounting": {
+        "accounted_balance": 0,
+        "conserved": true,
+        "escrow_count": 2,
+        "locked_bonds": 0,
+        "locked_principal": 0,
+        "native_balance": 0,
+        "pending_withdrawals": 0,
+        "solvent": true,
+        "total_deposited": 22047,
+        "total_withdrawn": 22047,
+        "unreconciled_deposits": 0,
+        "withdrawal_credits": 0
+      }
+    },
+    "0x8bFe262CE35375b557F60aE28497B42F1552780a": {
+      "source_sha256": "ea4af6e7c194a176e33031a65ff7f2357e5c8854156209144a684bdb7dea1951",
+      "accounting": {
+        "accounted_balance": 0,
+        "conserved": true,
+        "escrow_count": 1,
+        "locked_bonds": 0,
+        "locked_principal": 0,
+        "native_balance": 0,
+        "pending_withdrawals": 0,
+        "solvent": true,
+        "total_deposited": 10018,
+        "total_withdrawn": 10018,
+        "unreconciled_deposits": 0,
+        "withdrawal_credits": 0
+      }
+    },
+    "0x5da04B7dF368D74e775e331A1B8154C1aad47E7d": {
+      "source_sha256": "ea4af6e7c194a176e33031a65ff7f2357e5c8854156209144a684bdb7dea1951",
+      "accounting": {
+        "accounted_balance": 0,
+        "conserved": true,
+        "escrow_count": 1,
+        "locked_bonds": 0,
+        "locked_principal": 0,
+        "native_balance": 0,
+        "pending_withdrawals": 0,
+        "solvent": true,
+        "total_deposited": 10044,
+        "total_withdrawn": 10044,
+        "unreconciled_deposits": 0,
+        "withdrawal_credits": 0
+      }
+    }
+  },
+  "payout_inbox": {
+    "address": "0xFd310BA17Bd88Ba6A461054C45529e7a8Ecb72Ee",
+    "source_matches": true,
+    "final_config": {
+      "custody": "native-balance",
+      "escrow_account": "0x5da04B7dF368D74e775e331A1B8154C1aad47E7d",
+      "native_balance": 0,
+      "owner": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "total_emitted": 29,
+      "version": "2.0.0",
+      "withdrawal_pending": false
+    }
+  },
+  "affected_book": {
+    "address": "0x2A738Fb0EA7F055f5691B8c9d8a364D7d03F332F",
+    "source_error": "gen_getContractCode failed (code=-32602): Contract not deployed",
+    "native_balance": 300033
+  },
+  "release_gate": "Repair Studio appeal restoration and affected account, then verify unchanged source, refreshed ruling and actual payouts after a successful appeal."
+}

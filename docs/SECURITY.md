@@ -1,5 +1,7 @@
 # Security and operating assumptions
 
+Current Studio qualification is blocked by [source loss after a successful appeal](STUDIO_APPEAL_BLOCKER.md). Native custody and reconciliation require executable contract source. Ownership rules cannot recover funds when the hosted network loses that source. The SDK now checks source before deposits and binds source integrity across appeals; repairing the affected account requires network operators.
+
 ## Exact economic agreement
 
 Validators independently assess the original terms and committed evidence. They must exactly match the tuple that controls settlement: conclusiveness, earned basis points and bad faith. No tolerance can admit a different payout bucket. Integer arithmetic conserves principal and bond, including rounding. The exhaustive direct test compares all 103 valid economic states against one another, covering 10609 ordered pairs.

@@ -68,6 +68,7 @@ Set `GENLAYER_PRIVATE_KEY` outside the repository. `GENLAYER_TEST_KEYS_FILE` sho
 ```bash
 python -m pytest tests/integration/test_studio.py -v -s -x
 python -m pytest tests/integration/test_custody_faults.py -v -s -x
+python -m pytest tests/integration/test_payouts.py -v -s -x
 ```
 
 The source-availability suite additionally requires `ESCROW_EVIDENCE_ORIGIN`, a real public HTTPS tunnel to the test server on `127.0.0.1:18765`. Set it to `auto` to create a fresh anonymous SSH tunnel for each case. Its documentation explains the origin and request logging. No production component depends on this test tunnel.

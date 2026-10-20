@@ -52,6 +52,8 @@ After the resolution deadline, new model adjudication is disabled and anyone can
 
 An accepted proposal can change during a GenLayer appeal. The Python binding distinguishes provisional acceptance from finality and requires both authoritative consensus agreement and successful VM execution. Finalized majority disagreement is a failed operation even if its leader returned successfully.
 
+Appeal tickets also commit deployed source. Final polling verifies that commitment before reading a case, because the live Studio failure demonstrated that a historical finalized view can survive loss of executable accepted-state code. The [appeal integrity release gate](STUDIO_APPEAL_BLOCKER.md) remains unresolved.
+
 Settlement creates credits rather than sending value during model execution. A withdrawal spends its owner's credit, stores a reference and emits the transfer at finalization. `EMITTED` describes the parent action, not recipient execution. The SDK follows actual child IDs for IC recipients and surfaces failed child execution.
 
 The supported contract recipient is `PayoutInbox`, whose exact source and owner/book configuration are checked by the SDK. Its native balance is authoritative, so a failed callback cannot hide retained funds from its owner. Arbitrary custom receivers are a lower-level integration boundary and require their own custody recovery design.

@@ -42,7 +42,8 @@ def failure_text(receipt):
 
 class Live:
     def __init__(self,report_name='studio-verification.json'):
-        self.deployment=json.loads((ROOT/'artifacts/deployment.json').read_text())
+        deployment_path=Path(os.environ.get('GENLAYER_TEST_DEPLOYMENT_FILE',ROOT/'artifacts/deployment.json'))
+        self.deployment=json.loads(deployment_path.read_text())
         assert self.deployment['version']=='2.0.0'
         self.address=self.deployment['contract_address']
         self.payer=attach_transport(create_client(chain=studionet,account=create_account(os.environ['GENLAYER_PRIVATE_KEY'])))

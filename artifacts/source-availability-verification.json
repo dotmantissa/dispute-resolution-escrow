@@ -1,9 +1,10 @@
 {
-  "run_id": "530b9726ba40",
+  "version": "2.0.0",
+  "run_id": "2f539854dd02",
+  "contract_address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+  "source_sha256": "ea4af6e7c194a176e33031a65ff7f2357e5c8854156209144a684bdb7dea1951",
   "network": "studionet",
-  "contract_address": "0xA9BAc09D9813c890292Cb862323130D4508E7f30",
-  "source_sha256": "5bfd2f5f39ca81af72f6d2a0162e402382b918a19aab25fedc9b7ec5415ed7e5",
-  "started_at": 1792415250,
+  "started_at": 1792467006,
   "actors": {
     "payer": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
     "payee": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
@@ -11,133 +12,1303 @@
   },
   "transactions": [
     {
-      "method": "create_escrow",
-      "transaction_hash": "0xfed7e2f75bce94bec46ddf6901ea4694cfe5817b2a54350069fc0853c83dc420",
-      "reference": "530b9726ba40:changed-origin",
-      "value": 10001,
+      "operation": "availability-deposit",
+      "method": "deposit",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+      "transaction_hash": "0x93f31485d663b80aad765433b9e55f3af5119848f0d07a9648f5caefcb577974",
+      "value": 22004,
+      "expected": "success",
       "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
       "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
       "votes": {
         "0x1242E9f5bf9b253327f130E8802b7b2F438A21Ef": "agree",
-        "0x17ac0CaefB18205c737e64ee582c9245A28ca1f9": "agree",
-        "0x892C437da9b9CA0b6017B6f046F58E3526B46ec6": "idle",
-        "0x8Ce1805d6970d54748dE7160b5b395dCC5c71F44": "agree",
-        "0x8a876C3F3a4783Bd123982bcBF3c672dc0239004": "idle"
-      },
-      "finalized_execution": "SUCCESS"
+        "0x8a876C3F3a4783Bd123982bcBF3c672dc0239004": "agree",
+        "0x9244De5F20cB75A0c51d79A9A3208D00a99aFc10": "idle",
+        "0xa21bc502E3578E4b3039be8c59a257198f7c3f19": "idle",
+        "0xad7d13f269CeAd4379E64a1A3a0803a827e70B43": "agree"
+      }
     },
     {
+      "operation": "create:origin-changed",
+      "method": "create_escrow",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+      "transaction_hash": "0x6b26be4cd4f32df990ba33bbe8593962a6cca3094be57f26f0f0882bcebe0e7f",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x1dEcE6A694520b1d3a2e24b9f28500858C756BDb": "agree",
+        "0x8a876C3F3a4783Bd123982bcBF3c672dc0239004": "agree",
+        "0x9244De5F20cB75A0c51d79A9A3208D00a99aFc10": "idle",
+        "0xA712cB25a4002666FA9D09477251f238dD9e06b3": "agree",
+        "0xb0925568bFbCF00aADBcA053E6D0E1628ff3d530": "idle"
+      }
+    },
+    {
+      "operation": "4757a24dd077702204e05bb6df2ee888b1482f7897ee3ef79f970a3ca56924f9",
+      "method": "accept_engagement",
+      "caller": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
+      "address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+      "transaction_hash": "0x9ad4e54ce97630e366f57c05753499fb0692824b233d4d10853caed20a407e24",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x17ac0CaefB18205c737e64ee582c9245A28ca1f9": "agree",
+        "0x892C437da9b9CA0b6017B6f046F58E3526B46ec6": "agree",
+        "0x8Ce1805d6970d54748dE7160b5b395dCC5c71F44": "agree",
+        "0x8a876C3F3a4783Bd123982bcBF3c672dc0239004": "agree",
+        "0xA712cB25a4002666FA9D09477251f238dD9e06b3": "agree"
+      }
+    },
+    {
+      "operation": "e99d10e8b4e4ceabd3c3d2d14ed86b71f327f8be4027e6383f3952f3428ce2b1",
       "method": "claim_delivery",
       "caller": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
-      "transaction_hash": "0x826dcbfe3e90db78887794f11eb33e80259f1e0fa6f13e29cfb15500a3200166",
+      "address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+      "transaction_hash": "0xd976a5a563c8d1874cefba37e9fd7e621ad3daa5370904c93f706bd920c5c892",
       "value": 0,
       "expected": "success",
       "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
       "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
       "votes": {
-        "0x40533175AfBbAee2c030F88259Afb5aEDbCF0E05": "idle",
-        "0x892C437da9b9CA0b6017B6f046F58E3526B46ec6": "agree",
-        "0x8a876C3F3a4783Bd123982bcBF3c672dc0239004": "idle",
-        "0x9244De5F20cB75A0c51d79A9A3208D00a99aFc10": "agree",
-        "0xe7eEe8a1c1690b0322d795B80A76ab2Cd1a0eAFd": "agree"
-      },
-      "agree_count": 3,
-      "finalized_execution": "SUCCESS"
+        "0x17ac0CaefB18205c737e64ee582c9245A28ca1f9": "agree",
+        "0x8Ce1805d6970d54748dE7160b5b395dCC5c71F44": "agree",
+        "0xA712cB25a4002666FA9D09477251f238dD9e06b3": "idle",
+        "0xf1C7551292319EE334e2D8A24eAC108Bd4C63b21": "idle",
+        "0xf29b6947ed298d139FC2655DB15D868C9AbB3091": "agree"
+      }
     },
     {
+      "operation": "c820456c23520763ae959f3a3071ea904566f06794e7c0f37aaf270173eb0f1c",
       "method": "dispute",
       "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
-      "transaction_hash": "0xbe5c86e19bf79f47e34ca41a77c81dbc614def905f081ee0ae8d52704f77446d",
-      "value": 1001,
-      "expected": "success",
-      "state": "FINALIZED",
-      "execution": "SUCCESS",
-      "votes": {
-        "0x40533175AfBbAee2c030F88259Afb5aEDbCF0E05": "idle",
-        "0x892C437da9b9CA0b6017B6f046F58E3526B46ec6": "agree",
-        "0xa21bc502E3578E4b3039be8c59a257198f7c3f19": "agree",
-        "0xad7d13f269CeAd4379E64a1A3a0803a827e70B43": "idle",
-        "0xf1C7551292319EE334e2D8A24eAC108Bd4C63b21": "agree"
-      },
-      "agree_count": 3,
-      "finalized_execution": "SUCCESS"
-    },
-    {
-      "method": "adjudicate",
-      "caller": "0x10B55466540e0E24D5733752ED6A843d0D708c8c",
-      "transaction_hash": "0x515d922a262cfb1c7450fefe30c66f5952d4f35af57a5c5a3a97a5ef736dbadf",
+      "address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+      "transaction_hash": "0x764bf1cabf03fb710ac09f542b0ef6a01eab0b1c8335f535a677b42707cdde1a",
       "value": 0,
       "expected": "success",
       "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
       "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x7bf4Ea55363bbe73A4dd5b3900bf03c978A63b6e": "idle",
+        "0x892C437da9b9CA0b6017B6f046F58E3526B46ec6": "agree",
+        "0x8a876C3F3a4783Bd123982bcBF3c672dc0239004": "idle",
+        "0xe7eEe8a1c1690b0322d795B80A76ab2Cd1a0eAFd": "agree",
+        "0xf29b6947ed298d139FC2655DB15D868C9AbB3091": "agree"
+      }
+    },
+    {
+      "operation": "c6ce5dbb3c9430a6d916a8c88e6033990145a8756c1d7f025ac6f98343a71e77",
+      "method": "finish_evidence",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+      "transaction_hash": "0xc96581c86cd809be477f5701e69fa2133c9764ccd727246c10c784214076e972",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x1242E9f5bf9b253327f130E8802b7b2F438A21Ef": "agree",
+        "0x5Bbbd7cdD63c0ba7f088038Cb049bDDAbE4F6fd1": "agree",
+        "0x8Ce1805d6970d54748dE7160b5b395dCC5c71F44": "idle",
+        "0xa21bc502E3578E4b3039be8c59a257198f7c3f19": "agree",
+        "0xad7d13f269CeAd4379E64a1A3a0803a827e70B43": "idle"
+      }
+    },
+    {
+      "operation": "9c8879a57fad573241d2b4fe3efb7a9d41c83fb69456af450b1d2ccbabebe536",
+      "method": "finish_evidence",
+      "caller": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
+      "address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+      "transaction_hash": "0x38bba6ee61f4a0ab2e137f6d96a50a229d32b64a142074d5ccd93e8663b0c523",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
       "votes": {
         "0x0B50B270Eba5D9B780272C4Cf4720260177e761D": "agree",
-        "0x1242E9f5bf9b253327f130E8802b7b2F438A21Ef": "idle",
-        "0x1dEcE6A694520b1d3a2e24b9f28500858C756BDb": "idle",
-        "0xad7d13f269CeAd4379E64a1A3a0803a827e70B43": "agree",
-        "0xe7eEe8a1c1690b0322d795B80A76ab2Cd1a0eAFd": "agree"
-      },
-      "agree_count": 3,
-      "finalized_execution": "SUCCESS"
+        "0x1dEcE6A694520b1d3a2e24b9f28500858C756BDb": "agree",
+        "0xb0925568bFbCF00aADBcA053E6D0E1628ff3d530": "idle",
+        "0xe7eEe8a1c1690b0322d795B80A76ab2Cd1a0eAFd": "agree",
+        "0xf29b6947ed298d139FC2655DB15D868C9AbB3091": "agree"
+      }
     },
     {
+      "operation": "52c0ea9740bd4436468cb596b73e17d7a3da77bf836c411e386e83daad5311dd",
+      "method": "adjudicate",
+      "caller": "0x10B55466540e0E24D5733752ED6A843d0D708c8c",
+      "address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+      "transaction_hash": "0x3810b41a3b0139f5e7212510f5e3e6cacab9554c647b3021fe64caccfef04fd3",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x17ac0CaefB18205c737e64ee582c9245A28ca1f9": "agree",
+        "0x892C437da9b9CA0b6017B6f046F58E3526B46ec6": "agree",
+        "0x8a876C3F3a4783Bd123982bcBF3c672dc0239004": "idle",
+        "0xf1C7551292319EE334e2D8A24eAC108Bd4C63b21": "agree",
+        "0xf29b6947ed298d139FC2655DB15D868C9AbB3091": "idle"
+      }
+    },
+    {
+      "operation": "create:origin-deleted",
+      "method": "create_escrow",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+      "transaction_hash": "0x6a9265f872bc5b9621b9c64905d248060387492f5700df12885cc5a4475fe9dd",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x1dEcE6A694520b1d3a2e24b9f28500858C756BDb": "idle",
+        "0x5Bbbd7cdD63c0ba7f088038Cb049bDDAbE4F6fd1": "agree",
+        "0x8Ce1805d6970d54748dE7160b5b395dCC5c71F44": "agree",
+        "0x8a876C3F3a4783Bd123982bcBF3c672dc0239004": "agree",
+        "0xe7eEe8a1c1690b0322d795B80A76ab2Cd1a0eAFd": "idle"
+      }
+    },
+    {
+      "operation": "731f03dd3489ff5e1594e214bff86d55f38a5c5da7f55151fcba7d2dd5348589",
+      "method": "accept_engagement",
+      "caller": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
+      "address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+      "transaction_hash": "0x18f1ecd349b6f875e8eb13195fcf18378cb73b708fd7cf91e45ac904587dd3fd",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x0B50B270Eba5D9B780272C4Cf4720260177e761D": "idle",
+        "0x5Bbbd7cdD63c0ba7f088038Cb049bDDAbE4F6fd1": "agree",
+        "0x8Ce1805d6970d54748dE7160b5b395dCC5c71F44": "idle",
+        "0x9244De5F20cB75A0c51d79A9A3208D00a99aFc10": "agree",
+        "0xf29b6947ed298d139FC2655DB15D868C9AbB3091": "agree"
+      }
+    },
+    {
+      "operation": "4b35808c7092951995a360fe94bb2f52fad90d84a34fbc867dd7647c0361c399",
+      "method": "claim_delivery",
+      "caller": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
+      "address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+      "transaction_hash": "0x4f13bcfa5f7bf79f3c707852b61bdea8ff30dde782a1bc7b014b17350e68a96b",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x0B50B270Eba5D9B780272C4Cf4720260177e761D": "idle",
+        "0x5Bbbd7cdD63c0ba7f088038Cb049bDDAbE4F6fd1": "idle",
+        "0x7bf4Ea55363bbe73A4dd5b3900bf03c978A63b6e": "agree",
+        "0xad7d13f269CeAd4379E64a1A3a0803a827e70B43": "agree",
+        "0xf1C7551292319EE334e2D8A24eAC108Bd4C63b21": "agree"
+      }
+    },
+    {
+      "operation": "789fe8299cd04aa1622a68ac9290f1b2d3bca739509c8564e2bd2b0bb6f2d0a0",
+      "method": "dispute",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+      "transaction_hash": "0xe2721b3be16bc35ed729cec0c69f32d665bbe814483219116d77384e12282a95",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x1dEcE6A694520b1d3a2e24b9f28500858C756BDb": "idle",
+        "0x6a4179A851B3747A458baD2f089AB2EeFE0eBbAb": "agree",
+        "0x8Ce1805d6970d54748dE7160b5b395dCC5c71F44": "agree",
+        "0xa21bc502E3578E4b3039be8c59a257198f7c3f19": "agree",
+        "0xf29b6947ed298d139FC2655DB15D868C9AbB3091": "idle"
+      }
+    },
+    {
+      "operation": "813a224f78992bab952b1f46a9bfd5524fb7a167c7e46dde37e256ffdd2ac4e4",
+      "method": "finish_evidence",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+      "transaction_hash": "0x6a81125adfefb39f4f9c28b3d6c7fa3c7be6d6ed2fd5bbccda300df28cbd3cc8",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x17ac0CaefB18205c737e64ee582c9245A28ca1f9": "idle",
+        "0x2FcBC452425f2F1e102c5c04b4331fcB46ee1c00": "agree",
+        "0x6a4179A851B3747A458baD2f089AB2EeFE0eBbAb": "agree",
+        "0x8Ce1805d6970d54748dE7160b5b395dCC5c71F44": "agree",
+        "0x9244De5F20cB75A0c51d79A9A3208D00a99aFc10": "agree"
+      }
+    },
+    {
+      "operation": "91947d1eb4326153f277193029a9302f1db6a53b847d0a264061be551ccfd061",
+      "method": "finish_evidence",
+      "caller": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
+      "address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+      "transaction_hash": "0x8ae60860e5cbe046912678239e3eade54429a01346556f0e5f086064877010f1",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x1242E9f5bf9b253327f130E8802b7b2F438A21Ef": "agree",
+        "0x1dEcE6A694520b1d3a2e24b9f28500858C756BDb": "agree",
+        "0x8Ce1805d6970d54748dE7160b5b395dCC5c71F44": "idle",
+        "0x8a876C3F3a4783Bd123982bcBF3c672dc0239004": "agree",
+        "0xe7eEe8a1c1690b0322d795B80A76ab2Cd1a0eAFd": "agree"
+      }
+    },
+    {
+      "operation": "4587d23c5ddcf85d9ab34f022d7d7e35c0b31ce048bc3f1f8a55f0b900ad22f4",
+      "method": "adjudicate",
+      "caller": "0x10B55466540e0E24D5733752ED6A843d0D708c8c",
+      "address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+      "transaction_hash": "0x06c8dee16c4cbed1ee07fceea4c063be16e7432e0432435441523036009dc5bd",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x1dEcE6A694520b1d3a2e24b9f28500858C756BDb": "idle",
+        "0x40533175AfBbAee2c030F88259Afb5aEDbCF0E05": "idle",
+        "0x6a4179A851B3747A458baD2f089AB2EeFE0eBbAb": "agree",
+        "0x7bf4Ea55363bbe73A4dd5b3900bf03c978A63b6e": "agree",
+        "0xad7d13f269CeAd4379E64a1A3a0803a827e70B43": "agree"
+      }
+    },
+    {
+      "operation": "5a675bd94254f14ca874189e1c2fea6f3cc4bdc9fbfe86d913e1eba1b556168a",
       "method": "withdraw",
       "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
-      "transaction_hash": "0x8f88ab14e7e4eb6a281cdd40585c299f635ef83a3157b5b719183d2fa805573e",
+      "address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+      "transaction_hash": "0x5d93a4f7885ee2613c3ad589127e92353a51d83120f95f8494d7f233e42a1e65",
       "value": 0,
       "expected": "success",
       "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
       "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
       "votes": {
-        "0x40533175AfBbAee2c030F88259Afb5aEDbCF0E05": "agree",
-        "0x9244De5F20cB75A0c51d79A9A3208D00a99aFc10": "agree",
-        "0xA712cB25a4002666FA9D09477251f238dD9e06b3": "agree",
-        "0xb0925568bFbCF00aADBcA053E6D0E1628ff3d530": "agree",
+        "0x1dEcE6A694520b1d3a2e24b9f28500858C756BDb": "idle",
+        "0x7bf4Ea55363bbe73A4dd5b3900bf03c978A63b6e": "agree",
+        "0x8Ce1805d6970d54748dE7160b5b395dCC5c71F44": "agree",
+        "0xA712cB25a4002666FA9D09477251f238dD9e06b3": "idle",
         "0xf1C7551292319EE334e2D8A24eAC108Bd4C63b21": "agree"
-      },
-      "agree_count": 5
+      }
     },
     {
+      "operation": "b08322618a131a7b7f0225ab66099c8aef8ad926a6fcba7d43bb8f9d2bbaf6bf",
       "method": "withdraw",
       "caller": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
-      "transaction_hash": "0x5efb101f74a8c42055232f0febf17c444e8ec0594c9d9f0f46c922ef301a8347",
+      "address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+      "transaction_hash": "0x8508c7c2e0a95c4d0c00432a0b2cd931df43a8cd85aedaff1964b4b9abc87c9e",
       "value": 0,
       "expected": "success",
       "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
       "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
       "votes": {
-        "0x5Bbbd7cdD63c0ba7f088038Cb049bDDAbE4F6fd1": "idle",
-        "0xa21bc502E3578E4b3039be8c59a257198f7c3f19": "idle",
-        "0xe7eEe8a1c1690b0322d795B80A76ab2Cd1a0eAFd": "agree",
-        "0xf1C7551292319EE334e2D8A24eAC108Bd4C63b21": "agree",
-        "0xf29b6947ed298d139FC2655DB15D868C9AbB3091": "agree"
-      },
-      "agree_count": 3
+        "0x0B50B270Eba5D9B780272C4Cf4720260177e761D": "agree",
+        "0x17ac0CaefB18205c737e64ee582c9245A28ca1f9": "agree",
+        "0x5Bbbd7cdD63c0ba7f088038Cb049bDDAbE4F6fd1": "agree",
+        "0xb0925568bFbCF00aADBcA053E6D0E1628ff3d530": "agree",
+        "0xf1C7551292319EE334e2D8A24eAC108Bd4C63b21": "agree"
+      }
     }
   ],
-  "scenarios": [],
-  "mutable_gist": "https://gist.github.com/dotmantissa/830ffb3b9e1afd78a8e81be271c53bc1",
+  "scenarios": [
+    {
+      "case": "exact_url_changed_snapshot_fallback",
+      "verified": true,
+      "escrow_id": "1",
+      "assessment": {
+        "conclusive": true,
+        "document_sources": [
+          {
+            "sha256": "7fbf4cc48cc098393b4df8a349d0b2b8ed2d07a5c206587e82104b4668a34591",
+            "used_snapshot": true
+          },
+          {
+            "sha256": "7d4bee0b2eaaf609805404fb0988cdd6497a1a9aa0f6a3680050920b35f01b25",
+            "used_snapshot": true
+          },
+          {
+            "sha256": "66b06cd1ff6268f6f399d9728415da59affdf520f127b550aa395114fbb20f60",
+            "used_snapshot": true
+          }
+        ],
+        "payee_bps": 5000,
+        "payer_bad_faith": false,
+        "reason": "The original terms define four independently priced sections each worth exactly 25% of the principal. The payee's own delivery document explicitly states that the dispute and withdrawal sections were not written or delivered, and confirms the submitted document is the entirety of the work supplied. The payer's dispute corroborates this, accepting that the two delivered sections (Installation and Funding) earn 50%. Reviewing the delivery text: Section 1 (Installation) contains the required command `pip install -e .` \u2014 satisfied. Section 2 (Funding) states the payer calls payable `deposit` and then nonpayable `create_escrow` locks the principal from prepaid credit \u2014 satisfied. Sections 3 (Dispute) and 4 (Withdrawal) are absent by the payee's own explicit admission. Under the equal 25% weights specified in the original terms, two complete sections earn 50% (5000 bps). The allocation is unambiguous and supported by both parties' evidence. Payer bad faith does not apply because the payer acknowledged the two delivered sections and requested only a partial refund consistent with the terms; there is no evidence the payer disputed a fully delivered promise."
+      },
+      "origin_requests": [
+        {
+          "at": 1792467186.0947447,
+          "path": "/2f539854dd02/changed/terms.md",
+          "status": 200,
+          "phase": "changed",
+          "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+        },
+        {
+          "at": 1792467186.9184427,
+          "path": "/2f539854dd02/changed/delivery-half.md",
+          "status": 200,
+          "phase": "changed",
+          "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+        },
+        {
+          "at": 1792467187.731544,
+          "path": "/2f539854dd02/changed/dispute-half.md",
+          "status": 200,
+          "phase": "changed",
+          "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+        },
+        {
+          "at": 1792467198.3340828,
+          "path": "/2f539854dd02/changed/terms.md",
+          "status": 200,
+          "phase": "changed",
+          "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+        },
+        {
+          "at": 1792467198.6023433,
+          "path": "/2f539854dd02/changed/terms.md",
+          "status": 200,
+          "phase": "changed",
+          "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+        },
+        {
+          "at": 1792467199.4330697,
+          "path": "/2f539854dd02/changed/delivery-half.md",
+          "status": 200,
+          "phase": "changed",
+          "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+        },
+        {
+          "at": 1792467199.6995583,
+          "path": "/2f539854dd02/changed/delivery-half.md",
+          "status": 200,
+          "phase": "changed",
+          "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+        },
+        {
+          "at": 1792467200.515189,
+          "path": "/2f539854dd02/changed/dispute-half.md",
+          "status": 200,
+          "phase": "changed",
+          "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+        },
+        {
+          "at": 1792467200.8136125,
+          "path": "/2f539854dd02/changed/dispute-half.md",
+          "status": 200,
+          "phase": "changed",
+          "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+        },
+        {
+          "at": 1792467205.7303793,
+          "path": "/2f539854dd02/changed/terms.md",
+          "status": 200,
+          "phase": "changed",
+          "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+        },
+        {
+          "at": 1792467206.5852587,
+          "path": "/2f539854dd02/changed/delivery-half.md",
+          "status": 200,
+          "phase": "changed",
+          "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+        },
+        {
+          "at": 1792467207.3991072,
+          "path": "/2f539854dd02/changed/dispute-half.md",
+          "status": 200,
+          "phase": "changed",
+          "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+        },
+        {
+          "at": 1792467210.540177,
+          "path": "/2f539854dd02/changed/terms.md",
+          "status": 200,
+          "phase": "changed",
+          "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+        },
+        {
+          "at": 1792467211.3265219,
+          "path": "/2f539854dd02/changed/delivery-half.md",
+          "status": 200,
+          "phase": "changed",
+          "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+        },
+        {
+          "at": 1792467212.1311772,
+          "path": "/2f539854dd02/changed/dispute-half.md",
+          "status": 200,
+          "phase": "changed",
+          "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+        },
+        {
+          "at": 1792467215.6532166,
+          "path": "/2f539854dd02/changed/terms.md",
+          "status": 200,
+          "phase": "changed",
+          "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+        },
+        {
+          "at": 1792467216.4799562,
+          "path": "/2f539854dd02/changed/delivery-half.md",
+          "status": 200,
+          "phase": "changed",
+          "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+        },
+        {
+          "at": 1792467217.3433511,
+          "path": "/2f539854dd02/changed/dispute-half.md",
+          "status": 200,
+          "phase": "changed",
+          "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+        }
+      ],
+      "public_origin": "https://fed77f2c0697ed.lhr.life"
+    },
+    {
+      "case": "exact_url_deleted_snapshot_fallback",
+      "verified": true,
+      "escrow_id": "2",
+      "assessment": {
+        "conclusive": true,
+        "document_sources": [
+          {
+            "sha256": "7fbf4cc48cc098393b4df8a349d0b2b8ed2d07a5c206587e82104b4668a34591",
+            "used_snapshot": true
+          },
+          {
+            "sha256": "7d4bee0b2eaaf609805404fb0988cdd6497a1a9aa0f6a3680050920b35f01b25",
+            "used_snapshot": true
+          },
+          {
+            "sha256": "66b06cd1ff6268f6f399d9728415da59affdf520f127b550aa395114fbb20f60",
+            "used_snapshot": true
+          }
+        ],
+        "payee_bps": 5000,
+        "payer_bad_faith": false,
+        "reason": "The original terms specify four independently priced sections, each worth exactly 25%. The payee's own submitted delivery document contains the Installation section with the exact command `pip install -e .` and the Funding section correctly stating the payer calls payable `deposit` then nonpayable `create_escrow` locks the prepaid principal \u2014 both meeting their specified instructions. The delivery document explicitly admits the Dispute and Withdrawal sections were never written or delivered, and the payer's dispute corroborates this. Two of four milestones delivered = 50% (5000 bps). No bad faith: the payer acknowledges the delivered sections earn 50% and disputes only the undelivered portion, which is an accurate position rather than denial of delivered work."
+      },
+      "origin_requests": [
+        {
+          "at": 1792467366.2999718,
+          "path": "/2f539854dd02/deleted/terms.md",
+          "status": 404,
+          "phase": "deleted",
+          "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+        },
+        {
+          "at": 1792467367.095982,
+          "path": "/2f539854dd02/deleted/delivery-half.md",
+          "status": 404,
+          "phase": "deleted",
+          "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+        },
+        {
+          "at": 1792467367.8908737,
+          "path": "/2f539854dd02/deleted/dispute-half.md",
+          "status": 404,
+          "phase": "deleted",
+          "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+        },
+        {
+          "at": 1792467383.3364067,
+          "path": "/2f539854dd02/deleted/terms.md",
+          "status": 404,
+          "phase": "deleted",
+          "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+        },
+        {
+          "at": 1792467383.6004784,
+          "path": "/2f539854dd02/deleted/terms.md",
+          "status": 404,
+          "phase": "deleted",
+          "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+        },
+        {
+          "at": 1792467384.40055,
+          "path": "/2f539854dd02/deleted/delivery-half.md",
+          "status": 404,
+          "phase": "deleted",
+          "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+        },
+        {
+          "at": 1792467384.6687393,
+          "path": "/2f539854dd02/deleted/delivery-half.md",
+          "status": 404,
+          "phase": "deleted",
+          "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+        },
+        {
+          "at": 1792467385.4595802,
+          "path": "/2f539854dd02/deleted/dispute-half.md",
+          "status": 404,
+          "phase": "deleted",
+          "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+        },
+        {
+          "at": 1792467385.729223,
+          "path": "/2f539854dd02/deleted/dispute-half.md",
+          "status": 404,
+          "phase": "deleted",
+          "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+        },
+        {
+          "at": 1792467392.0910673,
+          "path": "/2f539854dd02/deleted/terms.md",
+          "status": 404,
+          "phase": "deleted",
+          "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+        },
+        {
+          "at": 1792467392.8900049,
+          "path": "/2f539854dd02/deleted/delivery-half.md",
+          "status": 404,
+          "phase": "deleted",
+          "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+        },
+        {
+          "at": 1792467393.8884563,
+          "path": "/2f539854dd02/deleted/dispute-half.md",
+          "status": 404,
+          "phase": "deleted",
+          "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+        },
+        {
+          "at": 1792467399.9050877,
+          "path": "/2f539854dd02/deleted/terms.md",
+          "status": 404,
+          "phase": "deleted",
+          "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+        },
+        {
+          "at": 1792467400.7254996,
+          "path": "/2f539854dd02/deleted/delivery-half.md",
+          "status": 404,
+          "phase": "deleted",
+          "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+        },
+        {
+          "at": 1792467401.5281882,
+          "path": "/2f539854dd02/deleted/dispute-half.md",
+          "status": 404,
+          "phase": "deleted",
+          "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+        },
+        {
+          "at": 1792467405.4068766,
+          "path": "/2f539854dd02/deleted/terms.md",
+          "status": 404,
+          "phase": "deleted",
+          "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+        },
+        {
+          "at": 1792467406.1932547,
+          "path": "/2f539854dd02/deleted/delivery-half.md",
+          "status": 404,
+          "phase": "deleted",
+          "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+        },
+        {
+          "at": 1792467407.021134,
+          "path": "/2f539854dd02/deleted/dispute-half.md",
+          "status": 404,
+          "phase": "deleted",
+          "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+        }
+      ],
+      "public_origin": "https://d3cfa12d0003fa.lhr.life"
+    }
+  ],
+  "origins": {
+    "changed": "https://fed77f2c0697ed.lhr.life",
+    "deleted": "https://d3cfa12d0003fa.lhr.life"
+  },
+  "emitted_transactions": [
+    {
+      "transaction_hash": "0x0ea038be3b76465222c4f5d93e1106d79eebfe627bc7e919b9758f294c019812",
+      "triggered_by": "0x5d93a4f7885ee2613c3ad589127e92353a51d83120f95f8494d7f233e42a1e65",
+      "state": "FINALIZED",
+      "type": 0,
+      "recipient": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "value": 12004,
+      "expected": "success"
+    },
+    {
+      "transaction_hash": "0xbcd7bf68d384bcff21515eed25ec5dc592049647fed899c5ad6517c911605026",
+      "triggered_by": "0x5d93a4f7885ee2613c3ad589127e92353a51d83120f95f8494d7f233e42a1e65",
+      "state": "FINALIZED",
+      "type": 2,
+      "recipient": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+      "value": 0,
+      "expected": "success"
+    },
+    {
+      "transaction_hash": "0x8a2f1e61d980906b2d7e036d1e0561c9cab20150e3640ca0bcae1b6807e1b454",
+      "triggered_by": "0x8508c7c2e0a95c4d0c00432a0b2cd931df43a8cd85aedaff1964b4b9abc87c9e",
+      "state": "FINALIZED",
+      "type": 0,
+      "recipient": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
+      "value": 10000,
+      "expected": "success"
+    },
+    {
+      "transaction_hash": "0xb4292a6862e8e25889b30c3654262432d5c6ca4a77986beea6688ae44bae04a2",
+      "triggered_by": "0x8508c7c2e0a95c4d0c00432a0b2cd931df43a8cd85aedaff1964b4b9abc87c9e",
+      "state": "FINALIZED",
+      "type": 2,
+      "recipient": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+      "value": 0,
+      "expected": "success"
+    }
+  ],
   "all_transactions_finalized": true,
   "complete": true,
-  "finished_at": 1792415509,
-  "escrow_id": "12",
-  "origin_changed": true,
-  "origin_deleted": true,
-  "original_snapshots_preserved": true,
   "final_accounting": {
     "accounted_balance": 0,
     "conserved": true,
-    "escrow_count": 12,
+    "escrow_count": 2,
     "locked_bonds": 0,
     "locked_principal": 0,
-    "total_deposited": 139038,
-    "total_withdrawn": 139038,
+    "native_balance": 0,
+    "pending_withdrawals": 0,
+    "solvent": true,
+    "total_deposited": 22047,
+    "total_withdrawn": 22047,
+    "unreconciled_deposits": 0,
     "withdrawal_credits": 0
   },
-  "assessment": {
-    "conclusive": true,
-    "payee_bps": 5000,
-    "payer_bad_faith": false,
-    "reason": "Original terms define four independently priced sections, each earning exactly 25%. Delivery evidence contains Installation with the exact required command and Funding stating create_escrow is payable and native GEN value is principal, satisfying sections 1 and 2. Dispute and Withdrawal sections are absent, and the delivery text itself acknowledges they were not written; payer also confirms only two sections delivered and accepts 50% earned. No evidence supports bad faith; payer's position matches the terms and delivered work. Award 2 of 4 sections = 50% = 5000 bps."
-  }
+  "public_origin": "https://d3cfa12d0003fa.lhr.life",
+  "origin_requests": [
+    {
+      "at": 1792467056.1954527,
+      "path": "/2f539854dd02/changed/terms.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7fbf4cc48cc098393b4df8a349d0b2b8ed2d07a5c206587e82104b4668a34591"
+    },
+    {
+      "at": 1792467057.8785946,
+      "path": "/2f539854dd02/changed/delivery-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7d4bee0b2eaaf609805404fb0988cdd6497a1a9aa0f6a3680050920b35f01b25"
+    },
+    {
+      "at": 1792467059.6426692,
+      "path": "/2f539854dd02/changed/dispute-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "66b06cd1ff6268f6f399d9728415da59affdf520f127b550aa395114fbb20f60"
+    },
+    {
+      "at": 1792467069.710655,
+      "path": "/2f539854dd02/changed/terms.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7fbf4cc48cc098393b4df8a349d0b2b8ed2d07a5c206587e82104b4668a34591"
+    },
+    {
+      "at": 1792467075.141529,
+      "path": "/2f539854dd02/changed/terms.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7fbf4cc48cc098393b4df8a349d0b2b8ed2d07a5c206587e82104b4668a34591"
+    },
+    {
+      "at": 1792467075.4073741,
+      "path": "/2f539854dd02/changed/terms.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7fbf4cc48cc098393b4df8a349d0b2b8ed2d07a5c206587e82104b4668a34591"
+    },
+    {
+      "at": 1792467080.1177773,
+      "path": "/2f539854dd02/changed/terms.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7fbf4cc48cc098393b4df8a349d0b2b8ed2d07a5c206587e82104b4668a34591"
+    },
+    {
+      "at": 1792467080.3880541,
+      "path": "/2f539854dd02/changed/terms.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7fbf4cc48cc098393b4df8a349d0b2b8ed2d07a5c206587e82104b4668a34591"
+    },
+    {
+      "at": 1792467085.2547827,
+      "path": "/2f539854dd02/changed/terms.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7fbf4cc48cc098393b4df8a349d0b2b8ed2d07a5c206587e82104b4668a34591"
+    },
+    {
+      "at": 1792467108.1107476,
+      "path": "/2f539854dd02/changed/delivery-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7d4bee0b2eaaf609805404fb0988cdd6497a1a9aa0f6a3680050920b35f01b25"
+    },
+    {
+      "at": 1792467113.5842695,
+      "path": "/2f539854dd02/changed/delivery-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7d4bee0b2eaaf609805404fb0988cdd6497a1a9aa0f6a3680050920b35f01b25"
+    },
+    {
+      "at": 1792467113.8565605,
+      "path": "/2f539854dd02/changed/delivery-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7d4bee0b2eaaf609805404fb0988cdd6497a1a9aa0f6a3680050920b35f01b25"
+    },
+    {
+      "at": 1792467118.1051579,
+      "path": "/2f539854dd02/changed/delivery-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7d4bee0b2eaaf609805404fb0988cdd6497a1a9aa0f6a3680050920b35f01b25"
+    },
+    {
+      "at": 1792467118.9046187,
+      "path": "/2f539854dd02/changed/delivery-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7d4bee0b2eaaf609805404fb0988cdd6497a1a9aa0f6a3680050920b35f01b25"
+    },
+    {
+      "at": 1792467122.5480096,
+      "path": "/2f539854dd02/changed/delivery-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7d4bee0b2eaaf609805404fb0988cdd6497a1a9aa0f6a3680050920b35f01b25"
+    },
+    {
+      "at": 1792467129.5722232,
+      "path": "/2f539854dd02/changed/dispute-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "66b06cd1ff6268f6f399d9728415da59affdf520f127b550aa395114fbb20f60"
+    },
+    {
+      "at": 1792467134.8933926,
+      "path": "/2f539854dd02/changed/dispute-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "66b06cd1ff6268f6f399d9728415da59affdf520f127b550aa395114fbb20f60"
+    },
+    {
+      "at": 1792467135.1821349,
+      "path": "/2f539854dd02/changed/dispute-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "66b06cd1ff6268f6f399d9728415da59affdf520f127b550aa395114fbb20f60"
+    },
+    {
+      "at": 1792467141.3024049,
+      "path": "/2f539854dd02/changed/dispute-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "66b06cd1ff6268f6f399d9728415da59affdf520f127b550aa395114fbb20f60"
+    },
+    {
+      "at": 1792467141.5769053,
+      "path": "/2f539854dd02/changed/dispute-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "66b06cd1ff6268f6f399d9728415da59affdf520f127b550aa395114fbb20f60"
+    },
+    {
+      "at": 1792467146.4482052,
+      "path": "/2f539854dd02/changed/dispute-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "66b06cd1ff6268f6f399d9728415da59affdf520f127b550aa395114fbb20f60"
+    },
+    {
+      "at": 1792467174.793115,
+      "path": "/2f539854dd02/changed/terms.md",
+      "status": 200,
+      "phase": "changed",
+      "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+    },
+    {
+      "at": 1792467176.2083569,
+      "path": "/2f539854dd02/changed/delivery-half.md",
+      "status": 200,
+      "phase": "changed",
+      "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+    },
+    {
+      "at": 1792467177.6804545,
+      "path": "/2f539854dd02/changed/dispute-half.md",
+      "status": 200,
+      "phase": "changed",
+      "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+    },
+    {
+      "at": 1792467186.0947447,
+      "path": "/2f539854dd02/changed/terms.md",
+      "status": 200,
+      "phase": "changed",
+      "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+    },
+    {
+      "at": 1792467186.9184427,
+      "path": "/2f539854dd02/changed/delivery-half.md",
+      "status": 200,
+      "phase": "changed",
+      "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+    },
+    {
+      "at": 1792467187.731544,
+      "path": "/2f539854dd02/changed/dispute-half.md",
+      "status": 200,
+      "phase": "changed",
+      "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+    },
+    {
+      "at": 1792467198.3340828,
+      "path": "/2f539854dd02/changed/terms.md",
+      "status": 200,
+      "phase": "changed",
+      "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+    },
+    {
+      "at": 1792467198.6023433,
+      "path": "/2f539854dd02/changed/terms.md",
+      "status": 200,
+      "phase": "changed",
+      "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+    },
+    {
+      "at": 1792467199.4330697,
+      "path": "/2f539854dd02/changed/delivery-half.md",
+      "status": 200,
+      "phase": "changed",
+      "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+    },
+    {
+      "at": 1792467199.6995583,
+      "path": "/2f539854dd02/changed/delivery-half.md",
+      "status": 200,
+      "phase": "changed",
+      "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+    },
+    {
+      "at": 1792467200.515189,
+      "path": "/2f539854dd02/changed/dispute-half.md",
+      "status": 200,
+      "phase": "changed",
+      "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+    },
+    {
+      "at": 1792467200.8136125,
+      "path": "/2f539854dd02/changed/dispute-half.md",
+      "status": 200,
+      "phase": "changed",
+      "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+    },
+    {
+      "at": 1792467205.7303793,
+      "path": "/2f539854dd02/changed/terms.md",
+      "status": 200,
+      "phase": "changed",
+      "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+    },
+    {
+      "at": 1792467206.5852587,
+      "path": "/2f539854dd02/changed/delivery-half.md",
+      "status": 200,
+      "phase": "changed",
+      "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+    },
+    {
+      "at": 1792467207.3991072,
+      "path": "/2f539854dd02/changed/dispute-half.md",
+      "status": 200,
+      "phase": "changed",
+      "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+    },
+    {
+      "at": 1792467210.540177,
+      "path": "/2f539854dd02/changed/terms.md",
+      "status": 200,
+      "phase": "changed",
+      "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+    },
+    {
+      "at": 1792467211.3265219,
+      "path": "/2f539854dd02/changed/delivery-half.md",
+      "status": 200,
+      "phase": "changed",
+      "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+    },
+    {
+      "at": 1792467212.1311772,
+      "path": "/2f539854dd02/changed/dispute-half.md",
+      "status": 200,
+      "phase": "changed",
+      "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+    },
+    {
+      "at": 1792467215.6532166,
+      "path": "/2f539854dd02/changed/terms.md",
+      "status": 200,
+      "phase": "changed",
+      "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+    },
+    {
+      "at": 1792467216.4799562,
+      "path": "/2f539854dd02/changed/delivery-half.md",
+      "status": 200,
+      "phase": "changed",
+      "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+    },
+    {
+      "at": 1792467217.3433511,
+      "path": "/2f539854dd02/changed/dispute-half.md",
+      "status": 200,
+      "phase": "changed",
+      "sha256": "4f323f732a14f9881f04754e9abea8745880f67847ca5020b3f25d21ac58e5d7"
+    },
+    {
+      "at": 1792467255.1303027,
+      "path": "/2f539854dd02/deleted/terms.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7fbf4cc48cc098393b4df8a349d0b2b8ed2d07a5c206587e82104b4668a34591"
+    },
+    {
+      "at": 1792467256.7856107,
+      "path": "/2f539854dd02/deleted/delivery-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7d4bee0b2eaaf609805404fb0988cdd6497a1a9aa0f6a3680050920b35f01b25"
+    },
+    {
+      "at": 1792467258.4389126,
+      "path": "/2f539854dd02/deleted/dispute-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "66b06cd1ff6268f6f399d9728415da59affdf520f127b550aa395114fbb20f60"
+    },
+    {
+      "at": 1792467267.5002918,
+      "path": "/2f539854dd02/deleted/terms.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7fbf4cc48cc098393b4df8a349d0b2b8ed2d07a5c206587e82104b4668a34591"
+    },
+    {
+      "at": 1792467270.698516,
+      "path": "/2f539854dd02/deleted/terms.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7fbf4cc48cc098393b4df8a349d0b2b8ed2d07a5c206587e82104b4668a34591"
+    },
+    {
+      "at": 1792467270.9821317,
+      "path": "/2f539854dd02/deleted/terms.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7fbf4cc48cc098393b4df8a349d0b2b8ed2d07a5c206587e82104b4668a34591"
+    },
+    {
+      "at": 1792467273.4048388,
+      "path": "/2f539854dd02/deleted/terms.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7fbf4cc48cc098393b4df8a349d0b2b8ed2d07a5c206587e82104b4668a34591"
+    },
+    {
+      "at": 1792467274.2151756,
+      "path": "/2f539854dd02/deleted/terms.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7fbf4cc48cc098393b4df8a349d0b2b8ed2d07a5c206587e82104b4668a34591"
+    },
+    {
+      "at": 1792467276.2856002,
+      "path": "/2f539854dd02/deleted/terms.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7fbf4cc48cc098393b4df8a349d0b2b8ed2d07a5c206587e82104b4668a34591"
+    },
+    {
+      "at": 1792467295.3369,
+      "path": "/2f539854dd02/deleted/delivery-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7d4bee0b2eaaf609805404fb0988cdd6497a1a9aa0f6a3680050920b35f01b25"
+    },
+    {
+      "at": 1792467298.3817432,
+      "path": "/2f539854dd02/deleted/delivery-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7d4bee0b2eaaf609805404fb0988cdd6497a1a9aa0f6a3680050920b35f01b25"
+    },
+    {
+      "at": 1792467298.654944,
+      "path": "/2f539854dd02/deleted/delivery-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7d4bee0b2eaaf609805404fb0988cdd6497a1a9aa0f6a3680050920b35f01b25"
+    },
+    {
+      "at": 1792467301.269035,
+      "path": "/2f539854dd02/deleted/delivery-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7d4bee0b2eaaf609805404fb0988cdd6497a1a9aa0f6a3680050920b35f01b25"
+    },
+    {
+      "at": 1792467301.5416386,
+      "path": "/2f539854dd02/deleted/delivery-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7d4bee0b2eaaf609805404fb0988cdd6497a1a9aa0f6a3680050920b35f01b25"
+    },
+    {
+      "at": 1792467304.4994965,
+      "path": "/2f539854dd02/deleted/delivery-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "7d4bee0b2eaaf609805404fb0988cdd6497a1a9aa0f6a3680050920b35f01b25"
+    },
+    {
+      "at": 1792467313.140507,
+      "path": "/2f539854dd02/deleted/dispute-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "66b06cd1ff6268f6f399d9728415da59affdf520f127b550aa395114fbb20f60"
+    },
+    {
+      "at": 1792467316.0922134,
+      "path": "/2f539854dd02/deleted/dispute-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "66b06cd1ff6268f6f399d9728415da59affdf520f127b550aa395114fbb20f60"
+    },
+    {
+      "at": 1792467318.842717,
+      "path": "/2f539854dd02/deleted/dispute-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "66b06cd1ff6268f6f399d9728415da59affdf520f127b550aa395114fbb20f60"
+    },
+    {
+      "at": 1792467321.5320034,
+      "path": "/2f539854dd02/deleted/dispute-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "66b06cd1ff6268f6f399d9728415da59affdf520f127b550aa395114fbb20f60"
+    },
+    {
+      "at": 1792467324.608331,
+      "path": "/2f539854dd02/deleted/dispute-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "66b06cd1ff6268f6f399d9728415da59affdf520f127b550aa395114fbb20f60"
+    },
+    {
+      "at": 1792467327.3481612,
+      "path": "/2f539854dd02/deleted/dispute-half.md",
+      "status": 200,
+      "phase": "original",
+      "sha256": "66b06cd1ff6268f6f399d9728415da59affdf520f127b550aa395114fbb20f60"
+    },
+    {
+      "at": 1792467357.1170475,
+      "path": "/2f539854dd02/deleted/terms.md",
+      "status": 404,
+      "phase": "deleted",
+      "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+    },
+    {
+      "at": 1792467358.4874327,
+      "path": "/2f539854dd02/deleted/delivery-half.md",
+      "status": 404,
+      "phase": "deleted",
+      "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+    },
+    {
+      "at": 1792467360.0694962,
+      "path": "/2f539854dd02/deleted/dispute-half.md",
+      "status": 404,
+      "phase": "deleted",
+      "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+    },
+    {
+      "at": 1792467366.2999718,
+      "path": "/2f539854dd02/deleted/terms.md",
+      "status": 404,
+      "phase": "deleted",
+      "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+    },
+    {
+      "at": 1792467367.095982,
+      "path": "/2f539854dd02/deleted/delivery-half.md",
+      "status": 404,
+      "phase": "deleted",
+      "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+    },
+    {
+      "at": 1792467367.8908737,
+      "path": "/2f539854dd02/deleted/dispute-half.md",
+      "status": 404,
+      "phase": "deleted",
+      "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+    },
+    {
+      "at": 1792467383.3364067,
+      "path": "/2f539854dd02/deleted/terms.md",
+      "status": 404,
+      "phase": "deleted",
+      "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+    },
+    {
+      "at": 1792467383.6004784,
+      "path": "/2f539854dd02/deleted/terms.md",
+      "status": 404,
+      "phase": "deleted",
+      "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+    },
+    {
+      "at": 1792467384.40055,
+      "path": "/2f539854dd02/deleted/delivery-half.md",
+      "status": 404,
+      "phase": "deleted",
+      "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+    },
+    {
+      "at": 1792467384.6687393,
+      "path": "/2f539854dd02/deleted/delivery-half.md",
+      "status": 404,
+      "phase": "deleted",
+      "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+    },
+    {
+      "at": 1792467385.4595802,
+      "path": "/2f539854dd02/deleted/dispute-half.md",
+      "status": 404,
+      "phase": "deleted",
+      "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+    },
+    {
+      "at": 1792467385.729223,
+      "path": "/2f539854dd02/deleted/dispute-half.md",
+      "status": 404,
+      "phase": "deleted",
+      "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+    },
+    {
+      "at": 1792467392.0910673,
+      "path": "/2f539854dd02/deleted/terms.md",
+      "status": 404,
+      "phase": "deleted",
+      "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+    },
+    {
+      "at": 1792467392.8900049,
+      "path": "/2f539854dd02/deleted/delivery-half.md",
+      "status": 404,
+      "phase": "deleted",
+      "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+    },
+    {
+      "at": 1792467393.8884563,
+      "path": "/2f539854dd02/deleted/dispute-half.md",
+      "status": 404,
+      "phase": "deleted",
+      "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+    },
+    {
+      "at": 1792467399.9050877,
+      "path": "/2f539854dd02/deleted/terms.md",
+      "status": 404,
+      "phase": "deleted",
+      "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+    },
+    {
+      "at": 1792467400.7254996,
+      "path": "/2f539854dd02/deleted/delivery-half.md",
+      "status": 404,
+      "phase": "deleted",
+      "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+    },
+    {
+      "at": 1792467401.5281882,
+      "path": "/2f539854dd02/deleted/dispute-half.md",
+      "status": 404,
+      "phase": "deleted",
+      "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+    },
+    {
+      "at": 1792467405.4068766,
+      "path": "/2f539854dd02/deleted/terms.md",
+      "status": 404,
+      "phase": "deleted",
+      "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+    },
+    {
+      "at": 1792467406.1932547,
+      "path": "/2f539854dd02/deleted/delivery-half.md",
+      "status": 404,
+      "phase": "deleted",
+      "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+    },
+    {
+      "at": 1792467407.021134,
+      "path": "/2f539854dd02/deleted/dispute-half.md",
+      "status": 404,
+      "phase": "deleted",
+      "sha256": "691a20f8688566a74e3a01458c912a08a0c2b18c29709107245d80bb4f798154"
+    }
+  ]
 }

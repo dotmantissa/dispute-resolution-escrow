@@ -1,0 +1,347 @@
+{
+  "version": "2.0.0",
+  "run_id": "7dba302d8d79",
+  "contract_address": "0x5da04B7dF368D74e775e331A1B8154C1aad47E7d",
+  "source_sha256": "ea4af6e7c194a176e33031a65ff7f2357e5c8854156209144a684bdb7dea1951",
+  "network": "studionet",
+  "started_at": 1792467574,
+  "actors": {
+    "payer": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+    "payee": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
+    "outsider": "0x10B55466540e0E24D5733752ED6A843d0D708c8c"
+  },
+  "transactions": [
+    {
+      "operation": "deploy-positive-payout-book",
+      "method": "deploy",
+      "transaction_hash": "0x38808cfb8ea6948facba42af321c535f0dbe02302117d77a3b1aafac0e73fa70",
+      "source_sha256": "ea4af6e7c194a176e33031a65ff7f2357e5c8854156209144a684bdb7dea1951",
+      "state": "FINALIZED",
+      "expected": "success",
+      "execution": "SUCCESS",
+      "contract_address": "0x5da04B7dF368D74e775e331A1B8154C1aad47E7d"
+    },
+    {
+      "operation": "positive-payout-deposit",
+      "method": "deposit",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "address": "0x5da04B7dF368D74e775e331A1B8154C1aad47E7d",
+      "transaction_hash": "0x236e91fb948fb7adc077d2e83c85c30793cf29bc607717668753df1195a8f503",
+      "value": 10044,
+      "expected": "success",
+      "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x0B50B270Eba5D9B780272C4Cf4720260177e761D": "idle",
+        "0x40533175AfBbAee2c030F88259Afb5aEDbCF0E05": "agree",
+        "0x892C437da9b9CA0b6017B6f046F58E3526B46ec6": "agree",
+        "0xa21bc502E3578E4b3039be8c59a257198f7c3f19": "idle",
+        "0xe7eEe8a1c1690b0322d795B80A76ab2Cd1a0eAFd": "agree"
+      }
+    },
+    {
+      "operation": "create:positive-payout",
+      "method": "create_escrow",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "address": "0x5da04B7dF368D74e775e331A1B8154C1aad47E7d",
+      "transaction_hash": "0x56957f16db70d8146c44118e9bb13348f6889722ac7464ac351e3504f61a3f76",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x17ac0CaefB18205c737e64ee582c9245A28ca1f9": "agree",
+        "0x40533175AfBbAee2c030F88259Afb5aEDbCF0E05": "idle",
+        "0x5Bbbd7cdD63c0ba7f088038Cb049bDDAbE4F6fd1": "agree",
+        "0x7bf4Ea55363bbe73A4dd5b3900bf03c978A63b6e": "idle",
+        "0xad7d13f269CeAd4379E64a1A3a0803a827e70B43": "agree"
+      }
+    },
+    {
+      "operation": "9bfda45956b90e0b40657c301276a326b145d1bf07919012dc40e858f7c3906c",
+      "method": "accept_engagement",
+      "caller": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
+      "address": "0x5da04B7dF368D74e775e331A1B8154C1aad47E7d",
+      "transaction_hash": "0x879079e747d3260899443d48117cbcd9c7dfa789ae8b28354828bdb132782324",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x1dEcE6A694520b1d3a2e24b9f28500858C756BDb": "idle",
+        "0x2FcBC452425f2F1e102c5c04b4331fcB46ee1c00": "agree",
+        "0x5Bbbd7cdD63c0ba7f088038Cb049bDDAbE4F6fd1": "idle",
+        "0xa21bc502E3578E4b3039be8c59a257198f7c3f19": "agree",
+        "0xb0925568bFbCF00aADBcA053E6D0E1628ff3d530": "agree"
+      }
+    },
+    {
+      "operation": "731bf3933a49c50f759ebb53f1cc5fbacd766bc266f5498ff6d09eabd5cbad37",
+      "method": "claim_delivery",
+      "caller": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
+      "address": "0x5da04B7dF368D74e775e331A1B8154C1aad47E7d",
+      "transaction_hash": "0xe64224a5adf2cad6e23d9d6782373c512163d508601626abe67eb271fa8fae1b",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x1dEcE6A694520b1d3a2e24b9f28500858C756BDb": "agree",
+        "0x8a876C3F3a4783Bd123982bcBF3c672dc0239004": "agree",
+        "0x9244De5F20cB75A0c51d79A9A3208D00a99aFc10": "agree",
+        "0xA712cB25a4002666FA9D09477251f238dD9e06b3": "idle",
+        "0xb0925568bFbCF00aADBcA053E6D0E1628ff3d530": "idle"
+      }
+    },
+    {
+      "operation": "e2ea8cb749da21e2db8b7c173b33f54936b5ef63b2fb7c5416b037dd791d77c2",
+      "method": "accept_delivery",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "address": "0x5da04B7dF368D74e775e331A1B8154C1aad47E7d",
+      "transaction_hash": "0xdf96ffe894b175146a9110de76fd3e87dc6b93ce3ae29ffc68237fc2d0883b88",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x1242E9f5bf9b253327f130E8802b7b2F438A21Ef": "idle",
+        "0x5Bbbd7cdD63c0ba7f088038Cb049bDDAbE4F6fd1": "agree",
+        "0x892C437da9b9CA0b6017B6f046F58E3526B46ec6": "idle",
+        "0x8Ce1805d6970d54748dE7160b5b395dCC5c71F44": "agree",
+        "0xA712cB25a4002666FA9D09477251f238dD9e06b3": "agree"
+      }
+    },
+    {
+      "operation": "deploy-payout-inbox",
+      "method": "deploy",
+      "transaction_hash": "0xb914ac579ea21970d8adeb45f3dd2336fc06b658357da2fa6285e780576b6889",
+      "source_sha256": "1121d585aaad1a56156b730a7444962513ed8c767fc618f8945f14d015339934",
+      "state": "FINALIZED",
+      "expected": "success",
+      "execution": "SUCCESS",
+      "contract_address": "0xFd310BA17Bd88Ba6A461054C45529e7a8Ecb72Ee"
+    },
+    {
+      "operation": "6ec663c7be1e5a5e9afe2c1054e7bb88e7cf1cffacb02b4d32f1cbbe387fc0a7",
+      "method": "withdraw",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "address": "0x5da04B7dF368D74e775e331A1B8154C1aad47E7d",
+      "transaction_hash": "0xce3a8f3974f2dbbd028faa14bdb0b9d0c9a97cd035971e307679e5e392ec39a0",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x0B50B270Eba5D9B780272C4Cf4720260177e761D": "idle",
+        "0x2FcBC452425f2F1e102c5c04b4331fcB46ee1c00": "agree",
+        "0x8a876C3F3a4783Bd123982bcBF3c672dc0239004": "idle",
+        "0x9244De5F20cB75A0c51d79A9A3208D00a99aFc10": "agree",
+        "0xA712cB25a4002666FA9D09477251f238dD9e06b3": "agree"
+      }
+    },
+    {
+      "operation": "664219673250849b8da05f9bb7a10e261c6baf62e0564983e35ba8ce2fb79a5f",
+      "method": "withdraw_to_account",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "address": "0xFd310BA17Bd88Ba6A461054C45529e7a8Ecb72Ee",
+      "transaction_hash": "0xc18cf9d40d962ed814b787e10f375a3a6e58d0275ef47e29ee367f9871dc7c2c",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "submitted_via": "raw SDK",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x40533175AfBbAee2c030F88259Afb5aEDbCF0E05": "idle",
+        "0x7bf4Ea55363bbe73A4dd5b3900bf03c978A63b6e": "idle",
+        "0xA712cB25a4002666FA9D09477251f238dD9e06b3": "agree",
+        "0xa21bc502E3578E4b3039be8c59a257198f7c3f19": "agree",
+        "0xf1C7551292319EE334e2D8A24eAC108Bd4C63b21": "agree"
+      }
+    },
+    {
+      "operation": "c5a14d88ca7d4c4ed438ca9f695fc1b5df1e80fe2244d13632018f4eabc18556",
+      "method": "withdraw",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "address": "0x5da04B7dF368D74e775e331A1B8154C1aad47E7d",
+      "transaction_hash": "0x99f87afd1b08c2ec470b912222ab31e5e69eaf66f3e1111cf1a6c367f8fd4fbc",
+      "value": 0,
+      "expected": "revert",
+      "state": "FINALIZED",
+      "submitted_via": "raw SDK",
+      "execution": "ERROR",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x2FcBC452425f2F1e102c5c04b4331fcB46ee1c00": "agree",
+        "0x40533175AfBbAee2c030F88259Afb5aEDbCF0E05": "agree",
+        "0x7bf4Ea55363bbe73A4dd5b3900bf03c978A63b6e": "agree",
+        "0x892C437da9b9CA0b6017B6f046F58E3526B46ec6": "agree",
+        "0xb0925568bFbCF00aADBcA053E6D0E1628ff3d530": "idle"
+      },
+      "error": "[EXPECTED] Withdrawal reference already used"
+    },
+    {
+      "operation": "1d54e99dff1b3cae49af9bb0fbe0a548ed4199b91c8ba2803909e9f79312aecf",
+      "method": "withdraw",
+      "caller": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "address": "0x5da04B7dF368D74e775e331A1B8154C1aad47E7d",
+      "transaction_hash": "0xf47e5d8587433392e1133c891d82a01bf6c8b6fda35074c2f28897e269742713",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x17ac0CaefB18205c737e64ee582c9245A28ca1f9": "agree",
+        "0x2FcBC452425f2F1e102c5c04b4331fcB46ee1c00": "agree",
+        "0x6a4179A851B3747A458baD2f089AB2EeFE0eBbAb": "agree",
+        "0x7bf4Ea55363bbe73A4dd5b3900bf03c978A63b6e": "agree",
+        "0xa21bc502E3578E4b3039be8c59a257198f7c3f19": "agree"
+      }
+    },
+    {
+      "operation": "1c6f180e0e5bdf5e63b7966f6e09a7f6aa2e39c15f0529a85737574a3f21c1da",
+      "method": "withdraw",
+      "caller": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
+      "address": "0x5da04B7dF368D74e775e331A1B8154C1aad47E7d",
+      "transaction_hash": "0x3e11e16be3f97f89ca9d40c4b95e3fc1666af099e8cf3c8081bfbf0352461c93",
+      "value": 0,
+      "expected": "success",
+      "state": "FINALIZED",
+      "submitted_via": "EscrowClient",
+      "execution": "SUCCESS",
+      "decision": "MAJORITY_AGREE",
+      "votes": {
+        "0x1242E9f5bf9b253327f130E8802b7b2F438A21Ef": "agree",
+        "0x5Bbbd7cdD63c0ba7f088038Cb049bDDAbE4F6fd1": "agree",
+        "0x8a876C3F3a4783Bd123982bcBF3c672dc0239004": "agree",
+        "0xb0925568bFbCF00aADBcA053E6D0E1628ff3d530": "agree",
+        "0xf1C7551292319EE334e2D8A24eAC108Bd4C63b21": "agree"
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "case": "partial_withdrawal_safe_inbox_eoa",
+      "verified": true,
+      "inbox": "0xFd310BA17Bd88Ba6A461054C45529e7a8Ecb72Ee"
+    }
+  ],
+  "inbox_before": 0,
+  "inbox_recovery_before": 852374500919583130199,
+  "remaining_withdrawal_plan": {
+    "payer": {
+      "amount": 14,
+      "before": 852374500919583130228
+    },
+    "payee": {
+      "amount": 10001,
+      "before": 10000000000000158014
+    }
+  },
+  "emitted_transactions": [
+    {
+      "transaction_hash": "0x0864439703b1d2d797a5cc1d6a73ee2b0b328cfa03a4805940b62a22b797baee",
+      "triggered_by": "0xce3a8f3974f2dbbd028faa14bdb0b9d0c9a97cd035971e307679e5e392ec39a0",
+      "state": "FINALIZED",
+      "type": 2,
+      "recipient": "0x5da04B7dF368D74e775e331A1B8154C1aad47E7d",
+      "value": 0,
+      "expected": "success"
+    },
+    {
+      "transaction_hash": "0x15ad6b8d601754c290cab374b3a30a8799e3cf0bb3dfef0980546b619e59a850",
+      "triggered_by": "0xce3a8f3974f2dbbd028faa14bdb0b9d0c9a97cd035971e307679e5e392ec39a0",
+      "state": "FINALIZED",
+      "type": 2,
+      "recipient": "0xFd310BA17Bd88Ba6A461054C45529e7a8Ecb72Ee",
+      "value": 29,
+      "expected": "success"
+    },
+    {
+      "transaction_hash": "0x8806bc152d49d7fa700dc63b55871d2d133df81566a78e3a8a431b5028e30864",
+      "triggered_by": "0xc18cf9d40d962ed814b787e10f375a3a6e58d0275ef47e29ee367f9871dc7c2c",
+      "state": "FINALIZED",
+      "type": 0,
+      "recipient": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "value": 29,
+      "expected": "success"
+    },
+    {
+      "transaction_hash": "0x08ba0490383ae723e6e1c55fcca559978bf4a65b08f43ab18e6f4d5487a6296f",
+      "triggered_by": "0xc18cf9d40d962ed814b787e10f375a3a6e58d0275ef47e29ee367f9871dc7c2c",
+      "state": "FINALIZED",
+      "type": 2,
+      "recipient": "0xFd310BA17Bd88Ba6A461054C45529e7a8Ecb72Ee",
+      "value": 0,
+      "expected": "success"
+    },
+    {
+      "transaction_hash": "0x39bcfe4f9936f74f33ea4dfe90eff0a67b2e3213ecf4cc46c1928f0705a2522d",
+      "triggered_by": "0xf47e5d8587433392e1133c891d82a01bf6c8b6fda35074c2f28897e269742713",
+      "state": "FINALIZED",
+      "type": 0,
+      "recipient": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "value": 14,
+      "expected": "success"
+    },
+    {
+      "transaction_hash": "0xbdda7f550a1bf57c8d3dd9da53d0bbdbb05a6ca92a6328b599c700a13076c6fb",
+      "triggered_by": "0xf47e5d8587433392e1133c891d82a01bf6c8b6fda35074c2f28897e269742713",
+      "state": "FINALIZED",
+      "type": 2,
+      "recipient": "0x5da04B7dF368D74e775e331A1B8154C1aad47E7d",
+      "value": 0,
+      "expected": "success"
+    },
+    {
+      "transaction_hash": "0xe0cfdf9927da7a240265fc8c00019bd880c7aef7f8b9e115e451591052cf9103",
+      "triggered_by": "0x3e11e16be3f97f89ca9d40c4b95e3fc1666af099e8cf3c8081bfbf0352461c93",
+      "state": "FINALIZED",
+      "type": 0,
+      "recipient": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
+      "value": 10001,
+      "expected": "success"
+    },
+    {
+      "transaction_hash": "0xdcd27420fe213773968f6df58164ef3ad421701c904bd63d08fdd4e587db7106",
+      "triggered_by": "0x3e11e16be3f97f89ca9d40c4b95e3fc1666af099e8cf3c8081bfbf0352461c93",
+      "state": "FINALIZED",
+      "type": 2,
+      "recipient": "0x5da04B7dF368D74e775e331A1B8154C1aad47E7d",
+      "value": 0,
+      "expected": "success"
+    }
+  ],
+  "all_transactions_finalized": true,
+  "complete": true,
+  "final_accounting": {
+    "accounted_balance": 0,
+    "conserved": true,
+    "escrow_count": 1,
+    "locked_bonds": 0,
+    "locked_principal": 0,
+    "native_balance": 0,
+    "pending_withdrawals": 0,
+    "solvent": true,
+    "total_deposited": 10044,
+    "total_withdrawn": 10044,
+    "unreconciled_deposits": 0,
+    "withdrawal_credits": 0
+  },
+  "payout_inbox": "0xFd310BA17Bd88Ba6A461054C45529e7a8Ecb72Ee",
+  "finished_at": 1792468122
+}
