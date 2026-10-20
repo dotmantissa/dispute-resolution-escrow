@@ -62,7 +62,7 @@ assert record['principal'] == principal
 
 The 5000-basis-point fallback in this example is an explicit 50% deadline allocation, not a prediction about a future ruling. Select a split appropriate to the actual engagement and display it clearly to both parties.
 
-`deposit` refuses a locally signed deposit for a different funding owner. Lower-level direct gifts remain permitted by the contract and benefit its configured owner. A failed deposit on Studio may retain value before state commits. Inspect `get_accounting()['unreconciled_deposits']`, then call nonpayable `reconcile_deposits` after pending withdrawals finalize. That operation always credits the configured owner, never its caller.
+`deposit` first requires the published escrow source SHA-256 and then refuses a locally signed deposit for a different funding owner. Lower-level direct gifts remain permitted by the contract and benefit its configured owner. A failed deposit on Studio may retain value before state commits. Inspect `get_accounting()['unreconciled_deposits']`, then call nonpayable `reconcile_deposits` after pending withdrawals finalize. That operation always credits the configured owner, never its caller.
 
 ## Payee acceptance and delivery
 
@@ -185,3 +185,5 @@ A preflight view cannot guarantee arbitrary custom receiver execution. The lower
 Version 2 is a fresh deployment with a breaking API. The earlier published book `0xA9BAc09D9813c890292Cb862323130D4508E7f30` was audited with zero native balance and zero liabilities; no user funds were migrated. Historic transactions remain at that address and in Git history.
 
 Existing applications must deploy a payer-bound v2 book, change payable creation/dispute calls to prepaid nonpayable calls, add explicit payee acceptance, display the deadline fallback, and track finality plus recipient delivery. Do not treat old verification artifacts as evidence for a new source hash or continue funding a superseded address.
+
+The package exports `ESCROW_SOURCE_SHA256` and `PAYOUT_INBOX_SOURCE_SHA256` for source verification. An altered contract requires a separately audited binding and source commitment. The production binding refuses modified escrow source before submitting a deposit. The retired qualification account contains an incident recovery fixture and is never an integration destination.

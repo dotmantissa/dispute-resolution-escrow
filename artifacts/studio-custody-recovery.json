@@ -1,0 +1,141 @@
+{
+  "address": "0x2A738Fb0EA7F055f5691B8c9d8a364D7d03F332F",
+  "source_sha256": "2541dd99ba503c0e5a5582b5dc792b86aaa021a10fd2399a5b6dcc1929f416e3",
+  "plan_sha256": "e489a38a68db0e9e30636da43b3baa3f7116907fbf715d73702a8fe0f8c0641b",
+  "plan": {
+    "address": "0x2A738Fb0EA7F055f5691B8c9d8a364D7d03F332F",
+    "snapshot_sha256": "c539548a9e3d3ae5848fad4d20630ed02950b6e774b0e21808a5fe3502f549c5",
+    "allocations": {
+      "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53": 232695,
+      "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e": 67338
+    },
+    "native_balance": 300033,
+    "purpose": "Bilateral exit of controlled faucet test funds after Studio erased executable accepted state; account permanently retired from qualification."
+  },
+  "before_balances": {
+    "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53": 852374500919583130242,
+    "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e": 10000000000000168015
+  },
+  "transactions": [
+    {
+      "role": "payer",
+      "method": "authorize_test_recovery",
+      "transaction_hash": "0xa020112973f2e3646f1bbc191161b05a14091f4b9df737c30f4f23b709fc7ea4",
+      "status": "FINALIZED",
+      "consensus_success": true
+    },
+    {
+      "role": "payee",
+      "method": "authorize_test_recovery",
+      "transaction_hash": "0x293991322d3d87b550ffb403dc13d80c6ab87374ac2b349e99454380b2a8858d",
+      "status": "FINALIZED",
+      "consensus_success": true
+    },
+    {
+      "role": "payer",
+      "method": "emit_test_recovery",
+      "transaction_hash": "0x88676a37e8b8ecc4dedbaa3decfdadf9abd51b46159535b6b285513652b686e9",
+      "status": "FINALIZED",
+      "consensus_success": true
+    }
+  ],
+  "release_qualified": false,
+  "complete": true,
+  "upgrade_pre_nonce": 104,
+  "upgrade": "0x17bb6725844f58fa6ad98d122e9ba386fd962437c53ea8ca2147a5fb2c3e5d8a",
+  "upgrade_status": "FINALIZED",
+  "emission_transaction": "0x88676a37e8b8ecc4dedbaa3decfdadf9abd51b46159535b6b285513652b686e9",
+  "native_children": [
+    {
+      "transaction_hash": "0x910d8dea51e08033f853017dfff78c7747d519d8fd9d64e310e7a733200d9c79",
+      "from": "0x2A738Fb0EA7F055f5691B8c9d8a364D7d03F332F",
+      "to": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+      "amount": 232695,
+      "status": "FINALIZED",
+      "value_credited": true
+    },
+    {
+      "transaction_hash": "0x478f6679f972d0a795277d541db13668ee259da9b47841bd76104b80ea7976c5",
+      "from": "0x2A738Fb0EA7F055f5691B8c9d8a364D7d03F332F",
+      "to": "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e",
+      "amount": 67338,
+      "status": "FINALIZED",
+      "value_credited": true
+    }
+  ],
+  "after_balances": {
+    "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53": 852374500919583362937,
+    "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e": 10000000000000235353
+  },
+  "retired": true,
+  "native_balance": 0,
+  "recovered": 300033,
+  "recovery_state": {
+    "approvals": {
+      "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53": true,
+      "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e": true
+    },
+    "emitted": true,
+    "native_balance": 0,
+    "plan": {
+      "address": "0x2A738Fb0EA7F055f5691B8c9d8a364D7d03F332F",
+      "allocations": {
+        "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53": 232695,
+        "0xD199BC47C8096Bccc2e6e444a3f03B3Ba00faD8e": 67338
+      },
+      "native_balance": 300033,
+      "purpose": "Bilateral exit of controlled faucet test funds after Studio erased executable accepted state; account permanently retired from qualification.",
+      "snapshot_sha256": "c539548a9e3d3ae5848fad4d20630ed02950b6e774b0e21808a5fe3502f549c5"
+    },
+    "plan_sha256": "e489a38a68db0e9e30636da43b3baa3f7116907fbf715d73702a8fe0f8c0641b"
+  },
+  "finished_at": 1792470380,
+  "remaining_gate": "Hosted appeal snapshot repair and matching-source successful-appeal/payout qualification on a fresh book. This retired account is never funded again.",
+  "recovery_fixture": "tests/integration/contracts/qualification_custody_exit.py",
+  "direct_verification": {
+    "source_sha256": "2541dd99ba503c0e5a5582b5dc792b86aaa021a10fd2399a5b6dcc1929f416e3",
+    "plan_sha256": "e489a38a68db0e9e30636da43b3baa3f7116907fbf715d73702a8fe0f8c0641b",
+    "checks": [
+      "empty accepted storage",
+      "unrelated signer rejected",
+      "different payout plan rejected",
+      "one party cannot emit",
+      "uncommitted balance rejected",
+      "both exact approvals permit emission",
+      "emission replay rejected"
+    ],
+    "checks_passed": 7,
+    "native_delivery_tested": false,
+    "method": "Official direct-mode storage/calldata, absent accepted storage, actual captured allocation. Native delivery requires live child verification."
+  },
+  "control_verification": {
+    "address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+    "signer": "0xBC1399c55538eC034d4Da550C03c34Ae0C357f53",
+    "source_sha256": "ea4af6e7c194a176e33031a65ff7f2357e5c8854156209144a684bdb7dea1951",
+    "nonce": 26,
+    "pre_native_balance": 0,
+    "started_at": 1792469412,
+    "transaction_hash": "0xb83fa6c78aacf83d3abb7cc78666bb1a1c2d40b307c361499a3f0e1fcc9ca592",
+    "status": "FINALIZED",
+    "upgrade_result": "success",
+    "post_native_balance": 0,
+    "source_matches": true,
+    "accounting_preserved": true,
+    "accounting": {
+      "accounted_balance": 0,
+      "conserved": true,
+      "escrow_count": 2,
+      "locked_bonds": 0,
+      "locked_principal": 0,
+      "native_balance": 0,
+      "pending_withdrawals": 0,
+      "solvent": true,
+      "total_deposited": 22047,
+      "total_withdrawn": 22047,
+      "unreconciled_deposits": 0,
+      "withdrawal_credits": 0
+    }
+  },
+  "snapshot_file": "artifacts/studio-finalized-ledger-before-recovery.json",
+  "not_a_production_feature": true
+}

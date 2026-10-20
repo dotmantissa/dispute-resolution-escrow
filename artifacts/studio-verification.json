@@ -2278,5 +2278,9 @@
   "complete": false,
   "release_qualified": false,
   "blocker": "Source unavailable after successful validator appeal",
-  "appeal_outcome_usable": false
+  "appeal_outcome_usable": false,
+  "account_retired": true,
+  "custody_recovered": true,
+  "current_native_balance": 0,
+  "recovery": "artifacts/studio-custody-recovery.json"
 }

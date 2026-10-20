@@ -21,8 +21,13 @@
     "0x7bf4Ea55363bbe73A4dd5b3900bf03c978A63b6e": "idle",
     "0xf1C7551292319EE334e2D8A24eAC108Bd4C63b21": "idle"
   },
-  "qualification_status": "BLOCKED_SOURCE_UNAVAILABLE_AFTER_APPEAL",
-  "source_currently_retrievable": false,
+  "qualification_status": "RETIRED_AFTER_APPEAL_SOURCE_LOSS",
+  "source_currently_retrievable": true,
   "last_integrity_check": 1792467204,
-  "blocker_report": "artifacts/studio-appeal-integrity-failure.json"
+  "blocker_report": "artifacts/studio-appeal-integrity-failure.json",
+  "original_source_matches": false,
+  "current_source_sha256": "2541dd99ba503c0e5a5582b5dc792b86aaa021a10fd2399a5b6dcc1929f416e3",
+  "current_native_balance": 0,
+  "recovery": "artifacts/studio-custody-recovery.json",
+  "release_qualified": false
 }

@@ -1,0 +1,87 @@
+{
+  "network": "studionet",
+  "source_sha256": "e4b72e65725455955a7d683d942c905dcc19585b62df573facb5fe7bc43abef8",
+  "complete": false,
+  "release_qualified": false,
+  "attached_value": 0,
+  "transactions": [
+    {
+      "method": "deploy",
+      "transaction_hash": "0xd500eb0fbe36c4fc6a489b1db8e7ba9651a5d446afcfc2f1a8eeea545d0ff106"
+    },
+    {
+      "method": "observe",
+      "transaction_hash": "0xa8bae8d50e5433eb8a953f0d13046dc528f6906743c45ba4530292838cdd0342"
+    }
+  ],
+  "started_at": 1792470567,
+  "origin": "https://21bc1912566656.lhr.life/appeal-snapshot-1792470571030323472",
+  "contract_address": "0xCF8cCC825a6Cda684B38e09402982cd12E158eCA",
+  "appeal_submission": "0xa8bae8d50e5433eb8a953f0d13046dc528f6906743c45ba4530292838cdd0342",
+  "appealed_transaction": "0xa8bae8d50e5433eb8a953f0d13046dc528f6906743c45ba4530292838cdd0342",
+  "appeal_observed": true,
+  "final_status": "FINALIZED",
+  "final_rounds": 3,
+  "final_execution_success": false,
+  "native_balance": 0,
+  "post_appeal_source_error": "gen_getContractCode failed (code=-32602): Contract not deployed",
+  "origin_requests": [
+    {
+      "at": 1792470572.6010242,
+      "path": "/appeal-snapshot-1792470571030323472",
+      "status": 200,
+      "phase": "original",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "at": 1792470623.5571957,
+      "path": "/appeal-snapshot-1792470571030323472",
+      "status": 200,
+      "phase": "original",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "at": 1792470629.116433,
+      "path": "/appeal-snapshot-1792470571030323472",
+      "status": 200,
+      "phase": "original",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "at": 1792470629.9612927,
+      "path": "/appeal-snapshot-1792470571030323472",
+      "status": 200,
+      "phase": "original",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "at": 1792470630.8351846,
+      "path": "/appeal-snapshot-1792470571030323472",
+      "status": 200,
+      "phase": "original",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "at": 1792470631.1028028,
+      "path": "/appeal-snapshot-1792470571030323472",
+      "status": 200,
+      "phase": "original",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "at": 1792470631.1039248,
+      "path": "/appeal-snapshot-1792470571030323472",
+      "status": 200,
+      "phase": "original",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "at": 1792470634.7704246,
+      "path": "/appeal-snapshot-1792470571030323472",
+      "status": 200,
+      "phase": "after-acceptance",
+      "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+    }
+  ],
+  "public_origin_stopped": true
+}

@@ -1,0 +1,32 @@
+{
+  "inspected_at": 1792469908,
+  "upstream_commit": "c94072951e483510329670aa427fba3fa6944f45",
+  "scope": "Static verification against exact official source files. This does not verify the hosted revision or qualify a runtime fix.",
+  "checks": {
+    "claimed_appeal_sql_omits_saved_snapshot": true,
+    "claimed_appeal_dictionary_omits_saved_snapshot": true,
+    "process_appeal_converts_claimed_dictionary_directly": true,
+    "domain_conversion_reads_missing_snapshot_key": true,
+    "successful_appeal_fallback_selects_empty_accepted_state": true
+  },
+  "sources": {
+    "backend/consensus/worker.py": {
+      "url": "https://github.com/genlayerlabs/genlayer-studio/blob/c94072951e483510329670aa427fba3fa6944f45/backend/consensus/worker.py",
+      "sha256": "62c7b1926d6407edaa421426ae34b0ff275f259c5c671c6137b2bb4a61bdb566"
+    },
+    "backend/consensus/base.py": {
+      "url": "https://github.com/genlayerlabs/genlayer-studio/blob/c94072951e483510329670aa427fba3fa6944f45/backend/consensus/base.py",
+      "sha256": "6f6bf6350ea19a29a99fc476584091f241fd0a37a07e9aca238e61842301887d"
+    },
+    "backend/domain/types.py": {
+      "url": "https://github.com/genlayerlabs/genlayer-studio/blob/c94072951e483510329670aa427fba3fa6944f45/backend/domain/types.py",
+      "sha256": "a5e0910eb79ae1db6be8b3ad63f45c42ff556c8907d2c204164fc51ec6f04cd0"
+    }
+  },
+  "candidate_patch_sha256": "d4ee779e1f59d8ecc4eae91f5a665e90af003e30c3d751ae25c4c3e7fceb87cd",
+  "candidate_patch_python_syntax_valid": true,
+  "candidate_patch_runtime_tested": false,
+  "hosted_revision_verified": false,
+  "hosted_patch_applied": false,
+  "release_qualified": false
+}

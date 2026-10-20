@@ -3,18 +3,35 @@
   "complete": true,
   "release_qualified": false,
   "independent_install": true,
-  "sdk_tests_passed": 158,
+  "sdk_tests_passed": 161,
   "web3": "8.0.0",
-  "client_sha256": "64b69ae896f8f9c642e79da297e8d984dafc0ed22481ac9f4118bd7d09c33277",
-  "wheel_sha256": "54fdcc4efb2ce22612a8faabada9d4d823aa603651d3f8bc203fd090906e1826",
+  "client_sha256": "2b468bdc27d996f10884a7e17aafdbc1f83b595ce6813b6873b91e47b9d115ca",
+  "wheel_sha256": "aca634ed16fd374d713ed423c63d046480c44af2d4fa79f0b0aee4e8aaceb653",
   "live_source_guard_verified": true,
-  "guard_evidence": "artifacts/studio-appeal-integrity-failure.json",
-  "verified_at": 1792467315,
+  "guard_evidence": "artifacts/source-pin-sdk-verification.json",
+  "verified_at": 1792470554,
   "prior_client_signed_transaction": {
     "transaction_hash": "0x052b588a1c91b0400e7c8df417e2964252df66cd4f6d85f9d7b0c71274629950",
     "state": "FINALIZED",
     "sdk_tests_passed": 153,
     "scope": "Earlier SDK revision, before the source-integrity guard; preserved as historical positive signed-call evidence"
   },
-  "further_deposits_blocked": true
+  "further_deposits_blocked": true,
+  "positive_live_current_wheel": true,
+  "positive_live_address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+  "positive_live_transactions": [
+    {
+      "method": "deposit",
+      "transaction_hash": "0x91ca47a9a19cc01309d9b6073c3361b360715f8335836b4663130666f1bdf2fc",
+      "status": "FINALIZED"
+    },
+    {
+      "method": "withdraw",
+      "transaction_hash": "0xf2fde7350b3529776d0e2b7e5ce7c3be005aea1a42df4c216f6dd96ddb44e9d1",
+      "status": "FINALIZED",
+      "native_children": [
+        "0x8181d8ee743f77884db6d6cf86ee592d13cbd067b00ac5efb1b577913d4dd881"
+      ]
+    }
+  ]
 }

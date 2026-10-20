@@ -6,7 +6,7 @@ The release pins `genlayer-py==0.16.3`, `genlayer-test==0.29.2` and `genvm-linte
 
 Release qualification is blocked by the [live appeal integrity failure](STUDIO_APPEAL_BLOCKER.md). Completed component checks below do not establish a usable post-appeal deployment.
 
-The reviewed contracts passed both GenVM lint/semantic checks. The current local suite passed 296 tests, covering:
+The reviewed contracts passed both GenVM lint/semantic checks. The current local suite passed 300 tests, covering:
 
 - Creation and custody accounting, principal/bond capacity, exact bond rounding and replay rejection.
 - Immutable owner reconciliation and preservation of other parties' liabilities.
@@ -20,7 +20,7 @@ The reviewed contracts passed both GenVM lint/semantic checks. The current local
 
 Direct mode uses official SDK storage and calldata handling. Its verified public evidence cache avoids repeatedly downloading identical bytes. It does not establish actual validator consensus, native transfer delivery or protocol appeal behavior; those are separate live checks.
 
-The current wheel was installed in an independent virtual environment. All 158 SDK tests passed there with Web3 8.0.0. The installed package also rejected the real affected deployment through its new source-integrity guard. `artifacts/package-verification.json` records this qualification and preserves the earlier SDK revision's successful signed reconciliation separately as historical evidence.
+The current wheel was installed in an independent virtual environment. All 161 SDK tests passed there with Web3 8.0.0. The installed package also refused the real retired account's replacement source before funding and appeal refresh, and completed a one-wei deposit/native withdrawal round trip on a healthy production-source book with every emitted child finalized. `artifacts/package-verification.json` records this qualification and preserves the earlier SDK revision's successful signed reconciliation separately as historical evidence.
 
 ## Live qualification
 
@@ -42,9 +42,9 @@ These reports reached successful completion on their own recorded books. All par
 | [Exact changed and deleted URLs with snapshot fallback](../artifacts/source-availability-verification.json) | 17 | 4 | 0 |
 | [Partial production inbox transfer, owner recovery and account payouts](../artifacts/positive-payout-verification.json) | 12 | 8 | 0 |
 
-The main suite established its earlier lifecycle and economic scenarios, but its successful validator appeal was followed by missing source and a failed payout. It remains incomplete. The current inventory contains 313 tests, including 17 integration items; 313 passing tests are not claimed. Source integrity and post-appeal payout safety must pass before a release is qualified.
+The main suite established its earlier lifecycle and economic scenarios, but its successful validator appeal was followed by missing source and a failed payout. It remains incomplete. The current inventory contains 318 tests, including 18 integration items; 318 passing tests are not claimed. A fresh fundless HTTP probe independently reproduced the same source-loss failure in 113.64 seconds. Its one failed integration gate is recorded explicitly in `artifacts/appeal-snapshot-probe.json`; it is not counted as a passing test. Source integrity and post-appeal payout safety must pass before a release is qualified.
 
-The final [component verification](../artifacts/component-verification.json) re-read deployed source and accounting for four healthy books and the production inbox. Their current balances and liabilities were zero. The same check reconfirmed that the affected book's source was unavailable while its balance remained 300033 faucet test wei. The report explicitly withholds release qualification.
+The final [component verification](../artifacts/component-verification.json) re-read deployed source and accounting for four healthy books and the production inbox. Their current balances and liabilities were zero. A subsequent bilateral custody exit recovered all 300033 test wei from the damaged book, verified both native children and exact beneficiary increases, and retired that account at zero balance. Its current code is the recovery fixture, rather than production source. The report explicitly withholds release qualification.
 
 ## Reproduction
 

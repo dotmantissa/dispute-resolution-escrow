@@ -16,5 +16,8 @@
   "installed_package": true,
   "sdk_tests_passed": 158,
   "client_sha256": "64b69ae896f8f9c642e79da297e8d984dafc0ed22481ac9f4118bd7d09c33277",
-  "further_deposits_blocked": true
+  "further_deposits_blocked": true,
+  "observation_scope": "Historical source-unavailable evidence before the later bilateral test custody exit",
+  "subsequent_recovery": "artifacts/studio-custody-recovery.json",
+  "current_sdk_guard_evidence": "artifacts/source-pin-sdk-verification.json"
 }

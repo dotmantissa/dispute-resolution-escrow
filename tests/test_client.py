@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 from genlayer_escrow import (Document,EscrowClient,ExecutionFailed,PollingTimeout,
-    AppealTicket,ContractIntegrityError,consensus_accepted,execution_succeeded,transaction_status)
+    AppealTicket,ContractIntegrityError,ESCROW_SOURCE_SHA256,consensus_accepted,execution_succeeded,transaction_status)
 from genlayer_py import create_account,create_client
 from genlayer_py.chains import studionet
 
@@ -173,10 +173,17 @@ def test_appeal_ticket_commits_actual_source_before_submission():
     assert ticket.source_sha256==SOURCE_SHA256 and ticket.transaction_id=='stored-id'
 
 
-def test_deposit_rejects_missing_code_before_stale_config_or_value_submission():
+def test_published_escrow_source_commitment_matches_contract():
+    assert ESCROW_SOURCE_SHA256==SOURCE_SHA256
+
+
+@pytest.mark.parametrize('source',[None,b'',b'changed contract source'])
+def test_deposit_rejects_unqualified_code_before_stale_config_or_value_submission(source):
     trace=LifecycleTrace([])
-    trace.source=None
-    with pytest.raises(ContractIntegrityError):binding(trace).deposit(17)
+    trace.source=source
+    with pytest.raises(ContractIntegrityError) as error:binding(trace).deposit(17)
+    assert error.value.expected_sha256==ESCROW_SOURCE_SHA256
+    if source:assert error.value.actual_sha256==hashlib.sha256(source).hexdigest()
     assert trace.reads==[] and trace.polled==[]
 
 

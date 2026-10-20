@@ -2,11 +2,11 @@
   "version": "2.0.0",
   "component_verification_complete": true,
   "release_qualified": false,
-  "status": "BLOCKED_STUDIO_APPEAL_STATE",
-  "verified_at": 1792468191,
+  "status": "BLOCKED_STUDIO_APPEAL_RESTORATION",
+  "verified_at": 1792470797,
   "source_sha256": "ea4af6e7c194a176e33031a65ff7f2357e5c8854156209144a684bdb7dea1951",
-  "local_tests_passed": 296,
-  "independent_installed_sdk_tests_passed": 158,
+  "local_tests_passed": 300,
+  "independent_installed_sdk_tests_passed": 161,
   "reports": {
     "rejected-consensus-recovery": {
       "complete": true,
@@ -68,8 +68,8 @@
         "native_balance": 0,
         "pending_withdrawals": 0,
         "solvent": true,
-        "total_deposited": 22047,
-        "total_withdrawn": 22047,
+        "total_deposited": 22048,
+        "total_withdrawn": 22048,
         "unreconciled_deposits": 0,
         "withdrawal_credits": 0
       }
@@ -122,10 +122,20 @@
       "withdrawal_pending": false
     }
   },
-  "affected_book": {
+  "retired_book": {
     "address": "0x2A738Fb0EA7F055f5691B8c9d8a364D7d03F332F",
-    "source_error": "gen_getContractCode failed (code=-32602): Contract not deployed",
-    "native_balance": 300033
+    "current_source_sha256": "2541dd99ba503c0e5a5582b5dc792b86aaa021a10fd2399a5b6dcc1929f416e3",
+    "production_source_matches": false,
+    "native_balance": 0,
+    "recovered": 300033,
+    "recovery_report": "artifacts/studio-custody-recovery.json"
   },
-  "release_gate": "Repair Studio appeal restoration and affected account, then verify unchanged source, refreshed ruling and actual payouts after a successful appeal."
+  "fresh_fundless_probe": {
+    "address": "0xCF8cCC825a6Cda684B38e09402982cd12E158eCA",
+    "appeal_transaction": "0xa8bae8d50e5433eb8a953f0d13046dc528f6906743c45ba4530292838cdd0342",
+    "source_unavailable": true,
+    "native_balance": 0,
+    "report": "artifacts/appeal-snapshot-probe.json"
+  },
+  "release_gate": "Repair Studio appeal snapshot restoration, then qualify a fresh matching-source escrow book through successful appeal, refreshed ruling, actual payouts and native/liability conservation. The retired paid account must never be funded or revived as unpaid escrow."
 }

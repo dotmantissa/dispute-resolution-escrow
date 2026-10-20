@@ -11,7 +11,7 @@ from genlayer_py.abi import calldata
 from web3 import Web3
 
 from .evidence import Document
-from .receivers import PAYOUT_INBOX_SOURCE_SHA256
+from .receivers import ESCROW_SOURCE_SHA256, PAYOUT_INBOX_SOURCE_SHA256
 
 _STATUS = {'0': 'UNINITIALIZED', '1': 'PENDING', '2': 'PROPOSING', '3': 'COMMITTING',
            '4': 'REVEALING', '5': 'ACCEPTED', '6': 'UNDETERMINED', '7': 'FINALIZED',
@@ -158,7 +158,7 @@ class EscrowClient:
     def deposit(self, amount: int):
         if type(amount) is not int or amount <= 0:
             raise ValueError('Deposit must be a positive integer in wei')
-        self._source_commitment()
+        self._source_commitment(ESCROW_SOURCE_SHA256)
         owner = self.get_config()['funding_owner']
         if self.client.local_account.address.lower() != owner.lower():
             raise ValueError('This deposit would benefit a different funding owner')

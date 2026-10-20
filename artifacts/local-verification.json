@@ -1,25 +1,27 @@
 {
   "version": "2.0.0",
-  "verified_at": 1792467358,
+  "verified_at": 1792470651,
   "python": "3.14.4",
   "command": "python -m pytest tests/direct tests/test_client.py tests/test_payout_client.py -v -s --tb=short",
-  "passed": 296,
+  "passed": 300,
   "failed": 0,
-  "duration_seconds": 11.47,
+  "duration_seconds": 9.93,
   "genvm_lint": "both production contracts passed",
   "source_sha256": {
     "contracts/dispute_escrow.py": "ea4af6e7c194a176e33031a65ff7f2357e5c8854156209144a684bdb7dea1951",
     "contracts/payout_inbox.py": "1121d585aaad1a56156b730a7444962513ed8c767fc618f8945f14d015339934",
-    "src/genlayer_escrow/client.py": "64b69ae896f8f9c642e79da297e8d984dafc0ed22481ac9f4118bd7d09c33277",
-    "src/genlayer_escrow/evidence.py": "3e8d17d13977fbe1fcdde8ae6b45cc3b13f6334673049639f9b90ee97196cbba"
+    "src/genlayer_escrow/client.py": "2b468bdc27d996f10884a7e17aafdbc1f83b595ce6813b6873b91e47b9d115ca",
+    "src/genlayer_escrow/evidence.py": "3e8d17d13977fbe1fcdde8ae6b45cc3b13f6334673049639f9b90ee97196cbba",
+    "src/genlayer_escrow/receivers.py": "e11e1a4bf1bc233b472dea9688b953da46a13491a1a2d18c41c288e23af89afe",
+    "tests/integration/contracts/qualification_custody_exit.py": "2541dd99ba503c0e5a5582b5dc792b86aaa021a10fd2399a5b6dcc1929f416e3"
   },
   "scope": "Official direct-mode storage/calldata, verified public HTTP bytes and SDK lifecycle input traces. Real validator consensus and native transfers are qualified in separate Studio reports.",
   "tested_sdk_environments": {
     "development_web3": "7.16.0",
     "independent_web3": "8.0.0",
     "genlayer_py": "0.16.3",
-    "independent_sdk_tests_passed": 158
+    "independent_sdk_tests_passed": 161
   },
   "release_qualified": false,
-  "release_blocker": "Studio source unavailable after successful validator appeal"
+  "release_blocker": "Hosted appeal snapshot restoration remains unqualified; original test custody exited and account retired"
 }

@@ -1,6 +1,6 @@
 # Security and operating assumptions
 
-Current Studio qualification is blocked by [source loss after a successful appeal](STUDIO_APPEAL_BLOCKER.md). Native custody and reconciliation require executable contract source. Ownership rules cannot reconstruct a ledger erased by the hosted network. The SDK checks source before deposits and binds source integrity across appeals. Code restoration and complete ledger recovery are separate operations; neither establishes that another appeal is safe.
+Current Studio qualification is blocked by [source loss after a successful appeal](STUDIO_APPEAL_BLOCKER.md). Native custody and reconciliation require executable contract source. Ownership rules cannot reconstruct a ledger erased by the hosted network. The SDK pins the exact published source before deposits and binds source integrity across appeals. Code restoration and complete ledger recovery are separate operations; neither establishes that another appeal is safe.
 
 ## Exact economic agreement
 

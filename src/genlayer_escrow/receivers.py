@@ -1,2 +1,3 @@
-"""Exact source qualification for the supported native-balance payout inbox."""
+"""Exact source commitments for the published custody contracts."""
+ESCROW_SOURCE_SHA256 = 'ea4af6e7c194a176e33031a65ff7f2357e5c8854156209144a684bdb7dea1951'
 PAYOUT_INBOX_SOURCE_SHA256 = '1121d585aaad1a56156b730a7444962513ed8c767fc618f8945f14d015339934'

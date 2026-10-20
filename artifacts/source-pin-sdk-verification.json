@@ -1,0 +1,74 @@
+{
+  "version": "2.0.0",
+  "release_qualified": false,
+  "installed_package": true,
+  "sdk_tests_passed": 161,
+  "client_sha256": "2b468bdc27d996f10884a7e17aafdbc1f83b595ce6813b6873b91e47b9d115ca",
+  "expected_source_sha256": "ea4af6e7c194a176e33031a65ff7f2357e5c8854156209144a684bdb7dea1951",
+  "retired_address": "0x2A738Fb0EA7F055f5691B8c9d8a364D7d03F332F",
+  "actual_recovery_source_sha256": "2541dd99ba503c0e5a5582b5dc792b86aaa021a10fd2399a5b6dcc1929f416e3",
+  "transactions": [
+    {
+      "method": "deposit",
+      "transaction_hash": "0x91ca47a9a19cc01309d9b6073c3361b360715f8335836b4663130666f1bdf2fc",
+      "status": "FINALIZED"
+    },
+    {
+      "method": "withdraw",
+      "transaction_hash": "0xf2fde7350b3529776d0e2b7e5ce7c3be005aea1a42df4c216f6dd96ddb44e9d1",
+      "status": "FINALIZED",
+      "native_children": [
+        "0x8181d8ee743f77884db6d6cf86ee592d13cbd067b00ac5efb1b577913d4dd881"
+      ]
+    }
+  ],
+  "deposit_rejected_replacement_source": true,
+  "appeal_poll_rejected_replacement_source": true,
+  "positive_before_accounting": {
+    "accounted_balance": 0,
+    "conserved": true,
+    "escrow_count": 2,
+    "locked_bonds": 0,
+    "locked_principal": 0,
+    "native_balance": 0,
+    "pending_withdrawals": 0,
+    "solvent": true,
+    "total_deposited": 22047,
+    "total_withdrawn": 22047,
+    "unreconciled_deposits": 0,
+    "withdrawal_credits": 0
+  },
+  "positive_before_owner_balance": 852374500919583362936,
+  "positive_emitted_children": [
+    {
+      "transaction_hash": "0x8181d8ee743f77884db6d6cf86ee592d13cbd067b00ac5efb1b577913d4dd881",
+      "type": 0,
+      "status": "FINALIZED"
+    },
+    {
+      "transaction_hash": "0x70715a17a8641e3019445b37acac9282d4dfa2b4da9c5030cddc17e301599dae",
+      "type": 2,
+      "status": "FINALIZED"
+    }
+  ],
+  "complete": true,
+  "verified_at": 1792470554,
+  "positive_address": "0xA1c104eFB714D45F951E2bA55b8Cb9B78896eA65",
+  "positive_after_accounting": {
+    "accounted_balance": 0,
+    "conserved": true,
+    "escrow_count": 2,
+    "locked_bonds": 0,
+    "locked_principal": 0,
+    "native_balance": 0,
+    "pending_withdrawals": 0,
+    "solvent": true,
+    "total_deposited": 22048,
+    "total_withdrawn": 22048,
+    "unreconciled_deposits": 0,
+    "withdrawal_credits": 0
+  },
+  "positive_source_pinned_deposit_and_native_exit": true,
+  "positive_all_children_finalized": true,
+  "retired_balance": 0
+}
