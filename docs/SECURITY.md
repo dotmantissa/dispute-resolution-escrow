@@ -1,6 +1,6 @@
 # Security and operating assumptions
 
-Current Studio qualification is blocked by [source loss after a successful appeal](STUDIO_APPEAL_BLOCKER.md). Native custody and reconciliation require executable contract source. Ownership rules cannot recover funds when the hosted network loses that source. The SDK now checks source before deposits and binds source integrity across appeals; repairing the affected account requires network operators.
+Current Studio qualification is blocked by [source loss after a successful appeal](STUDIO_APPEAL_BLOCKER.md). Native custody and reconciliation require executable contract source. Ownership rules cannot reconstruct a ledger erased by the hosted network. The SDK checks source before deposits and binds source integrity across appeals. Code restoration and complete ledger recovery are separate operations; neither establishes that another appeal is safe.
 
 ## Exact economic agreement
 
@@ -51,3 +51,13 @@ A successful leader is insufficient evidence of consensus. The SDK requires auth
 Protocol appeals are separate from an additional contract-level court or administrator. The SDK persists appeal IDs, polls the original transaction, observes round progression and refreshes finalized case storage. An upheld appeal need not change the award. No application should promise that every appeal succeeds or changes a ruling.
 
 Studio is a hosted development network with faucet balances, rate limits and asynchronous processing. Its tests establish behavior on that network and pinned runtime, not production economic security on every future network version. A new network or runner requires repeat qualification. Private signing keys and publication credentials never belong in the repository or transaction journals.
+
+## Studio code replacement
+
+The contract exposes no administrator, sweep or upgrade method. This does not remove privileges provided by its host. Studio's public source implements `sim_upgradeContractCode`, authorized on hosted deployments by an administrator key or a signature from the original deployer. The signature binds the address, contract transaction count and replacement source hash. The worker directly replaces the code slot in accepted and finalized storage without running GenVM consensus or consulting the contract's upgrader list.
+
+Consequently, immutable ownership and owner-only inbox withdrawals describe the deployed contract's behavior while that source remains installed. They are not guarantees against a Studio administrator or deployer replacing that source. Preserve control of the deployment key, verify source commitments and requalify these privileges on another network. A deployer signature is not an administrative capability that this package gives to an unrelated builder.
+
+Replacing a missing code slot does not restore the rest of accepted storage. A recovery must preserve authoritative liabilities, obtain agreement where a failed appeal leaves a disputed ruling, and verify actual payouts. Code availability alone cannot clear the current release gate.
+
+Source: [Studio authorization and replacement worker at the inspected revision](https://github.com/genlayerlabs/genlayer-studio/blob/c94072951e483510329670aa427fba3fa6944f45/backend/consensus/worker.py#L1540), [endpoint authorization](https://github.com/genlayerlabs/genlayer-studio/blob/c94072951e483510329670aa427fba3fa6944f45/backend/protocol_rpc/endpoints.py#L769).

@@ -24,7 +24,7 @@ Version 2 separates native deposits from evidence evaluation. Failed evidence co
 | `src/genlayer_escrow` | Signed Python bindings, public evidence fetching, decision-aware polling, durable appeal tickets and child withdrawal tracking |
 | `tests` | Contract invariants, SDK regressions and real Studio lifecycle, failure and evidence-source tests |
 
-There is no application server, hosted adjudication service, operator key, administrator, upgrade mechanism or custom token. Each deployment is standalone. The published book belongs to its recorded payer; deploy your own book for your payer rather than sending money to that address.
+The primitive has no application server, hosted adjudication service, administrator method, contract upgrade method or custom token. Each deployment is standalone. Studio itself has a separate deployer-signed code replacement endpoint that bypasses contract execution. Its operator and deployer privileges remain a network trust assumption; see [security boundaries](docs/SECURITY.md#studio-code-replacement). The published book belongs to its recorded payer; deploy your own book for your payer rather than sending money to that address.
 
 ## Install
 
