@@ -2,6 +2,8 @@
 
 The audit of version 1 identified two high-severity issues, a URL policy defect, incomplete live qualification and contradictory documentation. It did not identify a payout tolerance or precedent defect in the original exact-equality validator. Version 2 retains exact economic agreement and changes custody and lifecycle behavior.
 
+Subsequent live qualification found a new release blocker: source became unavailable after a successful validator appeal while native test funds remained in the account. The SDK now rejects that source-integrity failure, but the hosted network's restoration behavior remains unresolved. See [Studio appeal integrity blocker](STUDIO_APPEAL_BLOCKER.md). This is not a completed release.
+
 | Finding | Correction | Verification |
 | --- | --- | --- |
 | Provisional outgoing value could be mistaken for a fresh deposit during remediation | Require authenticated finalized self-acknowledgements before reconciliation; inbox also serializes outgoing transfers until acknowledgement | Real isolated reproduction, corrected-source provisional reconciliation rejection and post-finality idempotence |

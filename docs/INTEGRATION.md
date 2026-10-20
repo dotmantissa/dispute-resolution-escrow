@@ -130,7 +130,9 @@ assert outcome['state'] != 'APPEAL_PENDING'
 record = outcome['escrow']
 ```
 
-The ticket stores the original intelligent transaction ID, appeal submission ID, case ID and prior round markers. On Studio, the pinned SDK returns the original ID for appeal submission. Polling follows that ID through appeal processing and then refreshes the case from finalized contract storage. It does not reuse a cached pre-appeal ruling. `APPEAL_NOT_OBSERVED` means finality was seen without evidence that the requested appeal ran; do not report it as a completed appeal.
+The ticket stores the original intelligent transaction ID, appeal submission ID, case ID, prior round markers and pre-appeal source hash. On Studio, the pinned SDK returns the original ID for appeal submission. Polling follows that ID through appeal processing, verifies unchanged deployed source, and refreshes the case from finalized contract storage. It does not reuse a cached pre-appeal ruling. `APPEAL_NOT_OBSERVED` means finality was seen without evidence that the requested appeal ran; do not report it as a completed appeal.
+
+`ContractIntegrityError` means deployed source is missing or differs from the ticket's commitment. Stop funding and inspect the network state. A historical finalized case view can survive loss of executable accepted-state code. See the [live Studio blocker](STUDIO_APPEAL_BLOCKER.md). Tickets created before the source-commitment field require a verified pre-appeal source record; do not invent a commitment from whatever code is present afterward.
 
 Appeals can uphold a ruling, replace it, or leave the case unresolved. `transaction_succeeded` reports the resulting operation independently of the refreshed case status. A `PollingTimeout` retains the same transaction ID and last receipt so callers can resume. `ExecutionFailed` retains the failed receipt. Neither exception authorizes automatic write resubmission.
 

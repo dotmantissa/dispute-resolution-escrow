@@ -4,7 +4,9 @@ The release pins `genlayer-py==0.16.3`, `genlayer-test==0.29.2` and `genvm-linte
 
 ## Local checks
 
-The reviewed source passed both GenVM lint/semantic checks. The local suite passed 291 tests, covering:
+Release qualification is blocked by the [live appeal integrity failure](STUDIO_APPEAL_BLOCKER.md). Completed component checks below do not establish a usable post-appeal deployment.
+
+The reviewed contracts passed both GenVM lint/semantic checks. The current local suite passed 296 tests, covering:
 
 - Creation and custody accounting, principal/bond capacity, exact bond rounding and replay rejection.
 - Immutable owner reconciliation and preservation of other parties' liabilities.
@@ -12,12 +14,13 @@ The reviewed source passed both GenVM lint/semantic checks. The local suite pass
 - All 103 valid economic decisions against every other decision, with exact payout agreement for compatible pairs.
 - Inconclusive results, matching settlement offers, cancellation and the pre-agreed deadline fallback.
 - Strict receipt acceptance, majority rejection, contradictory status fields, timeouts and durable appeal polling with refreshed finalized state.
+- Source commitments in appeal tickets and rejection of missing, empty or changed deployed code before returning a stale finalized case.
 - Public evidence URL policy, exact response hashes and actual pinned-address HTTPS fetching.
 - Inbox source/configuration qualification, parent/child withdrawal tracking and recipient-failure propagation.
 
 Direct mode uses official SDK storage and calldata handling. Its verified public evidence cache avoids repeatedly downloading identical bytes. It does not establish actual validator consensus, native transfer delivery or protocol appeal behavior; those are separate live checks.
 
-The final wheel was installed in an independent virtual environment. All 153 SDK tests passed there with Web3 8.0.0. The installed package also signed a real nonpayable Studio reconciliation transaction, waited for successful finality and read the actual accounting state. See `artifacts/package-verification.json` for its ID and source binding.
+The current wheel was installed in an independent virtual environment. All 158 SDK tests passed there with Web3 8.0.0. The installed package also rejected the real affected deployment through its new source-integrity guard. `artifacts/package-verification.json` records this qualification and preserves the earlier SDK revision's successful signed reconciliation separately as historical evidence.
 
 ## Live qualification
 

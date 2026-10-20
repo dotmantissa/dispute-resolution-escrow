@@ -20,5 +20,9 @@
     "0x6a4179A851B3747A458baD2f089AB2EeFE0eBbAb": "agree",
     "0x7bf4Ea55363bbe73A4dd5b3900bf03c978A63b6e": "idle",
     "0xf1C7551292319EE334e2D8A24eAC108Bd4C63b21": "idle"
-  }
+  },
+  "qualification_status": "BLOCKED_SOURCE_UNAVAILABLE_AFTER_APPEAL",
+  "source_currently_retrievable": false,
+  "last_integrity_check": 1792467204,
+  "blocker_report": "artifacts/studio-appeal-integrity-failure.json"
 }

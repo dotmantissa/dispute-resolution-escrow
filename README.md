@@ -1,10 +1,12 @@
 # Dispute Resolution Escrow
 
+**Release qualification is blocked by a live Studio appeal integrity failure.** The appealed book no longer returns deployed source while native test funds remain present. See the [incident evidence and release gate](docs/STUDIO_APPEAL_BLOCKER.md). The address below is a qualification record, not a usable escrow endpoint.
+
 Native GEN escrow for a specific documented promise. Builders deploy a prepaid escrow book for each payer, commit the original terms, and let independent GenLayer validators assess delivery. An exact consensus decision determines the earned share and whether clear payer bad faith forfeits the dispute bond.
 
 Version 2 separates native deposits from evidence evaluation. Failed evidence consensus cannot debit newly attached principal or bond because those calls are nonpayable. An immutable funding owner can recover native value that Studio retains after a failed call through balance reconciliation.
 
-- [Studio contract](https://explorer-studio.genlayer.com/address/0x2A738Fb0EA7F055f5691B8c9d8a364D7d03F332F)
+- [Blocked Studio qualification address](https://explorer-studio.genlayer.com/address/0x2A738Fb0EA7F055f5691B8c9d8a364D7d03F332F)
 - [Deployment and source hash](artifacts/deployment.json)
 - [Builder integration](docs/INTEGRATION.md)
 - [Contract API and accounting](docs/TECHNICAL.md)

@@ -1,27 +1,20 @@
 {
   "version": "2.0.0",
-  "web3": "8.0.0",
-  "contract_address": "0x2A738Fb0EA7F055f5691B8c9d8a364D7d03F332F",
-  "source_sha256": "ea4af6e7c194a176e33031a65ff7f2357e5c8854156209144a684bdb7dea1951",
-  "independent_install": true,
-  "sdk_tests_passed": 153,
-  "state": "FINALIZED",
-  "transaction_hash": "0x052b588a1c91b0400e7c8df417e2964252df66cd4f6d85f9d7b0c71274629950",
   "complete": true,
-  "consensus": "MAJORITY_AGREE",
-  "accounting": {
-    "accounted_balance": 300016,
-    "conserved": true,
-    "escrow_count": 1,
-    "locked_bonds": 0,
-    "locked_principal": 10001,
-    "native_balance": 300016,
-    "pending_withdrawals": 0,
-    "solvent": true,
-    "total_deposited": 300017,
-    "total_withdrawn": 1,
-    "unreconciled_deposits": 0,
-    "withdrawal_credits": 290015
+  "release_qualified": false,
+  "independent_install": true,
+  "sdk_tests_passed": 158,
+  "web3": "8.0.0",
+  "client_sha256": "64b69ae896f8f9c642e79da297e8d984dafc0ed22481ac9f4118bd7d09c33277",
+  "wheel_sha256": "54fdcc4efb2ce22612a8faabada9d4d823aa603651d3f8bc203fd090906e1826",
+  "live_source_guard_verified": true,
+  "guard_evidence": "artifacts/studio-appeal-integrity-failure.json",
+  "verified_at": 1792467315,
+  "prior_client_signed_transaction": {
+    "transaction_hash": "0x052b588a1c91b0400e7c8df417e2964252df66cd4f6d85f9d7b0c71274629950",
+    "state": "FINALIZED",
+    "sdk_tests_passed": 153,
+    "scope": "Earlier SDK revision, before the source-integrity guard; preserved as historical positive signed-call evidence"
   },
-  "verified_at": 1792448084
+  "further_deposits_blocked": true
 }

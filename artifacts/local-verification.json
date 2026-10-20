@@ -1,16 +1,16 @@
 {
   "version": "2.0.0",
-  "verified_at": 1792447608,
+  "verified_at": 1792467358,
   "python": "3.14.4",
   "command": "python -m pytest tests/direct tests/test_client.py tests/test_payout_client.py -v -s --tb=short",
-  "passed": 291,
+  "passed": 296,
   "failed": 0,
-  "duration_seconds": 41.26,
+  "duration_seconds": 11.47,
   "genvm_lint": "both production contracts passed",
   "source_sha256": {
     "contracts/dispute_escrow.py": "ea4af6e7c194a176e33031a65ff7f2357e5c8854156209144a684bdb7dea1951",
     "contracts/payout_inbox.py": "1121d585aaad1a56156b730a7444962513ed8c767fc618f8945f14d015339934",
-    "src/genlayer_escrow/client.py": "6341f88536575a468326fcb5ff4b805da18ce4bc831bed6e76bb2b8df1142186",
+    "src/genlayer_escrow/client.py": "64b69ae896f8f9c642e79da297e8d984dafc0ed22481ac9f4118bd7d09c33277",
     "src/genlayer_escrow/evidence.py": "3e8d17d13977fbe1fcdde8ae6b45cc3b13f6334673049639f9b90ee97196cbba"
   },
   "scope": "Official direct-mode storage/calldata, verified public HTTP bytes and SDK lifecycle input traces. Real validator consensus and native transfers are qualified in separate Studio reports.",
@@ -18,6 +18,8 @@
     "development_web3": "7.16.0",
     "independent_web3": "8.0.0",
     "genlayer_py": "0.16.3",
-    "independent_sdk_tests_passed": 153
-  }
+    "independent_sdk_tests_passed": 158
+  },
+  "release_qualified": false,
+  "release_blocker": "Studio source unavailable after successful validator appeal"
 }

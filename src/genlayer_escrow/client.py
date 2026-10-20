@@ -111,6 +111,14 @@ class RecipientExecutionFailed(RuntimeError):
         super().__init__('Payout recipient did not execute successfully; inspect its native balance and recovery interface before retrying')
 
 
+class ContractIntegrityError(RuntimeError):
+    """The deployed source disappeared or changed during an appeal."""
+    def __init__(self, address, expected_sha256, actual_sha256=None, receipt=None):
+        self.address, self.expected_sha256 = address, expected_sha256
+        self.actual_sha256, self.receipt = actual_sha256, receipt
+        super().__init__('Contract source is unavailable or differs from the pre-appeal commitment; stop funding and inspect network state')
+
+
 @dataclass(frozen=True)
 class AppealTicket:
     transaction_id: str
@@ -118,6 +126,7 @@ class AppealTicket:
     escrow_id: str
     previous_round: int
     previous_appeal_seconds: float
+    source_sha256: str
 
 
 class EscrowClient:
@@ -149,6 +158,7 @@ class EscrowClient:
     def deposit(self, amount: int):
         if type(amount) is not int or amount <= 0:
             raise ValueError('Deposit must be a positive integer in wei')
+        self._source_commitment()
         owner = self.get_config()['funding_owner']
         if self.client.local_account.address.lower() != owner.lower():
             raise ValueError('This deposit would benefit a different funding owner')
@@ -278,7 +288,21 @@ class EscrowClient:
         rounds = history.get('consensus_results') or []
         return max(int(receipt.get('num_of_rounds') or 0), len(rounds))
 
+    def _source_commitment(self, expected=None, receipt=None):
+        try:
+            encoded = self.client.provider.make_request('gen_getContractCode', [self.address])['result']
+            source = base64.b64decode(encoded, validate=True)
+            if not source:
+                raise ValueError('Empty deployed source')
+            actual = hashlib.sha256(source).hexdigest()
+        except Exception as error:
+            raise ContractIntegrityError(self.address, expected, receipt=receipt) from error
+        if expected is not None and actual != expected:
+            raise ContractIntegrityError(self.address, expected, actual, receipt)
+        return actual
+
     def appeal(self, escrow_id: str, transaction_id: str, *, value: int = 0) -> AppealTicket:
+        source_sha256 = self._source_commitment()
         previous = self.client.get_transaction(transaction_hash=transaction_id)
         if transaction_status(previous) not in ('ACCEPTED', 'UNDETERMINED', 'VALIDATORS_TIMEOUT', 'LEADER_TIMEOUT'):
             raise ValueError('Transaction is not in an appealable decided state')
@@ -286,7 +310,7 @@ class EscrowClient:
         # Persist the returned submission ID and original ID before polling again.
         submission = self.client.appeal_transaction(transaction_id=transaction_id, value=value)
         return AppealTicket(transaction_id, submission, escrow_id, self._round_count(previous),
-                            float(previous.get('appeal_processing_time') or 0))
+                            float(previous.get('appeal_processing_time') or 0), source_sha256)
 
     def poll_appeal(self, ticket: AppealTicket) -> dict:
         if ticket.submission_id != ticket.transaction_id:
@@ -302,6 +326,9 @@ class EscrowClient:
                     status.startswith('APPEAL_') or bool(receipt.get('appealed')))
         if status != 'FINALIZED':
             return {'state': 'APPEAL_PENDING', 'appeal_observed': observed, 'receipt': receipt}
+        # A finalized view can survive a broken accepted-state rollback. Verify
+        # executable source before treating that older view as a usable ruling.
+        self._source_commitment(ticket.source_sha256, receipt)
         # Always refresh finalized contract storage. A cached pre-appeal ruling is unsafe.
         record = self.get_escrow(ticket.escrow_id, finalized=True)
         return {'state': record['status'] if observed else 'APPEAL_NOT_OBSERVED',

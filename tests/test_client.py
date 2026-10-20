@@ -1,14 +1,17 @@
 """Receipt classification and durable polling regressions, plus real HTTPS fetching."""
 import hashlib
+import base64
 import json
 from pathlib import Path
 
 import pytest
 from genlayer_escrow import (Document,EscrowClient,ExecutionFailed,PollingTimeout,
-    AppealTicket,consensus_accepted,execution_succeeded,transaction_status)
+    AppealTicket,ContractIntegrityError,consensus_accepted,execution_succeeded,transaction_status)
 from genlayer_py import create_account,create_client
 from genlayer_py.chains import studionet
 
+SOURCE=(Path(__file__).parents[1]/'contracts/dispute_escrow.py').read_bytes()
+SOURCE_SHA256=hashlib.sha256(SOURCE).hexdigest()
 
 def receipt(status='FINALIZED',decision=6,execution='SUCCESS',**extra):
     return {'status':status,'result':decision,
@@ -86,6 +89,12 @@ class LifecycleTrace:
         self.transactions=list(transactions)
         self.record=record or {'status':'SETTLED','payee_bps':10000,'payer_bad_faith':False}
         self.polled=[];self.reads=[]
+        self.provider=self
+        self.source=SOURCE
+    def make_request(self,method,args):
+        assert method=='gen_getContractCode'
+        if self.source is None:raise RuntimeError('Contract not deployed')
+        return {'result':base64.b64encode(self.source).decode()}
     def get_transaction(self,transaction_hash):
         self.polled.append(transaction_hash)
         return self.transactions.pop(0) if len(self.transactions)>1 else self.transactions[0]
@@ -128,7 +137,7 @@ def test_resumed_appeal_refreshes_finalized_ruling_and_leaves_pending_state():
         receipt('APPEAL_COMMITTING',num_of_rounds=1),
         receipt('APPEAL_REVEALING',num_of_rounds=2),
         receipt('FINALIZED',num_of_rounds=2)],record=refreshed)
-    ticket=AppealTicket('original-tx','original-tx','42',1,0)
+    ticket=AppealTicket('original-tx','original-tx','42',1,0,SOURCE_SHA256)
     encoded=json.dumps(ticket.__dict__)
     outcome=binding(trace).wait_appeal(AppealTicket(**json.loads(encoded)),retries=3,interval=0)
     assert outcome['state']=='SETTLED' and outcome['appeal_observed']
@@ -141,9 +150,34 @@ def test_resumed_appeal_refreshes_finalized_ruling_and_leaves_pending_state():
 
 def test_rejected_appeal_refreshes_unsettled_case_without_claiming_success():
     trace=LifecycleTrace([receipt('FINALIZED',7,num_of_rounds=2)],record={'status':'DISPUTED','last_assessment':None})
-    outcome=binding(trace).wait_appeal(AppealTicket('tx','tx','8',1,0),retries=1,interval=0)
+    outcome=binding(trace).wait_appeal(AppealTicket('tx','tx','8',1,0,SOURCE_SHA256),retries=1,interval=0)
     assert outcome['state']=='DISPUTED' and not outcome['transaction_succeeded']
     assert outcome['escrow']['last_assessment'] is None
+
+
+@pytest.mark.parametrize('source',[None,b'',b'changed source'])
+def test_appeal_rejects_missing_or_changed_source_before_reading_stale_ruling(source):
+    finalized=receipt('FINALIZED',execution='ERROR',num_of_rounds=3)
+    trace=LifecycleTrace([finalized],record={'status':'SETTLED','payee_credit':5000})
+    trace.source=source
+    with pytest.raises(ContractIntegrityError) as error:
+        binding(trace).wait_appeal(AppealTicket('tx','tx','14',1,0,SOURCE_SHA256),retries=1,interval=0)
+    assert error.value.receipt is finalized and error.value.expected_sha256==SOURCE_SHA256
+    assert trace.polled==['tx'] and trace.reads==[]
+
+
+def test_appeal_ticket_commits_actual_source_before_submission():
+    trace=LifecycleTrace([receipt('ACCEPTED',num_of_rounds=1)])
+    trace.appeal_transaction=lambda **kwargs:kwargs['transaction_id']
+    ticket=binding(trace).appeal('42','stored-id')
+    assert ticket.source_sha256==SOURCE_SHA256 and ticket.transaction_id=='stored-id'
+
+
+def test_deposit_rejects_missing_code_before_stale_config_or_value_submission():
+    trace=LifecycleTrace([])
+    trace.source=None
+    with pytest.raises(ContractIntegrityError):binding(trace).deposit(17)
+    assert trace.reads==[] and trace.polled==[]
 
 
 @pytest.mark.parametrize('principal',[0,-1,True,'100'])

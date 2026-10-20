@@ -1,0 +1,20 @@
+{
+  "version": "2.0.0",
+  "finding_confirmed": true,
+  "release_qualified": false,
+  "network": "studionet",
+  "contract_address": "0x2A738Fb0EA7F055f5691B8c9d8a364D7d03F332F",
+  "expected_source_sha256": "ea4af6e7c194a176e33031a65ff7f2357e5c8854156209144a684bdb7dea1951",
+  "appeal_transaction": "0x366f02f6997b56543e227cf131434b16968879e6ec60c78c440f9670acc53138",
+  "appeal_rounds": "3",
+  "appeal_final_status": "FINALIZED",
+  "source_error": "gen_getContractCode failed (code=-32602): Contract not deployed",
+  "sdk_fail_closed_verified": true,
+  "stale_finalized_ruling_not_returned": true,
+  "native_balance": 300033,
+  "verified_at": 1792467315,
+  "installed_package": true,
+  "sdk_tests_passed": 158,
+  "client_sha256": "64b69ae896f8f9c642e79da297e8d984dafc0ed22481ac9f4118bd7d09c33277",
+  "further_deposits_blocked": true
+}
